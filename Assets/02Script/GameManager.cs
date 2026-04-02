@@ -136,7 +136,7 @@ public class GameManager : MonoBehaviour
             player.isPlaying = true;
             isPlaying = true;
 
-            CameraManager.Instance.SnapCurrentCamera();
+            //CameraManager.Instance.SnapCurrentCamera();
             Time.timeScale = 1.0f;
 
             UIManager.Instance.FadeIn();

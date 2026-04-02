@@ -321,13 +321,13 @@ public class PlayerVisual : MonoBehaviour
 
     private void HandleSlamImpactVisual(Vector2 impactPos, Vector2 impactDir, Color impactColor)
     {
-        CameraManager.Instance?.PlaySlamGroundShake(impactPos, impactDir);
+        //CameraManager.Instance?.PlaySlamGroundShake(impactPos, impactDir);
         EffectManager.Instance?.PlaySlamGroundEffect(impactPos, impactDir, impactColor);
     }
 
     private void HandleSlamEnemyImpactVisual(Vector2 impactPos, Vector2 impactDir)
     {
-        CameraManager.Instance?.PlaySlamEnemyHitShake(impactPos, impactDir);
+        //CameraManager.Instance?.PlaySlamEnemyHitShake(impactPos, impactDir);
         EffectManager.Instance?.PlaySlamEnemyEffect(impactPos, impactDir);
     }
     #endregion
@@ -352,7 +352,7 @@ public class PlayerVisual : MonoBehaviour
 
     private void HandlePerfectGuardSuccessVisual(Vector2 impactPos, Vector2 shakeDir)
     {
-        CameraManager.Instance?.PlayPerfectGuardShake(impactPos, shakeDir);
+        //CameraManager.Instance?.PlayPerfectGuardShake(impactPos, shakeDir);
         EffectManager.Instance?.PlayPerfectGuardEffect(impactPos);
         PlayPerfectGuardTimeSlow();
     }
