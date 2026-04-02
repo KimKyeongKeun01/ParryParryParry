@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &3790423990843397217
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8578896272616800889, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: platformColor.b
+      value: 0.9647059
+      objectReference: {fileID: 0}
+    - target: {fileID: -8578896272616800889, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: platformColor.g
+      value: 0.50980395
+      objectReference: {fileID: 0}
+    - target: {fileID: -8578896272616800889, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: platformColor.r
+      value: 0.23137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 50780753859400013, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_Name
+      value: Platform_Moving Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 3666518051451040114, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4273432244586466324, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4273432244586466324, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4273432244586466324, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4402213658504683049, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_Color.b
+      value: 0.83137256
+      objectReference: {fileID: 0}
+    - target: {fileID: 4402213658504683049, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_Color.g
+      value: 0.7137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 4402213658504683049, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      propertyPath: m_Color.r
+      value: 0.023529412
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 50780753859400013, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4107198455202797412}
+    - targetCorrespondingSourceObject: {fileID: 50780753859400013, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2318433206287289252}
+  m_SourcePrefab: {fileID: 100100000, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+--- !u!1 &3759980509269165356 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 50780753859400013, guid: 02aa95ce687cd5c449db339ebf2264aa, type: 3}
+  m_PrefabInstance: {fileID: 3790423990843397217}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &4107198455202797412
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3759980509269165356}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!114 &2318433206287289252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3759980509269165356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a16857014cbe04593fd3d111431cfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform_Moving
+  trigger:
+    activationMode: 0
+    startActivated: 1
+  path:
+    movementMode: 0
+    firstWaypointOffset: {x: 3, y: 0}
+    additionalWaypointOffsets: []
+    moveSpeed: 2
+    returnToStartWhenInactive: 1
+    returnToStartWhenPlayerLeaves: 1
+  passenger:
+    sendCallbacks: 1
+    parentToPlatform: 0
+  visual:
+    targetRenderer: {fileID: 0}
+    useArrivalColorLerp: 0
+    arrivalColor: {r: 1, g: 1, b: 1, a: 1}
+    arrivalColorLerpDistance: 0.5
+    useActiveColorLerp: 0
+    activeColor: {r: 1, g: 1, b: 1, a: 1}
+    colorLerpSpeed: 4

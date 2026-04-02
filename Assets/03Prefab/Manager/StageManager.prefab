@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3369099720570006194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3789247306469847575}
+  - component: {fileID: 8163717132268177691}
+  m_Layer: 0
+  m_Name: StageManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3789247306469847575
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3369099720570006194}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8163717132268177691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3369099720570006194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efdd71b4a68228c41add2e059be85edd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageManager
+  stages:
+  - {fileID: 8997122303811005327, guid: ced881728bd95504b87ace4427fa3f6e, type: 3}
+  - {fileID: 4068086175180025228, guid: ff7684134a50be247868af51950be69c, type: 3}
+  - {fileID: 8776752523920782759, guid: 1507194e511041040b369fb687c60f36, type: 3}
+  - {fileID: 5617312482429766725, guid: 4a8a612f68567ff479f17b86c5dcd19a, type: 3}
+  - {fileID: 7826662999910530962, guid: c9bf37456ef4463459bfb9ed7d1e0e20, type: 3}
+  - {fileID: 3625732583906088712, guid: a99e50b46d53f6b439b137418af7f379, type: 3}
+  - {fileID: 3536185123502080162, guid: a5e3ddc78041c594b955a046d9f01457, type: 3}
+  - {fileID: 1004364399771767627, guid: c6dde3b1dd541214092d3b549365bbdc, type: 3}
+  - {fileID: 146587302705790104, guid: 79e86fec952124041a857f18e1cd793e, type: 3}
+  - {fileID: 4780418184546399209, guid: aff38971b49416641b305920e8d9baeb, type: 3}
+  stageOffsets: []

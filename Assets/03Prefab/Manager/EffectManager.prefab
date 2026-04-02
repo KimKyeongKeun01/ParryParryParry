@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &824091683166508710
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5285402172296838311}
+  - component: {fileID: 5428587508502532921}
+  m_Layer: 0
+  m_Name: EffectManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5285402172296838311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824091683166508710}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5428587508502532921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824091683166508710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aae8ddfd91e4f240b84820564823303, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EffectManager
+  slamGroundEffectPrefab: {fileID: 2838314150276552283, guid: 494958d411d56ee4bb1895508d9a2f55, type: 3}
+  slamEnemyEffectPrefab: {fileID: 2512589243216126811, guid: 16a90f65758dad34cae6d46feaca2652, type: 3}
+  jumpEffectPrefab: {fileID: 1390469300845549525, guid: d51bfb24541390140913a36bade7cdbe, type: 3}
+  slamStartEffectPrefab: {fileID: 7231778383001014975, guid: 66ebfce95c227824cb0d39a1cb73f194, type: 3}
+  footstepEffectPrefab: {fileID: 5605651041158485689, guid: 7a5b293695b1c124b8b70f9575258dc1, type: 3}
+  guardEffectPrefab: {fileID: 5901054716662270857, guid: fe2ba17b19d7575438c804713425f912, type: 3}
+  perfectGuardEffectPrefab: {fileID: -8436912499194383893, guid: 14f44fdd8051119429c3870cb5e8735d, type: 3}
+  slamStartEffectOffset: -1.5
+  slamStartEffectAngleOffset: -25

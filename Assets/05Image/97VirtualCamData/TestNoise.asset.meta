@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/06VirtualCamData/TestNoise.asset.meta
+guid: 50ed217457a91b64bb0535d97c7d67cc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+========
+guid: e3308404051ebf44ca8b70aeabf3fc79
+PrefabImporter:
+  externalObjects: {}
+>>>>>>>> sub:Assets/03Prefab/Stage/Base Stage 1.prefab.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40ff84edc9cab0844adf7e88c552e8d2, type: 3}
+  m_Name: UtanStatus
+  m_EditorClassIdentifier: Assembly-CSharp::BossStatus_Utan
+  bossName: Utan
+  maxHp: 40
+  contactDamage: 1
+  moveSpeed: 5
+  detectRange: 200
+  detectHeight: 5
+  phase2Threshold: 0.5
+  phaseTransitionDelay: 2
+  exhaustedDuration: 5
+  exhaustedHitLimit: 5
+  exhaustedDamageMulti: 1
+  defultWindUpTime: 0.5
+  defultWindDownTime: 0.5
+  patternInterval: 1.5
+  maxApproachTime: 2
+  phase2PatternIntervalMulti: 0.85
+  meleeRange: 10
+  midRange: 20
+  armSmashStopDistance: 8
+  armSmashCooldown: 3
+  armSmashDamage: 1
+  armSmashKnockback: 10
+  armSmashStunTime: 2
+  rockThrowCooldown: 5
+  rockDamage: 1
+  rockKnockback: 10
+  rockSpeed: 10
+  rockApexOffset: 12
+  swingHeight: 20
+  swingLopeLength: 18
+  swingCooldown: 10
+  swingDamage: 1
+  swingKnockback: 10
+  swingSpeed: 15
+  swingDuration: 3
+  slamWindownDuration: 3

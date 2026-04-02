@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Ground
+  - Projectile
+  - Bomb
+  - Bouncy
+  - Spike
+  - Lever
+  - T_Wall
+  - B_Wall
+  - Enemy
+  - Shield
+  - HalfPlatform
+  - Plants
+  - Boss
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Ground
+  - Water
+  - UI
+  - 
+  - Spike
+  - 
+  - T_Wall
+  - B_Wall
+  - 
+  - Projectile
+  - 
+  - Lever
+  - 
+  - Shield
+  - 
+  - 
+  - 
+  - 
+  - BossProjectile
+  - Boss
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Enemy
+  - 
+  - Player
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: BackGround
+    uniqueID: 3227819603
+    locked: 0
+  - name: Ground
+    uniqueID: 252398855
+    locked: 0
+  - name: BackObject
+    uniqueID: 164965971
+    locked: 0
+  - name: FrontObject
+    uniqueID: 2629216497
+    locked: 0
+  - name: Enemy
+    uniqueID: 446165175
+    locked: 0
+  - name: FrontGround
+    uniqueID: 1079118021
+    locked: 0
+  - name: Player
+    uniqueID: 3539096337
+    locked: 0
+  - name: UI
+    uniqueID: 4213484911
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  - Light Layer 1
+  - Light Layer 2
+  - Light Layer 3
+  - Light Layer 4
+  - Light Layer 5
+  - Light Layer 6
+  - Light Layer 7
