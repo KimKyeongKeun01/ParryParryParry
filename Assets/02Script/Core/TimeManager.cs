@@ -80,7 +80,10 @@ public class TimeManager : MonoBehaviour
     /// </summary>
     public void SetActionTime(float scale, float duration)
     {
+        // Scale 값은 0(정지)과 1(재생) 사이로 제한
         actionScale = Mathf.Clamp01(scale);
+        // 배속 구현시 해당 주석 사용
+        //actionScale = Mathf.Clamp(scale, 0f, 최대배속);
         Apply();
 
         if (actionRoutine != null)
@@ -125,6 +128,12 @@ public class TimeManager : MonoBehaviour
     /// </summary>
     private void Apply()
     {
+        /* 시간 적용 법칙
+        Scale이 더 작은 시간 적용
+        - System = 0, Action = 0.6  -> 최종 0
+        - System = 1, Action = 0.6  -> 최종 0.6
+        - System = 1, Action = 1    -> 최종 1
+        */
         float finalScale = Mathf.Min(systemScale, actionScale);
 
         Time.timeScale = finalScale;
@@ -141,6 +150,7 @@ public class TimeManager : MonoBehaviour
 
         while (elapsed < duration)
         {
+            // 시스템 정지시 액션 타이머 정지
             if (!IsPaused)
                 elapsed += Time.unscaledDeltaTime;
 
