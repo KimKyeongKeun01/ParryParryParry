@@ -1529,7 +1529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f0eaaff869b2840bbccf746f608e3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraManager
-  livePriority: 100
+  livePriority: 10
   idlePriority: 0
 --- !u!114 &945048471
 MonoBehaviour:
@@ -1545,7 +1545,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
   ImpulseDefinition:
     ImpulseChannel: 1
-    ImpulseShape: 2
+    ImpulseShape: 0
     CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
@@ -2031,6 +2031,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7761845686372616729, guid: 09a46b286a963ff46a89e939d5d26b01, type: 3}
+      propertyPath: slamShakeProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: 62b90bbd04baab345beef7b329b2931e, type: 2}
     - target: {fileID: 7860016953527242723, guid: 09a46b286a963ff46a89e939d5d26b01, type: 3}
       propertyPath: m_IsActive
       value: 0

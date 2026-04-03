@@ -57,7 +57,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  duration: 0.15
+  duration: 0.1
   force: 0.6
   forceMulti: 1
-  note: "\uAE30\uBCF8 \uBC18\uB3D9 \uD754\uB4E4\uB9BC"
+  note: "\uC57D\uD55C \uBC18\uB3D9 \uD754\uB4E4\uB9BC"

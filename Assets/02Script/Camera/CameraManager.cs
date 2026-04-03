@@ -24,6 +24,7 @@ public class CameraManager : MonoBehaviour
         }
 
         Instance = this;
+        Shake = GetComponent<CameraShakeController>();
     }
 
     public void SwitchTo(CinemachineCamera nextCam)

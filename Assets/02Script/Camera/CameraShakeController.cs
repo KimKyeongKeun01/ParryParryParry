@@ -97,7 +97,7 @@ public class CameraShakeController : MonoBehaviour
     }
     #endregion
 
-
+    #region Internal
     /// <summary>
     /// 프로필의 Source 설정을 Impulse Source에 적용한다.
     /// </summary>
@@ -139,4 +139,5 @@ public class CameraShakeController : MonoBehaviour
 
         return resolved.normalized;
     }
+    #endregion
 }
