@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     [Tooltip("메인 메뉴 씬 이름")][SerializeField] private string mainSceneName;
     [Tooltip("게임 시작 씬 이름")][SerializeField] private string gameSceneName;
 
+
+    // Reference
+    public TimeManager timeManager { get; private set; }
+
+
     void Awake()
     {
         if (instance == null)
@@ -25,8 +30,13 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
-        Application.targetFrameRate = 60;
+
+        if (timeManager == null) timeManager = GetComponent<TimeManager>();
+
+
+        QualitySettings.vSyncCount = 1;
     }
 
     private void Start()
@@ -59,7 +69,8 @@ public class GameManager : MonoBehaviour
     #region 게임 상태
     public void GameMain()
     {
-        Time.timeScale = 1f;
+        timeManager.SetSystemTime(1);   // 시간 초기화 필수!
+
         UIManager.Instance.FadeOut(onComplete: () =>
         {
             LoadScene(mainSceneName, true);
@@ -81,14 +92,14 @@ public class GameManager : MonoBehaviour
     public void GamePause()
     {
         isPlaying = false;
-        Time.timeScale = 0f;
+        timeManager.SetSystemTime(0);   // 시간 정지
         UIManager.Instance?.SetPausePanel(true);
     }
 
     public void GameRestart()
     {
         isPlaying = true;
-        Time.timeScale = 1f; // 시간 초기화 필수!
+        timeManager.SetSystemTime(1);   // 시간 초기화 필수!
 
         // 페이드 아웃 후 현재 씬 다시 로드
         UIManager.Instance.FadeOut(onComplete: () =>
@@ -107,14 +118,14 @@ public class GameManager : MonoBehaviour
     public void GameResume()
     {
         isPlaying = true;
-        Time.timeScale = 1f;
+        timeManager.SetSystemTime(1);   // 시간 초기화 필수!
         UIManager.Instance?.SetPausePanel(false);
     }
 
     public void GameClear()
     {
         isPlaying = false;
-        Time.timeScale = 0f;
+        timeManager.SetSystemTime(0);   // 시간 정지
         Player.Instance.isPlaying = false;
         UIManager.Instance.SetClearPanel(true);
     }
@@ -137,7 +148,7 @@ public class GameManager : MonoBehaviour
             isPlaying = true;
 
             //CameraManager.Instance.SnapCurrentCamera();
-            Time.timeScale = 1.0f;
+            timeManager.SetSystemTime(1);   // 시간 초기화 필수!
 
             UIManager.Instance.FadeIn();
         });

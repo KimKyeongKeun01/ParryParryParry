@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2310409125429820196}
   - component: {fileID: 8625695405180919282}
+  - component: {fileID: -2345020459958058696}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -47,3 +48,17 @@ MonoBehaviour:
   isPlaying: 1
   mainSceneName: Title
   gameSceneName: Stage
+--- !u!114 &-2345020459958058696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5849110577299472640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21145281a54317c4b9e3e8dbab981be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimeManager
+  baseFixedDeltaTime: 0.02
+  useCurrentFixedDeltaTimeAsBase: 1
