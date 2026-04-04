@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NeonGrisSquareMaterial
+  m_Name: NeonGridSquareMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 42e286f866fbad84fac2fd2d6e2fd154, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -72,10 +72,10 @@ Material:
     - _Cellsize: {r: 0, g: 0, b: 0, a: 0}
     - _ChangeCellSize: {r: 1, g: 1, b: 0, a: 0}
     - _ChangeClor: {r: 0.8567905, g: 1, b: 0, a: 1}
-    - _ChangeColor: {r: 0.93021417, g: 1, b: 0, a: 0}
-    - _HighlightCellCenter: {r: -12.5, g: -3.5, b: 0, a: 0}
+    - _ChangeColor: {r: 1, g: 0.85180074, b: 0, a: 0}
+    - _HighlightCellCenter: {r: 51.5, g: 9.5, b: 0, a: 0}
     - _NeonColor: {r: 0, g: 0.5553288, b: 0.8301887, a: 1}
-    - _TilemapOrigin: {r: -20, g: -8, b: 0, a: 0}
-    - _TilemapSize: {r: 50, g: 8, b: 0, a: 0}
+    - _TilemapOrigin: {r: -24, g: -23, b: 0, a: 0}
+    - _TilemapSize: {r: 926, g: 51, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
