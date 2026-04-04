@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class FullscreenShockwaveController : MonoBehaviour
 {
@@ -16,7 +15,6 @@ public class FullscreenShockwaveController : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool _playOnStart = false;
     [SerializeField] private Transform _debugWorldTarget;
-    [SerializeField] private bool _debugPlayOnMouseLeftClick = true;
 
     private const int SlotCount = 4;
 
@@ -96,14 +94,6 @@ public class FullscreenShockwaveController : MonoBehaviour
 
     private void Update()
     {
-        if (_debugPlayOnMouseLeftClick && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            Vector2 mouseScreenPixel = Mouse.current.position.ReadValue();
-            PlayAtScreenPixel(mouseScreenPixel);
-        }
-
-        bool anySlotUpdated = false;
-
         for (int i = 0; i < SlotCount; i++)
         {
             if (_slots[i].IsPlaying == false)
@@ -120,20 +110,23 @@ public class FullscreenShockwaveController : MonoBehaviour
             _fullscreenMaterial.SetFloat(ShockProgressIds[i], progress);
             _fullscreenMaterial.SetFloat(StrengthIds[i], currentStrength);
 
-            anySlotUpdated = true;
-
             if (normalizedTime >= 1f)
                 StopSlot(i);
         }
-
-        if (anySlotUpdated == false)
-            return;
     }
 
     public void PlayAtWorld(Vector3 worldPosition)
     {
-        Vector3 screenPoint = _targetCamera.WorldToScreenPoint(worldPosition);
+        if (_targetCamera == null)
+            _targetCamera = Camera.main;
 
+        if (_targetCamera == null)
+        {
+            Debug.LogWarning("[FullscreenShockwaveController] PlayAtWorld 실패 - target camera가 없습니다.");
+            return;
+        }
+
+        Vector3 screenPoint = _targetCamera.WorldToScreenPoint(worldPosition);
         if (screenPoint.z <= 0f)
             return;
 
@@ -143,6 +136,11 @@ public class FullscreenShockwaveController : MonoBehaviour
         );
 
         PlayAtViewportUV(viewportUV);
+    }
+
+    public void PlayAtWorld(Vector2 worldPosition)
+    {
+        PlayAtWorld((Vector3)worldPosition);
     }
 
     public void PlayAtScreenPixel(Vector2 screenPixel)
