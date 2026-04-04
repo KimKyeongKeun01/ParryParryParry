@@ -20,8 +20,8 @@ public class BossStart : MonoBehaviour
                 bossStage.StartBoss();
             }
 
-            // 한 번 작동 후 트리거 오브젝트 비활성화 (선택 사항)
-            // gameObject.SetActive(false);
+            // 오브젝트 비활성화
+            gameObject.SetActive(false);
         }
     }
 }

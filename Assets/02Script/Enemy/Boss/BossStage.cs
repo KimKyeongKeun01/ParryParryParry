@@ -20,6 +20,7 @@ public class BossStage : MonoBehaviour
 
     [Header("Timeline")]
     [SerializeField] private PlayableDirector bossIntro;
+    [SerializeField] private CameraShakeProfile shakeProfile;
     private bool isCutscenePlaying = false;
     private bool hasBossStarted = false;
 
@@ -70,12 +71,13 @@ public class BossStage : MonoBehaviour
     private void OnStageEntered(Stage enteredStage)
     {
         if (enteredStage != stage) return;
+
         // 보스전 시작 전의 배경음악 변경이나 UI 알림 등을 여기에 넣을 수 있음
     }
 
     public void StartBoss()
     {
-        if (isBossBattle || stageCleared) return;
+        if (hasBossStarted || stageCleared) return;
         hasBossStarted = true;
         Debug.Log($"[BossStage] {gameObject.name}: Boss Intro Start.");
 
@@ -90,6 +92,7 @@ public class BossStage : MonoBehaviour
         {
             isCutscenePlaying = true;
 
+            bossObj.SetActive(true);
             bossIntro.time = 0;
             bossIntro.Evaluate();
             bossIntro.Play();
@@ -115,6 +118,7 @@ public class BossStage : MonoBehaviour
     {
         if (isBossBattle) return;
 
+        bossScript.isDead = false;
         isBossBattle = true;
         isCutscenePlaying = false;
 
@@ -132,6 +136,7 @@ public class BossStage : MonoBehaviour
     {
         if (stageCleared) return;
         stageCleared = true;
+        isCutscenePlaying = false;
 
         Debug.Log($"[BossStage] {gameObject.name}: Boss Clear!");
 
@@ -149,5 +154,10 @@ public class BossStage : MonoBehaviour
 
         // 5. 입구 문 다시 열기 (선택 사항)
         if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
+    }
+
+    public void S_CameraShake()
+    {
+        CameraManager.Instance.Shake.Play(shakeProfile);
     }
 }
