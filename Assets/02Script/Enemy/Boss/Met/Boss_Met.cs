@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Boss_Met : BaseBoss
 {
@@ -12,7 +13,7 @@ public class Boss_Met : BaseBoss
     [Header(" === Boss Met === ")]
     [Header("Attack State Machine")]
     [SerializeField] private AttackPattern curAttack = AttackPattern.None;
-    [SerializeField] protected float attackTimer = 0f;
+    [SerializeField] protected float attackTimer = 0f; //공격 안전장치 타이머
 
     [Header("Power Dash")]
     [SerializeField] private bool hitDash = false;
@@ -30,6 +31,8 @@ public class Boss_Met : BaseBoss
     private float lastDashTime = -99f;
     private float lastTuskTime = -99f;
     private float lastSlamTime = -99f;
+
+    private bool isExhausted = false;
 
     protected override void Awake()
     {
@@ -92,6 +95,15 @@ public class Boss_Met : BaseBoss
 
     #region 패턴 관리
     
+    private void FixedUpdate()
+    {
+        if (!isExhausted) return;
+        isExhausted = false;
+        _rigid.MovePosition(_rigid.position + Vector2.left * facingX * 5);
+        _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
+        
+    }
+
     protected override int SelectNextPattern()
     {
         Player player = Player.Instance;
@@ -185,6 +197,7 @@ public class Boss_Met : BaseBoss
 
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         _visual?.PlayAnim("IsMoving", false);
+        DisableHitbox();
     }
 
     #endregion
@@ -245,6 +258,7 @@ public class Boss_Met : BaseBoss
         _visual.PlayAnim("Dash_Action", false);
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         lastDashTime = Time.time;
+        DisableHitbox();
         yield return new WaitForSeconds(Status.defultWindDownTime);
     }
 
@@ -331,7 +345,7 @@ public class Boss_Met : BaseBoss
     {
         if (hitTusk) return;
         hitTusk = true;
-
+        Debug.Log("터스트 힛");
         // 고개를 쳐올리는 공격이므로 위쪽 방향 힘을 더 줌
         Vector2 hitDir = new Vector2(facingX * 0.2f, 1f).normalized;
         Player.GuardType guard = player.controller.OnKnockback(hitDir, Status.tuskUpKnockback);
@@ -358,7 +372,7 @@ public class Boss_Met : BaseBoss
         Debug.Log("[Met] Body Slam Prepare...");
         yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime));
 
-        _visual.PlayAnim("Slam_Action"); // 뒤로 뺐다 치기
+        _visual.PlayAnim("Slam_Prepare"); // 뒤로 뺐다 치기
         yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
 
         lastSlamTime = Time.time;
@@ -399,7 +413,7 @@ public class Boss_Met : BaseBoss
         ValidateStage();    // 위치 x값 보정
 
         // 이동 완료 후 애니메이션 리셋 및 상태 마무리
-        _visual.PlayAnim("Motion_Reset");
+        _visual.PlayAnim("Slam_Action");
         _visual.AE_AnimFinished(); // WaitUntil 조건을 해제
 
         Debug.Log("[Met] Body Slam Finished");
@@ -452,28 +466,34 @@ public class Boss_Met : BaseBoss
     #region 기절
     protected override void StartExhausted()
     {
+        Debug.Log("기절 시작");
         curAttack = AttackPattern.None;
+        
         Visual?.AE_AnimFinished(); // 패턴 애니메이션 강제 종료
         Visual?.ResetAnimTrigger("Motion_Reset");
         Visual?.PlayAnim("Dash_Action", false); // 돌진 애니메이션을 멈추고 멈춰있는 포즈로 전환
         isDashing = false;
         isTusk = false;
         isSlam = false;
+
+        isExhausted = true;
         
-        _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         base.StartExhausted();
         _visual?.PlayAnim("IsStuned"); // 기절 애니메이션
+        EnableHitbox(); //기절 상태 히트박스 On
     }
 
     protected override void EndExhausted()
     {
+        Debug.Log("기절 끝");
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         base.EndExhausted();
-
+        DisableHitbox(); //기절 상태 히트박스 OFf
         Visual?.PlayAnim("Motion_Reset");
         Visual?.OffStunVisual();
     }
     #endregion
+    
 
     #region 피격
     public override void TakeDamage(int damage)
@@ -580,6 +600,18 @@ public class Boss_Met : BaseBoss
     }
     #endregion
 
+    [SerializeField] private Collider2D attackCollider;
+    public void EnableHitbox()
+    {
+        Debug.Log("히트박스 활성화");
+        attackCollider.enabled = true;
+    }
+
+    public void DisableHitbox()
+    {
+        Debug.Log("히트박스 비활성화");
+        attackCollider.enabled = false;
+    }
     #region 디버깅
     protected override void OnDrawGizmos()
     {

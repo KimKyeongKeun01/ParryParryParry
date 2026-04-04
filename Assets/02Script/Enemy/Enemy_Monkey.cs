@@ -290,7 +290,7 @@ public class Enemy_Monkey : BaseEnemy
             Player player = Player.Instance;
             if (!isEvading && player != null)
             {
-                TryStartEvade(player.transform.position);
+                //TryStartEvade(player.transform.position);
             }
         }
     }
@@ -321,23 +321,23 @@ public class Enemy_Monkey : BaseEnemy
     }
     #endregion
 
-    protected override void OnCollisionEnter2D(Collision2D collision)
-    {
-        // 스턴 상태가 아닐 때 플레이어가 닿으려고 하면 회피
-        if (CurState != EnemyState.Stun && collision.gameObject.CompareTag("Player"))
-        {
-            Player player = Player.Instance;
-            if (player != null)
-            {
-                StartCoroutine(Co_IgnorePlayer(player, 1f));
-                TryStartEvade(collision.transform.position);
+    //protected override void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    // 스턴 상태가 아닐 때 플레이어가 닿으려고 하면 회피
+    //    if (CurState != EnemyState.Stun && collision.gameObject.CompareTag("Player"))
+    //    {
+    //        Player player = Player.Instance;
+    //        if (player != null)
+    //        {
+    //            StartCoroutine(Co_IgnorePlayer(player, 1f));
+    //            TryStartEvade(collision.transform.position);
 
-                return;
-            }
-        }
+    //            return;
+    //        }
+    //    }
 
-        base.OnCollisionEnter2D(collision);
-    }
+    //    base.OnCollisionEnter2D(collision);
+    //}
 
     #region 시각화
     protected override void OnDrawGizmos()
