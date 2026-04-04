@@ -62,6 +62,8 @@ public class PlayerVisual : MonoBehaviour
     [SerializeField] private float perfectGuardTimeSlowDuration = 0.08f;
     #endregion
 
+    [SerializeField] private CameraShakeProfile slamShakeProfile;
+
     #region State
     private Coroutine blinkCor;
     private Sequence squashSequence;
@@ -321,7 +323,7 @@ public class PlayerVisual : MonoBehaviour
 
     private void HandleSlamImpactVisual(Vector2 impactPos, Vector2 impactDir, Color impactColor)
     {
-        //CameraManager.Instance?.PlaySlamGroundShake(impactPos, impactDir);
+        CameraManager.Instance?.Shake.Play(slamShakeProfile, impactDir);
         EffectManager.Instance?.PlaySlamGroundEffect(impactPos, impactDir, impactColor);
     }
 
