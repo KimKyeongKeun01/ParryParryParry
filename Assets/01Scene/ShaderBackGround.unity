@@ -193,7 +193,7 @@ SpriteRenderer:
   m_Size: {x: 10.37, y: 12.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &59440940
 Transform:
@@ -497,11 +497,13 @@ GameObject:
   - component: {fileID: 417669316}
   - component: {fileID: 417669319}
   - component: {fileID: 417669318}
+  - component: {fileID: 417669322}
   - component: {fileID: 417669317}
+  - component: {fileID: 417669321}
   - component: {fileID: 417669320}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: GroundTest
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -553,7 +555,7 @@ TilemapCollider2D:
     m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_CompositeOperation: 0
+  m_CompositeOperation: 1
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
@@ -3371,13 +3373,118 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TileNeighborData
   tilemap: {fileID: 417669319}
   targetMaterial: {fileID: 2100000, guid: 09c9d5573c74f79498bb057a85889128, type: 2}
+  feetPoint: {fileID: 1720859729}
   tileDataTexProperty: _TileDataTex
   tilemapOriginProperty: _TilemapOrigin
   tilemapSizeProperty: _TilemapSize
   cellSizeProperty: _CellSize
-  feetPoint: {fileID: 1720859729}
-  tilemapRenderer: {fileID: 417669318}
-  changeClor: {r: 0.93021417, g: 1, b: 0, a: 0}
+  stepHeatTexProperty: _StepHeatTex
+  heatOriginProperty: _HeatWorldOrigin
+  heatSizeProperty: _HeatWorldSize
+  changeColorProperty: _ChangeColor
+  changeColor: {r: 0.8117647, g: 0.7861807, b: 0.10980393, a: 1}
+  fadeSpeed: 2
+  footprintWidth: 0.6
+  footprintHeight: 0.2
+  pixelsPerUnit: 32
+--- !u!66 &417669321
+CompositeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417669315}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_GeometryType: 0
+  m_GenerationType: 0
+  m_EdgeRadius: 0
+  m_ColliderPaths:
+  - m_Collider: {fileID: 417669317}
+    m_ColliderPaths:
+    - - X: 300000000
+        Y: -30000000
+      - X: 190000000
+        Y: -30000000
+      - X: 190000000
+        Y: 0
+      - X: 130000000
+        Y: 0
+      - X: 130000000
+        Y: -30000000
+      - X: -200000000
+        Y: -30000000
+      - X: -200000000
+        Y: -80000000
+      - X: 300000000
+        Y: -80000000
+  m_CompositePaths:
+    m_Paths:
+    - - {x: 29.999971, y: -8}
+      - {x: 29.999971, y: -3}
+      - {x: 19, y: -2.9999707}
+      - {x: 18.999971, y: 0}
+      - {x: 13, y: -0.000029300001}
+      - {x: 12.99997, y: -3}
+      - {x: -20, y: -3.0000293}
+      - {x: -19.999971, y: -8}
+  m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.00005
+  m_UseDelaunayMesh: 0
+  m_CompositeGameObject: {fileID: 417669315}
+--- !u!50 &417669322
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417669315}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1001 &466203806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3534,7 +3641,7 @@ SpriteRenderer:
   m_Size: {x: 12.84, y: 8.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &565726732
 Transform:
@@ -3788,7 +3895,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4609574745413607386, guid: ced881728bd95504b87ace4427fa3f6e, type: 3}
+    - {fileID: 953013965946272243, guid: ced881728bd95504b87ace4427fa3f6e, type: 3}
+    - {fileID: 8291699713748000430, guid: ced881728bd95504b87ace4427fa3f6e, type: 3}
+    - {fileID: 1078205487608401818, guid: ced881728bd95504b87ace4427fa3f6e, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ced881728bd95504b87ace4427fa3f6e, type: 3}
@@ -3920,7 +4031,7 @@ SpriteRenderer:
   m_Size: {x: 40.96, y: 30.84}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &774187979
 Transform:
@@ -4460,7 +4571,7 @@ SpriteRenderer:
   m_Size: {x: 19.2, y: 12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1250387521
 Transform:
@@ -4671,7 +4782,7 @@ SpriteRenderer:
   m_Size: {x: 137.79001, y: 28.795958}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1665399501
 Transform:

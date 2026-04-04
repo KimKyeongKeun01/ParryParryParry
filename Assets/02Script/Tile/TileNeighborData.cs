@@ -4,22 +4,179 @@ using static UnityEditor.PlayerSettings;
 
 public class TileNeighborData : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private Material targetMaterial;
+    [SerializeField] private Transform feetPoint;
 
-    [Header("Shader Property Names")]
+    [Header("Static Tile Data Shader Property Names")]
     [SerializeField] private string tileDataTexProperty = "_TileDataTex";
     [SerializeField] private string tilemapOriginProperty = "_TilemapOrigin";
     [SerializeField] private string tilemapSizeProperty = "_TilemapSize";
     [SerializeField] private string cellSizeProperty = "_CellSize";
-    
-    [Header("Player Standing Pos")]
-    [SerializeField] private Transform feetPoint;
-    [SerializeField] private Renderer tilemapRenderer;
-    public Color changeClor;
 
-    private Texture2D dataTexture;
+    private Texture2D dataTexture;      // 기존 상하좌우 정보
 
+    private BoundsInt cachedBounds;
+    private int width;
+    private int height;
+
+
+    [Header("Shader Properties")]
+    [SerializeField] private string stepHeatTexProperty = "_StepHeatTex";
+    [SerializeField] private string heatOriginProperty = "_HeatWorldOrigin";
+    [SerializeField] private string heatSizeProperty = "_HeatWorldSize";
+    [SerializeField] private string changeColorProperty = "_ChangeColor";
+
+    [Header("Visual")]
+    [SerializeField] private Color changeColor = Color.red;
+    [SerializeField] private float fadeSpeed = 1.5f;
+
+    [Header("Footprint")]
+    [SerializeField] private float footprintWidth = 0.4f;
+    [SerializeField] private float footprintHeight = 0.1f;
+    [SerializeField] private int pixelsPerUnit = 32;
+
+    private Texture2D stepHeatTexture;
+    private float[] heatValues;
+    private Color[] heatPixels;
+
+    private BoundsInt cellBounds;
+    private Vector3 worldOrigin;
+    private Vector2 worldSize;
+
+    private int texWidth;
+    private int texHeight;
+
+    private void Start()
+    {
+        InitializeHeatTexture();
+        Bake();
+    }
+
+    private void InitializeHeatTexture()
+    {
+        tilemap.CompressBounds();
+        cellBounds = tilemap.cellBounds;
+
+        Vector3 minWorld = tilemap.CellToWorld(new Vector3Int(cellBounds.xMin, cellBounds.yMin, 0));
+        Vector3 maxWorld = tilemap.CellToWorld(new Vector3Int(cellBounds.xMax, cellBounds.yMax, 0));
+
+        worldOrigin = minWorld;
+        worldSize = new Vector2(maxWorld.x - minWorld.x, maxWorld.y - minWorld.y);
+
+        texWidth = Mathf.CeilToInt(worldSize.x * pixelsPerUnit);
+        texHeight = Mathf.CeilToInt(worldSize.y * pixelsPerUnit);
+
+        stepHeatTexture = new Texture2D(texWidth, texHeight, TextureFormat.RGBA32, false, true);
+        stepHeatTexture.filterMode = FilterMode.Point;
+        stepHeatTexture.wrapMode = TextureWrapMode.Clamp;
+        stepHeatTexture.name = "StepHeat_WorldSpace";
+
+        heatValues = new float[texWidth * texHeight];
+        heatPixels = new Color[texWidth * texHeight];
+
+        for (int i = 0; i < heatPixels.Length; i++)
+        {
+            heatValues[i] = 0f;
+            heatPixels[i] = Color.black;
+        }
+
+        stepHeatTexture.SetPixels(heatPixels);
+        stepHeatTexture.Apply(false, false);
+
+        targetMaterial.SetTexture(stepHeatTexProperty, stepHeatTexture);
+        targetMaterial.SetVector(heatOriginProperty, new Vector4(worldOrigin.x, worldOrigin.y, 0, 0));
+        targetMaterial.SetVector(heatSizeProperty, new Vector4(worldSize.x, worldSize.y, 0, 0));
+        targetMaterial.SetColor(changeColorProperty, changeColor);
+    }
+
+    private void Update()
+    {
+        if (stepHeatTexture == null) return;
+
+        FadeHeat();
+        StampFootprint();
+        UploadHeatTexture();
+
+        targetMaterial.SetColor(changeColorProperty, changeColor);
+    }
+
+    private void FadeHeat()
+    {
+        float delta = fadeSpeed * Time.deltaTime;
+
+        for (int i = 0; i < heatValues.Length; i++)
+        {
+            heatValues[i] = Mathf.Max(0f, heatValues[i] - delta);
+        }
+    }
+
+    private void StampFootprint()
+    {
+        if (feetPoint == null) return;
+
+        float minX = feetPoint.position.x - footprintWidth * 0.5f;
+        float maxX = feetPoint.position.x + footprintWidth * 0.5f;
+        float minY = feetPoint.position.y - footprintHeight * 0.5f;
+        float maxY = feetPoint.position.y + footprintHeight * 0.5f;
+
+        int pxMin = WorldToPixelX(minX);
+        int pxMax = WorldToPixelX(maxX);
+        int pyMin = WorldToPixelY(minY);
+        int pyMax = WorldToPixelY(maxY);
+
+        pxMin = Mathf.Clamp(pxMin, 0, texWidth - 1);
+        pxMax = Mathf.Clamp(pxMax, 0, texWidth - 1);
+        pyMin = Mathf.Clamp(pyMin, 0, texHeight - 1);
+        pyMax = Mathf.Clamp(pyMax, 0, texHeight - 1);
+
+        for (int y = pyMin; y <= pyMax; y++)
+        {
+            for (int x = pxMin; x <= pxMax; x++)
+            {
+                int index = y * texWidth + x;
+                heatValues[index] = 1f;
+            }
+        }
+    }
+
+    private int WorldToPixelX(float worldX)
+    {
+        float normalized = (worldX - worldOrigin.x) / worldSize.x;
+        return Mathf.FloorToInt(normalized * texWidth);
+    }
+
+    private int WorldToPixelY(float worldY)
+    {
+        float normalized = (worldY - worldOrigin.y) / worldSize.y;
+        return Mathf.FloorToInt(normalized * texHeight);
+    }
+
+    private void UploadHeatTexture()
+    {
+        for (int i = 0; i < heatValues.Length; i++)
+        {
+            float v = heatValues[i];
+            heatPixels[i] = new Color(v, v, v, 1f);
+        }
+
+        stepHeatTexture.SetPixels(heatPixels);
+        stepHeatTexture.Apply(false, false);
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+        {
+            if (tilemap != null && targetMaterial != null)
+            {
+                Bake();
+            }
+        }
+    }
+#endif
     public void Bake()
     {
         if (tilemap == null || targetMaterial == null)
@@ -27,10 +184,12 @@ public class TileNeighborData : MonoBehaviour
             Debug.LogWarning("Tilemap or Material is missing.");
             return;
         }
+
         tilemap.CompressBounds();
-        BoundsInt bounds = tilemap.cellBounds;
-        int width = bounds.size.x;
-        int height = bounds.size.y;
+        cachedBounds = tilemap.cellBounds;
+
+        width = cachedBounds.size.x;
+        height = cachedBounds.size.y;
 
         if (width <= 0 || height <= 0)
         {
@@ -38,6 +197,12 @@ public class TileNeighborData : MonoBehaviour
             return;
         }
 
+        BakeStaticTileData();
+        ApplyCommonMaterialProperties();
+    }
+
+    private void BakeStaticTileData()
+    {
         if (dataTexture == null || dataTexture.width != width || dataTexture.height != height)
         {
             dataTexture = new Texture2D(width, height, TextureFormat.RGBA32, false, true);
@@ -50,7 +215,7 @@ public class TileNeighborData : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                Vector3Int pos = new Vector3Int(bounds.xMin + x, bounds.yMin + y, 0);
+                Vector3Int pos = new Vector3Int(cachedBounds.xMin + x, cachedBounds.yMin + y, 0);
 
                 if (!tilemap.HasTile(pos))
                 {
@@ -74,46 +239,21 @@ public class TileNeighborData : MonoBehaviour
             }
         }
 
-        dataTexture.Apply();
-
-        Vector3 cellSize = tilemap.cellSize;
-        Vector3 originWorld = tilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMin, 0));
-
+        dataTexture.Apply(false, false);
         targetMaterial.SetTexture(tileDataTexProperty, dataTexture);
+    }
+
+
+    private void ApplyCommonMaterialProperties()
+    {
+        Vector3 cellSize = tilemap.cellSize;
+        Vector3 originWorld = tilemap.CellToWorld(new Vector3Int(cachedBounds.xMin, cachedBounds.yMin, 0));
+
         targetMaterial.SetVector(tilemapOriginProperty, new Vector2(originWorld.x, originWorld.y));
         targetMaterial.SetVector(tilemapSizeProperty, new Vector2(width, height));
         targetMaterial.SetVector(cellSizeProperty, new Vector2(cellSize.x, cellSize.y));
+        targetMaterial.SetColor(changeColorProperty, changeColor);
     }
 
-    private void Start()
-    {
-        Bake();
-    }
-    void Update()
-    {
-        Vector3Int cell = tilemap.WorldToCell(feetPoint.position);
 
-        if (tilemap.HasTile(cell))
-        {
-            Vector3 center = tilemap.GetCellCenterWorld(cell);
-
-            targetMaterial.SetVector("_HighlightCellCenter", new Vector4(center.x, center.y, center.z, 0));
-            targetMaterial.SetVector("_ChangeCellSize", new Vector2(tilemap.cellSize.x, tilemap.cellSize.y));
-            targetMaterial.SetColor("_ChangeColor", changeClor);
-        }
-        else
-        {
-            targetMaterial.SetVector("_HighlightCellCenter", new Vector4(0, 0, 0, 0));
-            targetMaterial.SetVector("_ChangeCellSize", new Vector2(0, 0));
-        }
-    }
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (!Application.isPlaying)
-        {
-            Bake();
-        }
-    }
-#endif
 }

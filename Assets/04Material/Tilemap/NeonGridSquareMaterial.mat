@@ -40,6 +40,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _StepHeatTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _TileDataTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -64,6 +68,7 @@ Material:
     - _InnerMargin: 0.07
     - _LineWidth: 0.08
     - _MarginWidth: 0.8
+    - _Range: 0.1
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _Aspect: {r: 5, g: 5, b: 0, a: 0}
@@ -72,10 +77,13 @@ Material:
     - _Cellsize: {r: 0, g: 0, b: 0, a: 0}
     - _ChangeCellSize: {r: 1, g: 1, b: 0, a: 0}
     - _ChangeClor: {r: 0.8567905, g: 1, b: 0, a: 1}
-    - _ChangeColor: {r: 1, g: 0.85180074, b: 0, a: 0}
+    - _ChangeColor: {r: 0.8117647, g: 0.7861807, b: 0.10980393, a: 1}
+    - _ChangeColor_1: {r: 0, g: 0, b: 0, a: 1}
+    - _HeatWorldOrigin: {r: -20, g: -8, b: 0, a: 0}
+    - _HeatWorldSize: {r: 50, g: 8, b: 0, a: 0}
     - _HighlightCellCenter: {r: 51.5, g: 9.5, b: 0, a: 0}
-    - _NeonColor: {r: 0, g: 0.5553288, b: 0.8301887, a: 1}
-    - _TilemapOrigin: {r: -24, g: -23, b: 0, a: 0}
-    - _TilemapSize: {r: 926, g: 51, b: 0, a: 0}
+    - _NeonColor: {r: 0, g: 0.44864368, b: 1, a: 1}
+    - _TilemapOrigin: {r: -20, g: -8, b: 0, a: 0}
+    - _TilemapSize: {r: 50, g: 8, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
