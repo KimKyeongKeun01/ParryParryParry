@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
@@ -27,12 +28,13 @@ public class Boss_Met : BaseBoss
     [SerializeField] private bool hitSlam = false;
     [SerializeField] private bool isSlam = false;
 
+    private bool isExhausted = false;
+
     // 패턴 쿨타임 타이머
     private float lastDashTime = -99f;
     private float lastTuskTime = -99f;
     private float lastSlamTime = -99f;
 
-    private bool isExhausted = false;
 
     protected override void Awake()
     {
@@ -492,9 +494,16 @@ public class Boss_Met : BaseBoss
         Visual?.PlayAnim("Motion_Reset");
         Visual?.OffStunVisual();
     }
-    #endregion
     
-
+    //기절 후 일어날 때 플레이어 넉백
+    public void ShoutKnockback()
+    {
+        //여기에 울리는 이펙트 필요
+        Vector2 hitDir = new Vector2(facingX, 0.2f).normalized;
+        Player player = Player.Instance;
+        player.controller.OnKnockback(hitDir, 30f);
+    }
+    #endregion
     #region 피격
     public override void TakeDamage(int damage)
     {
@@ -600,6 +609,7 @@ public class Boss_Met : BaseBoss
     }
     #endregion
 
+    // 공격 판정 콜라이더 (애니메이션 이벤트에서 활성화/비활성화)
     [SerializeField] private Collider2D attackCollider;
     public void EnableHitbox()
     {
