@@ -640,7 +640,7 @@ Transform:
   m_GameObject: {fileID: 385570277}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 542.7, y: 18.5, z: 0}
+  m_LocalPosition: {x: 540, y: 15.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -690,7 +690,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 118.47345, y: 56.82554}
+  m_Size: {x: 62, y: 50}
   m_EdgeRadius: 0
 --- !u!1 &385969656
 GameObject:
@@ -2056,12 +2056,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 348, y: 18}
-      - {x: 348, y: 12}
+    - - {x: 315, y: 18}
+      - {x: 366, y: 12}
       - {x: 580, y: 12}
       - {x: 580, y: -29}
-      - {x: 336, y: -29}
-      - {x: 336, y: -18}
+      - {x: 360, y: -29}
+      - {x: 310, y: -18}
       - {x: -277, y: -18}
       - {x: -277, y: 18}
   m_UseDelaunayMesh: 1
@@ -2870,12 +2870,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1713675777384460498, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: Lens.OrthographicSize
-      value: 30
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 1713675777384460498, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
-      objectReference: {fileID: 1487099317}
+      objectReference: {fileID: 0}
     - target: {fileID: 2036073549701694605, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_Name
       value: Camera - Boss_Utan
@@ -2884,13 +2884,17 @@ PrefabInstance:
       propertyPath: BoundingShape2D
       value: 
       objectReference: {fileID: 730281758}
+    - target: {fileID: 3675318302373858199, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
+      propertyPath: OversizeWindow.Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4574044076917759146, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.41
+      value: 851
       objectReference: {fileID: 0}
     - target: {fileID: 4574044076917759146, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.87
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 4574044076917759146, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4331,29 +4335,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 104831564}
     m_Modifications:
-    - target: {fileID: 1713675777384460498, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
-      propertyPath: Lens.OrthographicSize
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 1713675777384460498, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
-      propertyPath: Target.TrackingTarget
-      value: 
-      objectReference: {fileID: 1487099317}
     - target: {fileID: 2036073549701694605, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_Name
       value: Camera - Boss_Met
       objectReference: {fileID: 0}
-    - target: {fileID: 3675318302373858199, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
-      propertyPath: BoundingShape2D
-      value: 
-      objectReference: {fileID: 385570279}
     - target: {fileID: 4574044076917759146, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.41
+      value: 540
       objectReference: {fileID: 0}
     - target: {fileID: 4574044076917759146, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.87
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4574044076917759146, guid: d8e05cbc3e9bc7646b3a4dd335384b46, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4519,14 +4511,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 21239985}
     m_Modifications:
-    - target: {fileID: 1482790887744985565, guid: 747b6269bf08b264ebc1b10f144c58df, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2300891306707347243, guid: 747b6269bf08b264ebc1b10f144c58df, type: 3}
-      propertyPath: m_ColliderPaths.Array.size
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5445533930411741163, guid: 747b6269bf08b264ebc1b10f144c58df, type: 3}
       propertyPath: m_Name
       value: BossStage_Utan
