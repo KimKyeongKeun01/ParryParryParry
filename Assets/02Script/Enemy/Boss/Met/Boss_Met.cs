@@ -1,12 +1,14 @@
+using DG.Tweening;
 using NUnit.Framework;
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+
 public class Boss_Met : BaseBoss
 {
-    public enum AttackPattern { None, PowerDash, TuskDrive, BodySlam }
+    public enum AttackPattern { None, PowerDash, TuskDrive, BodySlam, GroundSlam }
 
     private BossStatus_Met Status => (BossStatus_Met)_status;
     private BossVisual_Met Visual => (BossVisual_Met)_visual;
@@ -34,7 +36,13 @@ public class Boss_Met : BaseBoss
     private float lastDashTime = -99f;
     private float lastTuskTime = -99f;
     private float lastSlamTime = -99f;
+    private float lastGroundSlamTime = -99f;
 
+    [Header("Ground Slam")]
+    [SerializeField] private bool hitGroundSlam = false;
+    [SerializeField] private bool isGroundSlamming = false;
+    private float groundSlamOriginY;
+    private Tween _groundSlamTween;
 
     protected override void Awake()
     {
@@ -66,6 +74,8 @@ public class Boss_Met : BaseBoss
             isDashing = false;
             isTusk = false;
             isSlam = false;
+            isGroundSlamming = false;
+
             attackTimer = 0f;
             base.Update();
             return;
@@ -78,6 +88,7 @@ public class Boss_Met : BaseBoss
             isDashing = false;
             isTusk = false; 
             isSlam = false;
+            isGroundSlamming = false;
         }
 
         // 안전 장치 타이머
@@ -101,7 +112,8 @@ public class Boss_Met : BaseBoss
     {
         if (!isExhausted) return;
         isExhausted = false;
-        _rigid.MovePosition(_rigid.position + Vector2.left * facingX * 5);
+        Vector2 exhaustedPos = new Vector2(_rigid.position.x, groundSlamOriginY);
+        _rigid.MovePosition(exhaustedPos + Vector2.left * facingX * 5);
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         
     }
@@ -117,6 +129,7 @@ public class Boss_Met : BaseBoss
         bool canDash = curTime - lastDashTime >= Status.dashCooldown;
         bool canTusk = curTime - lastTuskTime >= Status.tuskCooldown;
         bool canSlam = curTime - lastSlamTime >= Status.slamCooldown;
+        bool canGroundSlam = curTime - lastGroundSlamTime >= Status.groundSlamCooldown;
 
         AttackPattern next = AttackPattern.None;
 
@@ -129,6 +142,7 @@ public class Boss_Met : BaseBoss
         else if (dist <= Status.meleeRange)
         {
             if (canTusk && Random.value > 0.5f) next = AttackPattern.TuskDrive;
+            else if (canGroundSlam) next = AttackPattern.GroundSlam;
             else if (canSlam) next = AttackPattern.BodySlam;
             else if (canDash) next = AttackPattern.PowerDash;
         }
@@ -153,6 +167,7 @@ public class Boss_Met : BaseBoss
             case AttackPattern.PowerDash:   yield return Co_PowerDash();    break;
             case AttackPattern.TuskDrive:   yield return Co_TuskDrive();    break;
             case AttackPattern.BodySlam:    yield return Co_BodySlam();     break;
+            case AttackPattern.GroundSlam: yield return Co_GroundSlam(); break;
         }
 
         curAttack = AttackPattern.None;
@@ -180,6 +195,7 @@ public class Boss_Met : BaseBoss
         _visual?.Flip(dirX > 0f);
     }
 
+    //기존 스핀 모션
     private IEnumerator Co_MoveToRange(float stopDistance, float maxTime)
     {
         float elapsed = 0f;
@@ -211,6 +227,7 @@ public class Boss_Met : BaseBoss
         isDashing = false;
         isTusk = false;
         isSlam = false;
+        isGroundSlamming = false;
 
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         _visual?.AE_AnimFinished();
@@ -372,7 +389,7 @@ public class Boss_Met : BaseBoss
     {
         hitSlam = false;
         Debug.Log("[Met] Body Slam Prepare...");
-        yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime));
+        //yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime));
 
         _visual.PlayAnim("Slam_Prepare"); // 뒤로 뺐다 치기
         yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
@@ -451,6 +468,181 @@ public class Boss_Met : BaseBoss
         }
     }
     #endregion
+
+
+    #region 롤링
+    private IEnumerator Co_GroundSlam()
+    {
+        Player player = Player.Instance;
+        if (player == null) yield break;
+
+        // 시작 시 Y위치 저장 (착지 기준점)
+        groundSlamOriginY = _rigid.position.y;
+
+        hitGroundSlam = false;
+        isGroundSlamming = false;
+
+        Debug.Log("[Met] GroundSlam Start!");
+
+        // 패턴 시작 애니메이션
+        _visual.PlayAnim("Rolling_Action");
+        //yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+        if (curAttack == AttackPattern.None) yield break;
+
+        // 2회 반복
+        for (int i = 0; i < 2; i++)
+        {
+            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun) yield break;
+
+            // ── 올라가기 ──────────────────────────────────────────
+            // 목표 X: 보스와 플레이어 사이의 3/4 지점
+            float targetX = _rigid.position.x + (player.transform.position.x - _rigid.position.x) * 0.75f;
+            float targetY = groundSlamOriginY + Status.groundSlamJumpHeight;
+            Vector2 jumpTarget = new Vector2(targetX, targetY);
+
+            Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}");
+
+            yield return StartCoroutine(Co_MoveToTarget(
+            jumpTarget,
+            0.3f,   // 예: 0.2f ~ 0.3f
+            Ease.OutQuad                     // 처음 빠르게 치고 올라감
+        ));
+
+            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+            {
+                KillGroundSlamTween();
+                yield break;
+            }
+
+            _rigid.position = jumpTarget;
+            _rigid.linearVelocity = Vector2.zero;
+
+            // ── 공중 대기 1초 ─────────────────────────────────────
+            Debug.Log("[Met] GroundSlam Hovering...");
+            yield return new WaitForSeconds(1f);
+            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+            {
+                KillGroundSlamTween();
+                yield break;
+            }
+
+            // ── 내려찍기 (플레이어 방향 대각선 낙하) ──────────────
+            // 낙하 시작 시점 플레이어 위치 스냅
+            Vector2 slamTarget = new Vector2(player.transform.position.x, groundSlamOriginY);
+            hitGroundSlam = false;
+            isGroundSlamming = true;
+            EnableHitbox();
+
+            Debug.Log($"[Met] GroundSlam Down #{i + 1} → {slamTarget}");
+
+
+            yield return StartCoroutine(Co_MoveToTarget(
+            slamTarget,
+            0.3f,   // 예: 0.3f ~ 0.45f
+            Ease.InQuad                      // 처음 느리다가 점점 빠르게
+        
+            ));
+
+
+            // 중간에 끊기면 정리 후 종료
+            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+            {
+                isGroundSlamming = false;
+                DisableHitbox();
+                KillGroundSlamTween();
+                yield break;
+            }
+
+            // 착지 스냅 & 정리
+            _rigid.position = new Vector2(_rigid.position.x, groundSlamOriginY);
+            _rigid.linearVelocity = Vector2.zero;
+            isGroundSlamming = false;
+            DisableHitbox();
+
+            Debug.Log($"[Met] GroundSlam Landed #{i + 1}");
+
+            // 마지막 회차에만 Dash_End 호출
+            if (i == 1)
+            {
+                _visual.PlayAnim("Rolling_End");
+                yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+            }
+            else
+            {
+                // 첫 번째 착지 후 짧은 딜레이
+                yield return new WaitForSeconds(0.4f);
+            }
+        }
+        KillGroundSlamTween();
+        lastGroundSlamTime = Time.time;
+        yield return new WaitForSeconds(0.2f);//Status.defultWindDownTime
+    }
+    
+    private IEnumerator Co_MoveToTarget(Vector2 target, float duration, Ease ease)
+    {
+        bool finished = false;
+
+        KillGroundSlamTween();
+
+        _groundSlamTween = _rigid
+            .DOMove(target, duration)
+            .SetEase(ease)
+            .SetUpdate(UpdateType.Fixed)   // Rigidbody2D와 맞추기
+            .OnComplete(() => finished = true);
+
+        while (!finished)
+        {
+            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+            {
+                KillGroundSlamTween();
+                yield break;
+            }
+
+            // tween이 외부에서 Kill된 경우 무한루프 방지
+            if (_groundSlamTween == null || !_groundSlamTween.IsActive())
+                yield break;
+
+            yield return null;
+        }
+
+        KillGroundSlamTween();
+    }
+    private void KillGroundSlamTween()
+    {
+        if (_groundSlamTween != null && _groundSlamTween.IsActive())
+        {
+            _groundSlamTween.Kill();
+        }
+
+        _groundSlamTween = null;
+    }
+    public void OnGroundSlamHit(Player player)
+    {
+        if (hitGroundSlam) return;
+        hitGroundSlam = true;
+
+        Debug.Log("[Met] GroundSlam Player Hit!");
+
+        // 내려찍기이므로 아래→위 방향 넉백 + 약간의 수평
+        Vector2 hitDir = new Vector2(facingX * 0.2f, 1f).normalized;
+        Player.GuardType guard = player.controller.OnKnockback(hitDir, Status.groundSlamKnockback);
+
+        if (guard == Player.GuardType.PerfectGuard)
+        {
+            Debug.Log("[Met] GroundSlam Perfect Guarded!");
+            StartExhausted();
+        }
+        else if (guard == Player.GuardType.Guard)
+        {
+            Debug.Log("[Met] GroundSlam Guarded.");
+            player.controller.OnKnockback(hitDir, Status.groundSlamKnockback * 0.5f);
+        }
+        else
+        {
+            player.TakeDamaged(Status.groundSlamDamage);
+        }
+    }
+    #endregion
     #endregion
 
     #region 탐지
@@ -477,7 +669,7 @@ public class Boss_Met : BaseBoss
         isDashing = false;
         isTusk = false;
         isSlam = false;
-
+        isGroundSlamming = false;
         isExhausted = true;
         
         base.StartExhausted();
@@ -551,6 +743,7 @@ public class Boss_Met : BaseBoss
                 case AttackPattern.PowerDash:   OnDashHit(player); break;
                 case AttackPattern.TuskDrive:   OnTuskHit(player); break;
                 case AttackPattern.BodySlam:    OnSlamHit(player); break;
+                case AttackPattern.GroundSlam: OnGroundSlamHit(player); break;
                 default: base.OnCollisionEnter2D(collision); break;
             }
 
