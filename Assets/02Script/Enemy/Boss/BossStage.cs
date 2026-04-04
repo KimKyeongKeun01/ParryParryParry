@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Playables;
 
 /// <summary>
 /// 보스방 전용 스테이지 스크립트.
@@ -16,39 +17,26 @@ public class BossStage : MonoBehaviour
     [Header("Stage Door")]
     [SerializeField] private Platform_Moving entrance_Door;
     [SerializeField] private Platform_Moving exit_Door;
-    [SerializeField] private BossStart start;
+
+    [Header("Timeline")]
+    [SerializeField] private PlayableDirector bossIntro;
+    private bool isCutscenePlaying = false;
+    private bool hasBossStarted = false;
+
 
     private bool isBossBattle = false;
     private bool stageCleared = false;
+    
 
-    private void OnEnable() { Stage.OnPlayerEnteredStage += HandlePlayerEntered; }
-    private void OnDisable() { Stage.OnPlayerEnteredStage -= HandlePlayerEntered; }
-
-    private void HandlePlayerEntered(Stage enteredStage)
-    {
-        if (enteredStage != stage) return;
-        // 보스전 시작 전의 배경음악 변경이나 UI 알림 등을 여기에 넣을 수 있음
+    private void OnEnable() 
+    { 
+        Stage.OnPlayerEnteredStage += OnStageEntered;
+        if (bossIntro != null) bossIntro.stopped += OnIntroFinished;
     }
-
-    public void StartBossEncounter()
-    {
-        if (isBossBattle || stageCleared) return;
-
-        isBossBattle = true;
-        Debug.Log($"[BossStage] {gameObject.name}: Boss Battle Start!");
-
-        // 1. 입구 문 닫기
-        if (entrance_Door != null)
-        {
-            entrance_Door.SetExternalSignal(true);
-        }
-
-        // 2. 보스 위치 설정 및 활성화
-        if (bossObj != null && spawnPoint != null)
-        {
-            bossObj.transform.position = spawnPoint.position;
-            bossObj.SetActive(true);
-        }
+    private void OnDisable() 
+    { 
+        Stage.OnPlayerEnteredStage -= OnStageEntered;
+        if (bossIntro != null) bossIntro.stopped -= OnIntroFinished;
     }
 
     private void Start()
@@ -56,11 +44,16 @@ public class BossStage : MonoBehaviour
         // 초기 상태 설정
         if (bossObj != null) bossObj.SetActive(false);
 
-        // 입구 문은 처음에 열려 있어야 함 (Signal False)
+        // 출입구 세팅
         if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
-
-        // 출구 문은 처음에 닫혀 있어야 함 (Signal False)
         if (exit_Door != null) exit_Door.SetExternalSignal(false);
+
+        // 타임라인 세팅
+        if (bossIntro != null)
+        {
+            bossIntro.time = 0;
+            bossIntro.Stop();
+        }
     }
 
     private void Update()
@@ -74,7 +67,66 @@ public class BossStage : MonoBehaviour
         }
     }
 
+    private void OnStageEntered(Stage enteredStage)
+    {
+        if (enteredStage != stage) return;
+        // 보스전 시작 전의 배경음악 변경이나 UI 알림 등을 여기에 넣을 수 있음
+    }
 
+    public void StartBoss()
+    {
+        if (isBossBattle || stageCleared) return;
+        hasBossStarted = true;
+        Debug.Log($"[BossStage] {gameObject.name}: Boss Intro Start.");
+
+        // 1. 입구 문 닫기
+        if (entrance_Door != null)
+        {
+            entrance_Door.SetExternalSignal(true);
+        }
+
+        // 2. 보스 컷신
+        if (bossIntro != null)
+        {
+            isCutscenePlaying = true;
+
+            bossIntro.time = 0;
+            bossIntro.Evaluate();
+            bossIntro.Play();
+        }
+        else
+        {
+            StartBattle();
+        }
+    }
+
+    public void OnIntroFinished(PlayableDirector director)
+    {
+        if (director != bossIntro) return;
+        if (!isCutscenePlaying || stageCleared) return;
+
+        Debug.Log("[Boss Stage] Boss Intro Finished.");
+
+        StartBattle();
+    }
+
+
+    private void StartBattle()
+    {
+        if (isBossBattle) return;
+
+        isBossBattle = true;
+        isCutscenePlaying = false;
+
+        Debug.Log($"[BossStage] {gameObject.name}: Boss Battle Start!");
+
+        // 보스 위치 설정 및 활성화
+        if (bossObj != null && spawnPoint != null)
+        {
+            bossObj.transform.position = spawnPoint.position;
+            bossObj.SetActive(true);
+        }
+    }
 
     public void BossClear()
     {
