@@ -8,8 +8,8 @@ public class Platform : MonoBehaviour
     private void Awake()
     {
         // 초기에는 통과 불가능한 플랫폼으로 설정
-        SetPassable(false);
-        SetPlatformColor(platformColor);
+        //SetPassable(false);
+        //SetPlatformColor(platformColor);
     }
 
     public void SetPassable(bool passable)
@@ -26,11 +26,11 @@ public class Platform : MonoBehaviour
 
     public void SetPlatformColor(Color color)
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        if (renderer != null)
-        {
-            renderer.color = color;
-        }
+        //SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        //if (renderer != null)
+        //{
+        //    renderer.color = color;
+        //}
     }
 
     public Color GetPlatformColor()

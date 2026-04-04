@@ -138,7 +138,7 @@ public class StageManager : MonoBehaviour
         var vcams = new List<CinemachineCamera>();
         foreach (var inst in _instances)
             vcams.Add(inst.TryGetComponent(out Stage s) ? s.VirtualCamera : null);
-        CameraManager.Instance.RegisterCameras(vcams);
+        //CameraManager.Instance.RegisterCameras(vcams);
     }
 
     private void SetupPlayerAtStart()
@@ -147,8 +147,8 @@ public class StageManager : MonoBehaviour
         if (player == null) return;
 
         player.Setup(GetStageEntryPoint(_currentIndex));
-        if (CameraManager.Instance != null)
-            CameraManager.Instance.SnapCurrentCamera();
+        //if (CameraManager.Instance != null)
+        //    CameraManager.Instance.SnapCurrentCamera();
     }
 
     // 현재 스테이지 클리어 처리
@@ -193,16 +193,16 @@ public class StageManager : MonoBehaviour
             if (fresh.TryGetComponent(out Stage newStage))
             {
                 newStage.Init(i);
-                if (CameraManager.Instance != null)
-                    CameraManager.Instance.UpdateCameraAt(i, newStage.VirtualCamera);
+                //if (CameraManager.Instance != null)
+                    //CameraManager.Instance.UpdateCameraAt(i, newStage.VirtualCamera);
             }
         }
 
         if (_instances[i].TryGetComponent(out Stage stage))
             stage.Activate();
 
-        if (CameraManager.Instance != null)
-            CameraManager.Instance.SwitchToCamera(i);
+        //if (CameraManager.Instance != null)
+            //CameraManager.Instance.SwitchToCamera(i);
     }
 
     public Stage GetCurrentStage()
@@ -227,8 +227,8 @@ public class StageManager : MonoBehaviour
 
         _currentIndex = index;
         UpdateActiveStages();
-        if (CameraManager.Instance != null)
-            CameraManager.Instance.SwitchToCamera(index);
+        //if (CameraManager.Instance != null)
+        //    CameraManager.Instance.SwitchToCamera(index);
     }
 
     // 현재 ±1 범위만 활성화, 나머지 비활성화
