@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.AppUI.UI;
 using UnityEngine;
 
 public class Enemy_Monkey : BaseEnemy
@@ -12,7 +13,7 @@ public class Enemy_Monkey : BaseEnemy
     [SerializeField] private float evadeCooldown = 1.5f;    // 회피 쿨타임
     private const float EVADE_DURATION = 0.3f;          // 회피에 걸리는 시간 (고정)
     private float lastEvadeTime = -99f;
-    private bool isEvading = false;
+    [SerializeField] private bool isEvading = false;
     private bool isForcedEvade = false;
 
     [Header("Banana Throw")]
@@ -35,6 +36,10 @@ public class Enemy_Monkey : BaseEnemy
     private Color originColor;
 
     private Coroutine evadeRoutine;
+    [SerializeField] private bool canNotMove = false;
+    private Vector2 evadePos;
+    private Vector2 startPos;
+    private float evadeTimer = 0f;
 
     protected override void Awake()
     {
@@ -50,6 +55,7 @@ public class Enemy_Monkey : BaseEnemy
     {
         if (isDead) return;
 
+        if (isEvading) return;
         // 스턴 상태가 아닐 때만 회피 및 거리 유지 로직 작동
         if (CurState != EnemyState.Stun && !isEvading)
         {
@@ -57,6 +63,31 @@ public class Enemy_Monkey : BaseEnemy
         }
 
         base.Update();
+    }
+    private void FixedUpdate()
+    {
+        if (isEvading)
+        {
+            ExecuteEvade();
+        }
+
+    }
+    private void ExecuteEvade()
+    {
+        evadeTimer += Time.fixedDeltaTime;
+        float progress = evadeTimer / EVADE_DURATION;
+
+        if (progress < 1.0f)
+        {
+            Vector2 nextPos = Vector2.Lerp(startPos, evadePos, progress);
+            _rigid.MovePosition(nextPos);
+        }
+        else
+        {
+            _rigid.MovePosition(evadePos);
+            isEvading = false;
+        }
+        lastEvadeTime = Time.time;
     }
 
     private void HandleAI()
@@ -91,10 +122,60 @@ public class Enemy_Monkey : BaseEnemy
         if (isDead) return;
         if (isEvading || isForcedEvade) return;
         if (evadeRoutine != null) return;
-
-        evadeRoutine = StartCoroutine(Co_Evade(playerPos));
+        evadePosCheck(playerPos);
+        //evadeRoutine = StartCoroutine(Co_Evade(playerPos));
     }
 
+    
+
+    private void evadePosCheck(Vector2 playerPos)
+    {
+        startPos = transform.position;
+        evadeTimer = 0f;
+        ChangeState(EnemyState.Idle);
+        float evadeDir = Mathf.Sign(transform.position.x - playerPos.x);
+       
+        if (evadeDir == 0)
+            evadeDir = facingX == 0 ? 1f : -facingX;
+        facingX = evadeDir;
+        UpdateFlip();
+
+        Debug.Log(evadeDir);
+        Debug.Log(facingX);
+
+        if (canNotMove) // canNotMove가 true인 상태에서 다시 이동 메서드 요청이 들어올 시에는 일단 evadeDir을 -1*해서 반대로 바꾸고 쏨
+        { 
+            facingX *= -1; 
+            canNotMove = false; 
+            UpdateFlip(); 
+            
+        } //마지막 회피 체크가 불가능이었을 시 방향 바꿈
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2 (transform.position.x+(facingX*1f),transform.position.y), Vector2.right*facingX, evadeLength, groundLayer); // 레이를 transform.position에서 evadeLength만큼 evadeDir방향만큼 쏨
+
+        if (hit.collider != null) //걸린게 있다면 해당 distance만큼이 이동가능 거리
+        {
+            canNotMove = true; // evadeLength와 실제 이동 distance가 다를경우 canNotMove는 true로 바꾸고 일단 실제 거리만큼 이동함
+            evadePos = _rigid.position + (Vector2.right * facingX * hit.distance);
+        }
+        else //// 걸린게 없다면 transform.position.x+evadeLength*facingX, transform.position.y-1.5(플레이어 길이) 지점에서 레이를 -evadeDir방향으로 range 만큼 쏨
+        {
+            Vector2 downPos = new Vector2(transform.position.x + (facingX *evadeLength), transform.position.y - 1.5f);
+            RaycastHit2D downHit = Physics2D.Raycast(downPos, Vector2.right * facingX * (-1), evadeLength, groundLayer);
+            Debug.DrawRay(downPos, Vector2.right * facingX * (-1) * evadeLength, Color.yellow, 1.0f);
+            if (Mathf.Abs( downHit.distance) > 0) //// 두번째 레이의 distance가 0보다 크지 않다면 절벽임
+            {
+                canNotMove = true;
+                evadePos = _rigid.position + (Vector2.right * facingX * (evadeLength-downHit.distance));//evadeLength-distance만큼이 이동가능한 실제 거리
+            }
+            else
+            {
+                evadePos = _rigid.position + (Vector2.right * facingX * evadeLength);// 0이면 문제 없음 range만큼 이동 가능
+            }
+        }
+        isEvading = true;
+    }
+
+    //예전 회피 코루틴 (FixedUpdate로 바꿔보려고 일단 보류)
     private IEnumerator Co_Evade(Vector2 playerPos)
     {
         isEvading = true;
@@ -262,7 +343,7 @@ public class Enemy_Monkey : BaseEnemy
     private bool IsWall(float dir)
     {
         // 콜라이더 중심에서 진행 방향으로 레이 발사
-        return Physics2D.Raycast(transform.position, Vector2.right * dir, 1.0f, groundLayer);
+        return Physics2D.Raycast(transform.position, Vector2.right * dir, 5.0f, groundLayer);
     }
 
     private bool IsEdge(float dir)
