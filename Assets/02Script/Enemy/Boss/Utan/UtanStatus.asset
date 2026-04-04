@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: UtanStatus
   m_EditorClassIdentifier: Assembly-CSharp::BossStatus_Utan
   bossName: Utan
-  maxHp: 40
+  maxHp: 24
   contactDamage: 1
   moveSpeed: 5
   detectRange: 200
   detectHeight: 5
   phase2Threshold: 0.5
-  phaseTransitionDelay: 2
+  phaseTransitionDelay: 0.5
   exhaustedDuration: 5
-  exhaustedHitLimit: 5
+  exhaustedHitLimit: 3
   exhaustedDamageMulti: 1
   defultWindUpTime: 0.5
   defultWindDownTime: 0.5
@@ -30,7 +30,7 @@ MonoBehaviour:
   phase2PatternIntervalMulti: 0.85
   meleeRange: 10
   midRange: 20
-  armSmashStopDistance: 8
+  armSmashStopDistance: 6
   armSmashCooldown: 3
   armSmashDamage: 1
   armSmashKnockback: 10
@@ -47,4 +47,17 @@ MonoBehaviour:
   swingKnockback: 10
   swingSpeed: 15
   swingDuration: 3
+  doubleSwingCooldown: 0
+  jumpSmashCooldown: 6
+  jumpSmashHeight: 8
+  jumpSmashAirDuration: 0.2
+  jumpSmashDropSpeed: 25
+  jummpSmashDamange: 1
+  jumpSmashKnockback: 15
+  comboCooldown: 10
+  comboBackstepDist: 12
+  comboBackstepTime: 0.2
+  comboTossHeight: 12
+  comboSpikeSpeed: 3
   slamWindownDuration: 3
+  doubleSwingFirstHeightOffset: 3

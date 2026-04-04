@@ -34,6 +34,25 @@ public class BossStatus_Utan : BaseBossStatus
     [Tooltip("나무 타기 이동 속도")] public float swingSpeed = 15f;
     [Tooltip("나무 타기 시간")] public float swingDuration = 3f;
 
+    [Header(" === [Phase2] Pattern: Double Swing === ")]
+    [Tooltip("더블스윙 쿨타임")] public float doubleSwingCooldown;
+
+    [Header(" === [Phase2] Pattern: Jump Smash === ")]
+    [Tooltip("점프 내려치기 쿨타임")] public float jumpSmashCooldown;
+    [Tooltip("현재 위치로부터 점프 최고 높이")] public float jumpSmashHeight;
+    [Tooltip("공중 체공 시간")] public float jumpSmashAirDuration;
+    [Tooltip("내려찍기 속도")] public float jumpSmashDropSpeed;
+    [Tooltip("내려찍기 데미지")] public int jummpSmashDamange = 1;
+    [Tooltip("내려찍기 넉백 파워")] public float jumpSmashKnockback;
+    
+    [Header(" === [Phase2] Pattern: Volleyball Combo === ")]
+    [Tooltip("콤보 쿨타임")] public float comboCooldown;
+    [Tooltip("백스텝 이동 거리")] public float comboBackstepDist;
+    [Tooltip("백스텝 소요 시간")] public float comboBackstepTime;
+    [Tooltip("도약 높이")] public float comboTossHeight;
+    [Tooltip("공을 칠 때 속도 배율")] public int comboSpikeSpeed;
+
     [Header(" === Slam Window === ")]
     [Tooltip("기절시 슬램 가능한 시간")] public float slamWindownDuration = 3f;
+    [Tooltip("첫 번째 스윙의 올라갈 y offset")]public float doubleSwingFirstHeightOffset;
 }
