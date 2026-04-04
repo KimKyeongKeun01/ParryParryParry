@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using DG.Tweening;
@@ -45,7 +44,6 @@ public class PlayerVisual : MonoBehaviour
     [SerializeField] private Ease dashSquashInEase = Ease.OutCubic;
     [SerializeField] private Ease dashSquashOutEase = Ease.OutBack;
 
-
     [Header("Dash Trail")]
     [SerializeField] private Color dashTrailColor = new Color(1f, 1f, 1f, 0.45f);
     [SerializeField] private float dashTrailSpawnInterval = 0.03f;
@@ -58,6 +56,7 @@ public class PlayerVisual : MonoBehaviour
     [SerializeField] private ParticleSystemRenderer landingParticleRenderer;
 
     [Header("Perfect Guard Time Slow")]
+    [SerializeField] private TimeManager _timeManager;
     [SerializeField] private float perfectGuardTimeScale = 0.6f;
     [SerializeField] private float perfectGuardTimeSlowDuration = 0.08f;
     #endregion
@@ -74,19 +73,25 @@ public class PlayerVisual : MonoBehaviour
     private Vector3 defaultFacingIndicatorLocalPosition = Vector3.zero;
     private bool isHoldingFallSquash;
     private Coroutine dashTrailCor;
-    private Coroutine perfectGuardTimeSlowCor;
+    private Coroutine perfectGuardTimeSlowGateCor;
     private ParticleSystem moveParticles;
     private ParticleSystem jumpParticles;
     private ParticleSystem landingParticles;
-    private float perfectGuardRestoreTimeScale = 1f;
     #endregion
 
     #region Setup
+    private void Reset()
+    {
+        if (_timeManager == null)
+            _timeManager = FindFirstObjectByType<TimeManager>(FindObjectsInactive.Include);
+    }
+
     public void Init(Player _player)
     {
         player = _player;
         stat = _player.status;
         CacheVisualReferences();
+        ResolveTimeManager();
 
         if (thrownShieldObj != null)
         {
@@ -99,6 +104,8 @@ public class PlayerVisual : MonoBehaviour
 
     public void Setup()
     {
+        StopPerfectGuardTimeSlowGate();
+
         if (shieldObj != null)
             shieldObj.SetActive(false);
 
@@ -119,13 +126,20 @@ public class PlayerVisual : MonoBehaviour
         StopParticleBurst(jumpParticleRenderer, jumpParticles);
         StopParticleBurst(landingParticleRenderer, landingParticles);
         EffectManager.Instance?.StopGuardEffect(transform);
+        EffectManager.Instance?.StopSlamAnticipationEffect(transform);
+    }
+
+    private void ResolveTimeManager()
+    {
+        if (_timeManager == null)
+            _timeManager = FindFirstObjectByType<TimeManager>(FindObjectsInactive.Include);
     }
 
     private void BindControllerEvents()
     {
         if (player == null || player.controller == null)
         {
-            Debug.LogWarning("[PlayerVisual] BindControllerEvents ���� - player �Ǵ� controller�� null");
+            Debug.LogWarning("[PlayerVisual] BindControllerEvents 실패 - player 또는 controller가 null");
             return;
         }
 
@@ -156,17 +170,22 @@ public class PlayerVisual : MonoBehaviour
 
     private void OnDestroy()
     {
-        StopPerfectGuardTimeSlow(true);
+        StopPerfectGuardTimeSlowGate();
 
-        if (player == null || player.controller == null) return;
+        if (player == null || player.controller == null)
+            return;
 
         player.controller.onSlamImpact -= HandleSlamImpactVisual;
         player.controller.onSlamEnemyImpact -= HandleSlamEnemyImpactVisual;
+        player.controller.onJump -= HandleJumpVisual;
         player.controller.onGuardStart -= HandleGuardStartVisual;
         player.controller.onGuardEnd -= HandleGuardEndVisual;
         player.controller.onPerfectGuardSuccess -= HandlePerfectGuardSuccessVisual;
+        player.controller.onSlamStart -= HandleSlamStartVisual;
+        player.controller.onFootstep -= HandleFootstepVisual;
 
         EffectManager.Instance?.StopGuardEffect(transform);
+        EffectManager.Instance?.StopSlamAnticipationEffect(transform);
     }
     #endregion
 
@@ -181,7 +200,8 @@ public class PlayerVisual : MonoBehaviour
 
     public void UpdateTilt(float normalizedSpeed)
     {
-        if (modelObj == null) return;
+        if (modelObj == null)
+            return;
 
         float targetAngle = -player.FacingDirection * stat.MaxTiltAngle * normalizedSpeed;
         Quaternion targetRot = Quaternion.Euler(0f, 0f, targetAngle);
@@ -194,7 +214,9 @@ public class PlayerVisual : MonoBehaviour
 
     public void SetActiveShield(bool activeShield)
     {
-        if (shieldObj == null) return;
+        if (shieldObj == null)
+            return;
+
         shieldObj.transform.localPosition = Vector3.zero;
         shieldObj.SetActive(activeShield);
     }
@@ -246,10 +268,10 @@ public class PlayerVisual : MonoBehaviour
         PlaySquash(slamSquashScale, slamSquashTime, slamSquashEase);
     }
 
-
     public void PlayDashSquash(float dashDuration)
     {
-        if (modelObj == null) return;
+        if (modelObj == null)
+            return;
 
         isHoldingFallSquash = false;
         KillSquashTween();
@@ -304,7 +326,6 @@ public class PlayerVisual : MonoBehaviour
     {
         float xOffset = 0.1f * player.FacingDirection;
         float yOffset = -0.8f;
-
         return new Vector2(transform.position.x + xOffset, transform.position.y + yOffset);
     }
 
@@ -318,6 +339,7 @@ public class PlayerVisual : MonoBehaviour
     #region Slam
     private void HandleSlamStartVisual(Vector2 startPos, Vector2 slamDir)
     {
+        EffectManager.Instance?.PlaySlamAnticipationEffect(transform, startPos, slamDir);
         EffectManager.Instance?.PlaySlamStartEffect(startPos, slamDir);
     }
 
@@ -329,7 +351,6 @@ public class PlayerVisual : MonoBehaviour
 
     private void HandleSlamEnemyImpactVisual(Vector2 impactPos, Vector2 impactDir)
     {
-        //CameraManager.Instance?.PlaySlamEnemyHitShake(impactPos, impactDir);
         EffectManager.Instance?.PlaySlamEnemyEffect(impactPos, impactDir);
     }
     #endregion
@@ -354,7 +375,6 @@ public class PlayerVisual : MonoBehaviour
 
     private void HandlePerfectGuardSuccessVisual(Vector2 impactPos, Vector2 shakeDir)
     {
-        //CameraManager.Instance?.PlayPerfectGuardShake(impactPos, shakeDir);
         EffectManager.Instance?.PlayPerfectGuardEffect(impactPos);
         PlayPerfectGuardTimeSlow();
     }
@@ -366,7 +386,8 @@ public class PlayerVisual : MonoBehaviour
         if (moveParticleRenderer != null)
             moveParticleRenderer.enabled = active;
 
-        if (moveParticles == null) return;
+        if (moveParticles == null)
+            return;
 
         if (active)
         {
@@ -439,7 +460,9 @@ public class PlayerVisual : MonoBehaviour
 
     private void PlaySquash(Vector3 squashScale, float squashTime, Ease squashEase)
     {
-        if (modelObj == null) return;
+        if (modelObj == null)
+            return;
+
         KillSquashTween();
 
         Transform modelTransform = modelObj.transform;
@@ -472,7 +495,9 @@ public class PlayerVisual : MonoBehaviour
 
     private void HoldSquash(Vector3 squashScale, float squashDuration, Ease squashEase)
     {
-        if (modelObj == null || isHoldingFallSquash) return;
+        if (modelObj == null || isHoldingFallSquash)
+            return;
+
         KillSquashTween();
         isHoldingFallSquash = true;
 
@@ -519,7 +544,8 @@ public class PlayerVisual : MonoBehaviour
 
     private void KillSquashTween()
     {
-        if (squashSequence == null) return;
+        if (squashSequence == null)
+            return;
 
         squashSequence.Kill();
         squashSequence = null;
@@ -527,7 +553,8 @@ public class PlayerVisual : MonoBehaviour
 
     public void UpdateFacingIndicator(int facingDirection)
     {
-        if (facingIndicatorRenderer == null) return;
+        if (facingIndicatorRenderer == null)
+            return;
 
         Vector3 localPosition = defaultFacingIndicatorLocalPosition;
         float xOffset = Mathf.Abs(defaultFacingIndicatorLocalPosition.x);
@@ -599,36 +626,36 @@ public class PlayerVisual : MonoBehaviour
         if (perfectGuardTimeSlowDuration <= 0f)
             return;
 
-        if (perfectGuardTimeSlowCor != null)
+        if (perfectGuardTimeScale >= 1f)
             return;
 
-        if (!Mathf.Approximately(Time.timeScale, perfectGuardTimeScale))
-            perfectGuardRestoreTimeScale = Time.timeScale;
+        if (perfectGuardTimeSlowGateCor != null)
+            return;
 
-        Time.timeScale = perfectGuardTimeScale;
-        perfectGuardTimeSlowCor = StartCoroutine(PerfectGuardTimeSlowCoroutine());
-    }
-
-    private IEnumerator PerfectGuardTimeSlowCoroutine()
-    {
-        yield return new WaitForSecondsRealtime(perfectGuardTimeSlowDuration);
-
-        if (Mathf.Approximately(Time.timeScale, perfectGuardTimeScale))
-            Time.timeScale = perfectGuardRestoreTimeScale;
-
-        perfectGuardTimeSlowCor = null;
-    }
-
-    private void StopPerfectGuardTimeSlow(bool restoreTimeScale)
-    {
-        if (perfectGuardTimeSlowCor != null)
+        ResolveTimeManager();
+        if (_timeManager == null)
         {
-            StopCoroutine(perfectGuardTimeSlowCor);
-            perfectGuardTimeSlowCor = null;
+            Debug.LogWarning("[PlayerVisual] TimeManager reference is missing.");
+            return;
         }
 
-        if (restoreTimeScale && Mathf.Approximately(Time.timeScale, perfectGuardTimeScale))
-            Time.timeScale = perfectGuardRestoreTimeScale;
+        _timeManager.SetActionTime(perfectGuardTimeScale, perfectGuardTimeSlowDuration);
+        perfectGuardTimeSlowGateCor = StartCoroutine(Co_PerfectGuardTimeSlowGate());
+    }
+
+    private IEnumerator Co_PerfectGuardTimeSlowGate()
+    {
+        yield return new WaitForSecondsRealtime(perfectGuardTimeSlowDuration);
+        perfectGuardTimeSlowGateCor = null;
+    }
+
+    private void StopPerfectGuardTimeSlowGate()
+    {
+        if (perfectGuardTimeSlowGateCor != null)
+        {
+            StopCoroutine(perfectGuardTimeSlowGateCor);
+            perfectGuardTimeSlowGateCor = null;
+        }
     }
 
     private void OnDisable()
@@ -636,7 +663,8 @@ public class PlayerVisual : MonoBehaviour
         isHoldingFallSquash = false;
         StopDashTrail();
         KillSquashTween();
-        StopPerfectGuardTimeSlow(true);
+        StopPerfectGuardTimeSlowGate();
+        EffectManager.Instance?.StopSlamAnticipationEffect(transform);
     }
     #endregion
 

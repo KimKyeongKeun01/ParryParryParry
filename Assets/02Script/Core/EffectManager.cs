@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ public class EffectManager : MonoBehaviour
 {
     public static EffectManager Instance { get; private set; }
 
+    [Header("파티클 이펙트")]
     [SerializeField] private ParticleSystem slamGroundEffectPrefab;
     [SerializeField] private ParticleSystem slamEnemyEffectPrefab;
     [SerializeField] private ParticleSystem jumpEffectPrefab;
@@ -14,14 +16,20 @@ public class EffectManager : MonoBehaviour
     [SerializeField] private GuardEffectController guardEffectPrefab;
     [SerializeField] private PerfectGuardEffectController perfectGuardEffectPrefab;
 
+    [Header("쉐이더 이펙트")]
+    [SerializeField] private SlamAnticipationEffectController slamAnticipationEffectPrefab;
+    [SerializeField] private SlamEffectController slamGroundWaveEffectPrefab;
+
     private readonly Dictionary<Transform, GuardEffectController> activeGuardEffects = new();
+    private readonly Dictionary<Transform, SlamAnticipationEffectController> activeSlamAnticipationEffects = new();
 
     [SerializeField] private float slamStartEffectOffset = 0.5f;
     [SerializeField] private float slamStartEffectAngleOffset = 90f;
+    [SerializeField] private Vector2 slamAnticipationOffset = Vector2.zero;
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -41,10 +49,8 @@ public class EffectManager : MonoBehaviour
             return;
         }
 
-        // 🔥 Material 복사 (중요)
         Material runtimeMat = new Material(renderer.material);
 
-        // Shader에 따라 다름 (보통 이 둘 중 하나)
         if (runtimeMat.HasProperty("_BaseColor"))
             runtimeMat.SetColor("_BaseColor", color);
         else if (runtimeMat.HasProperty("_Color"))
@@ -55,7 +61,8 @@ public class EffectManager : MonoBehaviour
 
     private Quaternion GetRotationFromDirection(Vector2 direction)
     {
-        if(direction == Vector2.zero) return Quaternion.identity;
+        if (direction == Vector2.zero)
+            return Quaternion.identity;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         return Quaternion.Euler(0f, 0f, angle);
@@ -65,7 +72,7 @@ public class EffectManager : MonoBehaviour
     #region 걷기
     public void PlayFootstepEffect(Vector2 position, int facingDir)
     {
-        if(footstepEffectPrefab == null)
+        if (footstepEffectPrefab == null)
         {
             Debug.LogWarning("[EffectManager] footstepEffectPrefab이 없습니다.");
             return;
@@ -87,7 +94,7 @@ public class EffectManager : MonoBehaviour
     #region 가드
     public void PlayGuardEffect(Transform target)
     {
-        if(target == null)
+        if (target == null)
         {
             Debug.LogWarning("[EffectManager] PlayGuardEffect 실패 - target null");
             return;
@@ -114,12 +121,11 @@ public class EffectManager : MonoBehaviour
 
     public void StopGuardEffect(Transform target)
     {
-        if (target == null) return;
-
-        if(!activeGuardEffects.TryGetValue(target, out GuardEffectController effect) || effect == null)
-        {
+        if (target == null)
             return;
-        }
+
+        if (!activeGuardEffects.TryGetValue(target, out GuardEffectController effect) || effect == null)
+            return;
 
         effect.StopAndDestroy();
         activeGuardEffects.Remove(target);
@@ -127,14 +133,13 @@ public class EffectManager : MonoBehaviour
 
     public void PlayPerfectGuardEffect(Vector2 position)
     {
-        if(perfectGuardEffectPrefab == null)
+        if (perfectGuardEffectPrefab == null)
         {
             Debug.LogWarning("[EffectManager] perfectGuardEffectPrefab이 없습니다.");
             return;
         }
 
         PerfectGuardEffectController spawned = Instantiate(perfectGuardEffectPrefab, position, Quaternion.identity);
-
         spawned.Play();
 
         float lifeTime = spawned.GetLifetime();
@@ -145,17 +150,18 @@ public class EffectManager : MonoBehaviour
     #region 슬램
     public void PlaySlamGroundEffect(Vector2 position, Vector2 direction, Color color)
     {
+        PlaySlamWaveEffect(position, direction, color);
         PlaySlamEffect(slamGroundEffectPrefab, position, direction, color);
     }
 
     public void PlaySlamEnemyEffect(Vector2 position, Vector2 direction)
     {
-        PlaySlamEffect(slamEnemyEffectPrefab, position, direction); 
+        PlaySlamEffect(slamEnemyEffectPrefab, position, direction);
     }
 
     public void PlaySlamStartEffect(Vector2 playerPosition, Vector2 slamDirection)
     {
-        if(slamStartEffectPrefab == null)
+        if (slamStartEffectPrefab == null)
         {
             Debug.LogWarning("[EffectManager] slamStartEffectPrefab이 없습니다.");
             return;
@@ -164,31 +170,87 @@ public class EffectManager : MonoBehaviour
         Vector2 reverseDir = -slamDirection.normalized;
         Vector2 spawnPos = playerPosition + reverseDir * slamStartEffectOffset;
 
-        //Quaternion rotation = GetRotationFromDirection(reverseDir);
-
         float angle = Mathf.Atan2(reverseDir.y, reverseDir.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0f, 0f, angle + slamStartEffectAngleOffset);
 
         ParticleSystem spawned = Instantiate(slamStartEffectPrefab, spawnPos, rotation);
-
         spawned.Play();
 
         float lifeTime = spawned.main.duration;
         if (!spawned.main.loop)
-        {
             lifeTime += spawned.main.startLifetime.constantMax;
-        }
 
         Destroy(spawned.gameObject, lifeTime + 0.2f);
+    }
+
+    public void PlaySlamAnticipationEffect(Transform owner, Vector2 playerPosition, Vector2 slamDirection)
+    {
+        if (owner == null)
+        {
+            Debug.LogWarning("[EffectManager] PlaySlamAnticipationEffect 실패 - owner null");
+            return;
+        }
+
+        if (slamAnticipationEffectPrefab == null)
+            return;
+
+        StopSlamAnticipationEffect(owner);
+
+        Vector2 spawnPosition = playerPosition + slamAnticipationOffset;
+        SlamAnticipationEffectController spawned = Instantiate(slamAnticipationEffectPrefab, spawnPosition, Quaternion.identity);
+        activeSlamAnticipationEffects[owner] = spawned;
+
+        spawned.Play(
+            spawnPosition,
+            slamDirection,
+            effect => HandleSlamAnticipationEffectFinished(owner, effect)
+        );
+    }
+    private void PlaySlamWaveEffect(Vector2 position, Vector2 direction, Color color)
+    {
+        if (slamGroundWaveEffectPrefab == null)
+            return;
+
+        SlamEffectController spawned = Instantiate(slamGroundWaveEffectPrefab, position, Quaternion.identity);
+        spawned.Play(position, direction, color);
+    }
+
+    public void StopSlamAnticipationEffect(Transform owner)
+    {
+        if (owner == null)
+            return;
+
+        if (!activeSlamAnticipationEffects.TryGetValue(owner, out SlamAnticipationEffectController effect) || effect == null)
+        {
+            activeSlamAnticipationEffects.Remove(owner);
+            return;
+        }
+
+        activeSlamAnticipationEffects.Remove(owner);
+        effect.StopAndDestroy();
+    }
+
+    private void HandleSlamAnticipationEffectFinished(Transform owner, SlamAnticipationEffectController effect)
+    {
+        if (owner == null)
+            return;
+
+        if (!activeSlamAnticipationEffects.TryGetValue(owner, out SlamAnticipationEffectController current))
+            return;
+
+        if (current != effect)
+            return;
+
+        activeSlamAnticipationEffects.Remove(owner);
     }
     #endregion
 
     #region 점프
-    public void PlayJumpEffect(Vector2 _position)
+    public void PlayJumpEffect(Vector2 position)
     {
-        Vector3 position = _position;
-        position.y -= 0.2f;
-        PlayEffect(jumpEffectPrefab, position, Color.white);
+        Vector3 spawnPosition = position;
+        spawnPosition.y -= 0.2f;
+        PlayEffect(jumpEffectPrefab, spawnPosition, Color.white);
     }
     #endregion
 
@@ -207,17 +269,15 @@ public class EffectManager : MonoBehaviour
         spawned.Play();
 
         float lifeTime = spawned.main.duration;
-        if (spawned.main.loop == false)
-        {
+        if (!spawned.main.loop)
             lifeTime += spawned.main.startLifetime.constantMax;
-        }
 
         Destroy(spawned.gameObject, lifeTime + 0.2f);
     }
 
     private void PlaySlamEffect(ParticleSystem prefab, Vector2 position, Vector2 direction, Color? color = null)
     {
-        if(prefab == null)
+        if (prefab == null)
         {
             Debug.LogWarning("[EffectManager] 재생할 ParticleSystem 프리팹이 없습니다.");
             return;
@@ -226,19 +286,14 @@ public class EffectManager : MonoBehaviour
         Quaternion rotation = GetRotationFromDirection(direction);
         ParticleSystem spawned = Instantiate(prefab, position, rotation);
 
-
         if (color.HasValue)
-        {
             ApplyParticleColor(spawned, color.Value);
-        }
-        
+
         spawned.Play();
 
         float lifeTime = spawned.main.duration;
-        if(spawned.main.loop == false)
-        {
+        if (!spawned.main.loop)
             lifeTime += spawned.main.startLifetime.constantMax;
-        }
 
         Destroy(spawned.gameObject, lifeTime + 0.2f);
     }
