@@ -12,6 +12,11 @@ public class TileNeighborData : MonoBehaviour
     [SerializeField] private string tilemapOriginProperty = "_TilemapOrigin";
     [SerializeField] private string tilemapSizeProperty = "_TilemapSize";
     [SerializeField] private string cellSizeProperty = "_CellSize";
+    
+    [Header("Player Standing Pos")]
+    [SerializeField] private Transform feetPoint;
+    [SerializeField] private Renderer tilemapRenderer;
+    public Color changeClor;
 
     private Texture2D dataTexture;
 
@@ -78,14 +83,30 @@ public class TileNeighborData : MonoBehaviour
         targetMaterial.SetVector(tilemapOriginProperty, new Vector2(originWorld.x, originWorld.y));
         targetMaterial.SetVector(tilemapSizeProperty, new Vector2(width, height));
         targetMaterial.SetVector(cellSizeProperty, new Vector2(cellSize.x, cellSize.y));
-        Debug.Log($"cellSize ({cellSize.x},{cellSize.y})");
     }
 
     private void Start()
     {
         Bake();
     }
+    void Update()
+    {
+        Vector3Int cell = tilemap.WorldToCell(feetPoint.position);
 
+        if (tilemap.HasTile(cell))
+        {
+            Vector3 center = tilemap.GetCellCenterWorld(cell);
+
+            targetMaterial.SetVector("_HighlightCellCenter", new Vector4(center.x, center.y, center.z, 0));
+            targetMaterial.SetVector("_ChangeCellSize", new Vector2(tilemap.cellSize.x, tilemap.cellSize.y));
+            targetMaterial.SetColor("_ChangeColor", changeClor);
+        }
+        else
+        {
+            targetMaterial.SetVector("_HighlightCellCenter", new Vector4(0, 0, 0, 0));
+            targetMaterial.SetVector("_ChangeCellSize", new Vector2(0, 0));
+        }
+    }
 #if UNITY_EDITOR
     private void OnValidate()
     {

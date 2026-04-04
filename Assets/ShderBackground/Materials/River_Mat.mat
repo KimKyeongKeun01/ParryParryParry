@@ -49,12 +49,12 @@ Material:
     - _DistortionStrength: 0.02
     - _FoamStrength: 0.1
     - _FoamThreshold: 0.1
-    - _NoiseScale: 0.3
+    - _NoiseScale: 0.5
     - _NoiseScrollX: 0.01
     - _NormalStrength: 1
     - _TopMaskPower: 0
-    - _WaveAmplitude: 0.15
-    - _WaveFrequency: 5
+    - _WaveAmplitude: -0.01
+    - _WaveFrequency: 7.98
     - _WavePhaseOffset: 0
     - _WaveSpeed: 3
     m_Colors:
