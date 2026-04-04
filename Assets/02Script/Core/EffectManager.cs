@@ -18,7 +18,7 @@ public class EffectManager : MonoBehaviour
 
     [Header("쉐이더 이펙트")]
     [SerializeField] private SlamAnticipationEffectController slamAnticipationEffectPrefab;
-    [SerializeField] private SlamEffectController slamGroundWaveEffectPrefab;
+    [SerializeField] private FullscreenShockwaveController fullscreenShockwaveController;
 
     private readonly Dictionary<Transform, GuardEffectController> activeGuardEffects = new();
     private readonly Dictionary<Transform, SlamAnticipationEffectController> activeSlamAnticipationEffects = new();
@@ -148,42 +148,25 @@ public class EffectManager : MonoBehaviour
     #endregion
 
     #region 슬램
-    public void PlaySlamGroundEffect(Vector2 position, Vector2 direction, Color color)
+    public void PlaySlamStartVisual(Transform owner, Vector2 playerPosition, Vector2 slamDirection)
     {
+        PlaySlamAnticipationEffect(owner, playerPosition, slamDirection);
+    }
+
+    public void PlaySlamImpactVisual(Transform owner, Vector2 position, Vector2 direction, Color color)
+    {
+        StopSlamAnticipationEffect(owner);
         PlaySlamWaveEffect(position, direction, color);
         PlaySlamEffect(slamGroundEffectPrefab, position, direction, color);
     }
 
     public void PlaySlamEnemyEffect(Vector2 position, Vector2 direction)
     {
+        //TODO: 여기 캐릭터 좌표를 넣으면 플레이 되도록 만들어야함.
         PlaySlamEffect(slamEnemyEffectPrefab, position, direction);
     }
 
-    public void PlaySlamStartEffect(Vector2 playerPosition, Vector2 slamDirection)
-    {
-        if (slamStartEffectPrefab == null)
-        {
-            Debug.LogWarning("[EffectManager] slamStartEffectPrefab이 없습니다.");
-            return;
-        }
-
-        Vector2 reverseDir = -slamDirection.normalized;
-        Vector2 spawnPos = playerPosition + reverseDir * slamStartEffectOffset;
-
-        float angle = Mathf.Atan2(reverseDir.y, reverseDir.x) * Mathf.Rad2Deg;
-        Quaternion rotation = Quaternion.Euler(0f, 0f, angle + slamStartEffectAngleOffset);
-
-        ParticleSystem spawned = Instantiate(slamStartEffectPrefab, spawnPos, rotation);
-        spawned.Play();
-
-        float lifeTime = spawned.main.duration;
-        if (!spawned.main.loop)
-            lifeTime += spawned.main.startLifetime.constantMax;
-
-        Destroy(spawned.gameObject, lifeTime + 0.2f);
-    }
-
-    public void PlaySlamAnticipationEffect(Transform owner, Vector2 playerPosition, Vector2 slamDirection)
+    private void PlaySlamAnticipationEffect(Transform owner, Vector2 playerPosition, Vector2 slamDirection)
     {
         if (owner == null)
         {
@@ -208,11 +191,7 @@ public class EffectManager : MonoBehaviour
     }
     private void PlaySlamWaveEffect(Vector2 position, Vector2 direction, Color color)
     {
-        if (slamGroundWaveEffectPrefab == null)
-            return;
-
-        SlamEffectController spawned = Instantiate(slamGroundWaveEffectPrefab, position, Quaternion.identity);
-        spawned.Play(position, direction, color);
+        fullscreenShockwaveController.PlayAtWorld(position);
     }
 
     public void StopSlamAnticipationEffect(Transform owner)

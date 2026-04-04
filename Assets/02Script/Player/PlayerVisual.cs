@@ -339,14 +339,13 @@ public class PlayerVisual : MonoBehaviour
     #region Slam
     private void HandleSlamStartVisual(Vector2 startPos, Vector2 slamDir)
     {
-        EffectManager.Instance?.PlaySlamAnticipationEffect(transform, startPos, slamDir);
-        EffectManager.Instance?.PlaySlamStartEffect(startPos, slamDir);
+        EffectManager.Instance?.PlaySlamStartVisual(transform, startPos, slamDir);
     }
 
     private void HandleSlamImpactVisual(Vector2 impactPos, Vector2 impactDir, Color impactColor)
     {
         CameraManager.Instance?.Shake.Play(slamShakeProfile, impactDir);
-        EffectManager.Instance?.PlaySlamGroundEffect(impactPos, impactDir, impactColor);
+        EffectManager.Instance?.PlaySlamImpactVisual(transform, impactPos, impactDir, impactColor);
     }
 
     private void HandleSlamEnemyImpactVisual(Vector2 impactPos, Vector2 impactDir)

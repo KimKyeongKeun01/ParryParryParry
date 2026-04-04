@@ -304,6 +304,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
+--- !u!20 &571698228 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 7697578288154313467, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
+  m_PrefabInstance: {fileID: 571698227}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &698054583
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,11 +542,44 @@ PrefabInstance:
       propertyPath: slamAnticipationEffectPrefab
       value: 
       objectReference: {fileID: 6162588001418079846, guid: 64406d7b17b995341bb1ef81b74a2e03, type: 3}
+    - target: {fileID: 5428587508502532921, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      propertyPath: fullscreenShockwaveController
+      value: 
+      objectReference: {fileID: 999751917}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 824091683166508710, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 999751917}
   m_SourcePrefab: {fileID: 100100000, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+--- !u!1 &999751916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 824091683166508710, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+  m_PrefabInstance: {fileID: 999751915}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &999751917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999751916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44821ac568b05814aa4d5514dca83975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlamEffectController
+  _fullscreenMaterial: {fileID: 2100000, guid: 2d738a55f1307e54f8be2519d90adfbd, type: 2}
+  _targetCamera: {fileID: 571698228}
+  _duration: 10
+  _radius: 1
+  _ringWidth: 0.018
+  _strength: 0.012
+  _playOnStart: 0
+  _debugWorldTarget: {fileID: 0}
+  _debugPlayOnMouseLeftClick: 1
 --- !u!1 &1076435209
 GameObject:
   m_ObjectHideFlags: 0
@@ -1663,7 +1701,7 @@ MonoBehaviour:
   curDashCount: 0
   slopeNormal: {x: 0, y: 0}
   _timeManager: {fileID: 1076435210}
-  _slamStartTimeScale: 0.15
+  _slamStartTimeScale: 0
   _slamStartTimeSlowDuration: 0.12
 --- !u!4 &4851657365574422685 stripped
 Transform:
