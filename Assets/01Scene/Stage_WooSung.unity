@@ -220,6 +220,10 @@ PrefabInstance:
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 1962025956879362288, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
+      propertyPath: m_RendererIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1962025956879362288, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
       propertyPath: m_RenderPostProcessing
       value: 1
       objectReference: {fileID: 0}
@@ -285,11 +289,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7697578288154313467, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
       propertyPath: m_BackGroundColor.b
-      value: 0.122641504
+      value: 0.1981132
       objectReference: {fileID: 0}
     - target: {fileID: 7697578288154313467, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
       propertyPath: m_BackGroundColor.g
-      value: 0.004731034
+      value: 0.0063907425
       objectReference: {fileID: 0}
     - target: {fileID: 7697578288154313467, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
       propertyPath: m_BackGroundColor.r
@@ -300,6 +304,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
+--- !u!20 &571698228 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 7697578288154313467, guid: 1eef60dc043dac043bd16516abe42145, type: 3}
+  m_PrefabInstance: {fileID: 571698227}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &698054583
 GameObject:
   m_ObjectHideFlags: 0
@@ -517,11 +526,106 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5428587508502532921, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      propertyPath: slamStartEffectOffset
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428587508502532921, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      propertyPath: slamGroundWaveEffectPrefab
+      value: 
+      objectReference: {fileID: 8986678966715903885, guid: e0ffa026f03c2944fbf93f4c42eab1ba, type: 3}
+    - target: {fileID: 5428587508502532921, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      propertyPath: slamStartEffectAngleOffset
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428587508502532921, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      propertyPath: slamAnticipationEffectPrefab
+      value: 
+      objectReference: {fileID: 6162588001418079846, guid: 64406d7b17b995341bb1ef81b74a2e03, type: 3}
+    - target: {fileID: 5428587508502532921, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      propertyPath: fullscreenShockwaveController
+      value: 
+      objectReference: {fileID: 999751917}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 824091683166508710, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 999751917}
   m_SourcePrefab: {fileID: 100100000, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+--- !u!1 &999751916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 824091683166508710, guid: 22ca657ea9302d8448c620a302f71352, type: 3}
+  m_PrefabInstance: {fileID: 999751915}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &999751917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999751916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44821ac568b05814aa4d5514dca83975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlamEffectController
+  _fullscreenMaterial: {fileID: 2100000, guid: 2d738a55f1307e54f8be2519d90adfbd, type: 2}
+  _targetCamera: {fileID: 571698228}
+  _duration: 10
+  _radius: 1
+  _ringWidth: 0.018
+  _strength: 0.012
+  _playOnStart: 0
+  _debugWorldTarget: {fileID: 0}
+  _debugPlayOnMouseLeftClick: 1
+--- !u!1 &1076435209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1076435211}
+  - component: {fileID: 1076435210}
+  m_Layer: 0
+  m_Name: TimeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1076435210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076435209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21145281a54317c4b9e3e8dbab981be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimeManager
+  baseFixedDeltaTime: 0.02
+  useCurrentFixedDeltaTimeAsBase: 1
+--- !u!4 &1076435211
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076435209}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1486934139
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1596,6 +1700,9 @@ MonoBehaviour:
   fallSquashVelocityThreshold: -0.05
   curDashCount: 0
   slopeNormal: {x: 0, y: 0}
+  _timeManager: {fileID: 1076435210}
+  _slamStartTimeScale: 0
+  _slamStartTimeSlowDuration: 0.12
 --- !u!4 &4851657365574422685 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7241804563302670965, guid: d14a8aae0e8f92b408d5dfb9a2edca24, type: 3}
@@ -1750,8 +1857,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 536870912
   <SlamDetectRange>k__BackingField: 18
-  <SlamImpactStopDuration>k__BackingField: 0.18
+  <SlamImpactStopDuration>k__BackingField: 0.06
   <SlopeAngleThreshold>k__BackingField: 15
+  <SlamImpactStopTimeScale>k__BackingField: 0
   <MaxTiltAngle>k__BackingField: 6
   <TiltSpeed>k__BackingField: 20
   <CoyoteTime>k__BackingField: 0.1
@@ -2412,6 +2520,7 @@ MonoBehaviour:
   moveParticleRenderer: {fileID: 0}
   jumpParticleRenderer: {fileID: 0}
   landingParticleRenderer: {fileID: 0}
+  _timeManager: {fileID: 1076435210}
   perfectGuardTimeScale: 0.1
   perfectGuardTimeSlowDuration: 0.3
   slamShakeProfile: {fileID: 11400000, guid: 827e502c36a466246bcce61eedf97bbe, type: 2}
@@ -2762,4 +2871,5 @@ SceneRoots:
   - {fileID: 21239985}
   - {fileID: 2079989283}
   - {fileID: 1730999471}
+  - {fileID: 1076435211}
   - {fileID: 61722679}

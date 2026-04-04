@@ -220,6 +220,9 @@ public class PlayerStatus : MonoBehaviour
     public float SlamImpactStopDuration { get; private set; } = 0.05f;
     [field: Tooltip("경사면으로 판정하는 최소 경사 각도 (경사 이동 프로젝션에 사용)"), Range(0f, 90f), SerializeField]
     public float SlopeAngleThreshold { get; private set; } = 15f;
+
+    [field: Tooltip("슬램 착지 직후 적용할 액션 타임스케일 (0 = 완전 정지, 1 = 변화 없음)"), Range(0f, 1f), SerializeField]
+    public float SlamImpactStopTimeScale { get; private set; } = 1f;
     #endregion
 
     #region
