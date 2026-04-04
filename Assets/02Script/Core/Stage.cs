@@ -10,6 +10,7 @@ public class Stage : MonoBehaviour
 {
     public int Index { get; private set; }
 
+    /*
     [SerializeField] private CinemachineCamera virtualCam;
     [SerializeField] private CinemachineImpulseListener impulseListener;
 
@@ -21,6 +22,7 @@ public class Stage : MonoBehaviour
     [SerializeField] private float maxFollowOrthoSize = 12f;
     [Tooltip("체크 시 세로 기준, 해제 시 가로 기준으로 OrthographicSize 계산")]
     [SerializeField] private bool fitByHeight = false;
+    */
 
     [Header("Save Points")]
     [SerializeField] private Transform beforeClearSavePoint;
@@ -38,8 +40,10 @@ public class Stage : MonoBehaviour
     [Header("허용 기술")]
     [SerializeField] private PlayerAbilityFlags allowedAbilities = PlayerAbilityFlags.All;
 
-    public CinemachineCamera VirtualCamera => virtualCam;
-    public CinemachineImpulseListener ImpulseListener => impulseListener;
+
+    #region 프로퍼티
+    // public CinemachineCamera VirtualCamera => virtualCam;
+    // public CinemachineImpulseListener ImpulseListener => impulseListener;
     public Transform BeforeClearSavePoint => beforeClearSavePoint;
     public Transform AfterClearSavePoint => afterClearSavePoint;
     public PlayerAbilityFlags AllowedAbilities => allowedAbilities;
@@ -47,6 +51,7 @@ public class Stage : MonoBehaviour
     public float FadeDuration => fadeDuration;
     public float FadeHoldDuration => fadeHoldDuration;
     public Color FadeColor => fadeColor;
+    #endregion
 
     /// <summary>플레이어가 이 스테이지에 진입할 때 발생. StageManager가 구독하여 전환 처리.</summary>
     public static event Action<Stage> OnPlayerEnteredStage;
@@ -75,6 +80,7 @@ public class Stage : MonoBehaviour
         }
     }
 
+    /* 스테이지 카메라 세팅
     private void Awake()
     {
         // virtualCam에 ImpulseListener가 없으면 자동 추가
@@ -93,7 +99,9 @@ public class Stage : MonoBehaviour
             }
         }
         AutoFit();
+        
     }
+    
 
     public void Init(int index)
     {
@@ -120,6 +128,7 @@ public class Stage : MonoBehaviour
             player.controller.SetAbilities(allowedAbilities);
         }
     }
+    */
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -134,6 +143,7 @@ public class Stage : MonoBehaviour
             OnPlayerEnteredStage?.Invoke(this);
     }
 
+    /*
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -271,4 +281,5 @@ public class Stage : MonoBehaviour
         // SpriteRenderer가 아니면 기존 방식 사용
         return renderer.bounds;
     }
+    */
 }
