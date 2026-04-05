@@ -869,6 +869,7 @@ public class Boss_Utan : BaseBoss
         swingPosition = new Vector2(player.transform.position.x, pivotY);
         float lopeLength = Status.swingLopeLength;
 
+        // 올라가는 애니메이션 수행
         Visual?.PlayAnim("Swing_Prepare");
         yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
         if (curAttack == AttackPattern.None) { ResetSwing(); yield break; }
@@ -889,7 +890,7 @@ public class Boss_Utan : BaseBoss
         {
             if (curAttack == AttackPattern.None || CurState != EnemyState.Attack) { ResetSwing(); yield break; }
             
-            float angleStep = Status.swingSpeed * 10f * Time.deltaTime;
+            float angleStep = Status.swingSpeed * 10f * Time.deltaTime; // deltaTime당 이동 각도
             totalRotated += angleStep;
             currentAngle += angleStep * -startSide; // 진행 방향
 
@@ -898,7 +899,7 @@ public class Boss_Utan : BaseBoss
             float nextY = swingPosition.y + Mathf.Sin(rad) * radius;
 
             transform.position = new Vector2(nextX, nextY);
-            transform.rotation = Quaternion.Euler(0, 0, currentAngle + 90f);
+            transform.rotation = Quaternion.Euler(0, 0, currentAngle + 90f);    // 각에 맞게 rotation 전환
 
             yield return null;
         }
@@ -908,8 +909,13 @@ public class Boss_Utan : BaseBoss
         player = Player.Instance;
         LookAtPlayer();
         
-        // 피벗(나뭇가지)을 기존 1페이즈 스윙처럼 기본 높이로 내림
+        // 기존 1페이즈 스윙 높이로 피벗을 낮춤
         swingPosition = new Vector2(player != null ? player.transform.position.x : transform.position.x, originY + Status.swingHeight);
+
+        // 처음 시작위치 반대에 지정
+        startPos = swingPosition + new Vector2(startSide * lopeLength, 5f);
+        _rigid.MovePosition(startPos);
+        transform.position = startPos;
         
         // 공중에 멈춘 현재 위치 기준으로 반지름과 각도 새로 계산
         radius = Vector2.Distance(transform.position, swingPosition);
@@ -1047,7 +1053,7 @@ public class Boss_Utan : BaseBoss
             if (player == null) return;
 
             // 스윙 패턴 충돌
-            if (curAttack == AttackPattern.Swing)
+            if (curAttack == AttackPattern.Swing || curAttack == AttackPattern.DoubleSwing)
             {
                 StartCoroutine(Co_IgnorePlayer(player, 1f));
                 OnSwingHit(player);
