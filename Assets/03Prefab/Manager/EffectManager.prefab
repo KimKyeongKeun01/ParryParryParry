@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5285402172296838311}
   - component: {fileID: 5428587508502532921}
-  - component: {fileID: 8093424537277820258}
   - component: {fileID: 7468674992853688010}
   m_Layer: 0
   m_Name: EffectManager
@@ -58,26 +57,6 @@ MonoBehaviour:
   slamStartEffectOffset: 0
   slamStartEffectAngleOffset: 0
   slamAnticipationOffset: {x: 0, y: 0}
---- !u!114 &8093424537277820258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 824091683166508710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44821ac568b05814aa4d5514dca83975, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FullscreenShockwaveController
-  _fullscreenMaterial: {fileID: 2100000, guid: 2d738a55f1307e54f8be2519d90adfbd, type: 2}
-  _targetCamera: {fileID: 0}
-  _duration: 0.35
-  _radius: 0.35
-  _ringWidth: 0.018
-  _strength: 0.012
-  _playOnStart: 0
-  _debugWorldTarget: {fileID: 0}
 --- !u!114 &7468674992853688010
 MonoBehaviour:
   m_ObjectHideFlags: 0

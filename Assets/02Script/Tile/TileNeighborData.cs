@@ -185,10 +185,6 @@ public class TileNeighborData : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(stepHeatValues.Length);
-        Debug.Log(stepHeatPixels.Length);
-        Debug.Log(activeIndexLookup.Length);
-
         
         if (tilemap == null || targetMaterial == null || feetPoint == null)
             return;

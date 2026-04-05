@@ -50,9 +50,9 @@ Material:
     - _Strength_2: 0
     - _Strength_3: 0
     m_Colors:
-    - _HitCenterUV: {r: 0, g: 0, b: 0, a: 0}
-    - _HitCenterUV_1: {r: 0, g: 0, b: 0, a: 0}
-    - _HitCenterUV_2: {r: 0, g: 0, b: 0, a: 0}
-    - _HitCenterUV_3: {r: 0, g: 0, b: 0, a: 0}
+    - _HitCenterUV: {r: -10, g: -10, b: 0, a: 0}
+    - _HitCenterUV_1: {r: -10, g: -10, b: 0, a: 0}
+    - _HitCenterUV_2: {r: -10, g: -10, b: 0, a: 0}
+    - _HitCenterUV_3: {r: -10, g: -10, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
