@@ -24,6 +24,10 @@ public class DistanceFadeObject : MonoBehaviour
     private bool isVisible = true;
     private Color[] defaultRendererColors;
 
+    // Gizmos
+    [SerializeField] private float gizmoOriginSphereRadius = 0.12f;
+    [SerializeField] private int gizmoCircleSegments = 48;
+
     private void Reset()
     {
         CacheTargets();
@@ -278,4 +282,94 @@ public class DistanceFadeObject : MonoBehaviour
             colliderTarget.enabled = enabled;
         }
     }
+
+    #region
+    private void OnDrawGizmosSelected()
+    {
+        // 에디터에서 바로 보이게 target/renderer/collider 캐시를 최대한 보완
+        CacheTargets();
+
+        Vector3 origin = GetFadeOrigin();
+
+        // 기준점 표시
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(origin, gizmoOriginSphereRadius);
+
+        // 2D/3D 거리 모드에 따라 거리 반경 표시
+        if (use2DDistanceOnly)
+        {
+            DrawWireCircle2D(origin, visibleDistance, new Color(0.2f, 1f, 0.2f, 1f));
+            DrawWireCircle2D(origin, hiddenDistance, new Color(1f, 0.5f, 0.1f, 1f));
+        }
+        else
+        {
+            Gizmos.color = new Color(0.2f, 1f, 0.2f, 1f);
+            Gizmos.DrawWireSphere(origin, visibleDistance);
+
+            Gizmos.color = new Color(1f, 0.5f, 0.1f, 1f);
+            Gizmos.DrawWireSphere(origin, hiddenDistance);
+        }
+
+        // 현재 타겟과의 연결선, 현재 거리 시각화
+        if (target != null)
+        {
+            Vector3 targetPos = target.position;
+
+            if (use2DDistanceOnly)
+            {
+                targetPos.z = origin.z;
+            }
+
+            float currentDistance = GetDistanceForGizmo(origin, targetPos);
+            bool currentlyVisible = isVisible
+                ? currentDistance <= hiddenDistance
+                : currentDistance <= visibleDistance;
+
+            Gizmos.color = currentlyVisible ? Color.green : Color.red;
+            Gizmos.DrawLine(origin, targetPos);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(targetPos, gizmoOriginSphereRadius * 0.85f);
+        }
+    }
+
+    /// <summary>
+    /// XY 평면 기준 2D 원형 기즈모.
+    /// 2D 프로젝트에서 visible/hidden 거리 반경을 직관적으로 보기 좋다.
+    /// </summary>
+    private void DrawWireCircle2D(Vector3 center, float radius, Color color)
+    {
+        if (radius <= 0f)
+            return;
+
+        int segments = Mathf.Max(8, gizmoCircleSegments);
+        Gizmos.color = color;
+
+        float angleStep = 360f / segments;
+        Vector3 prevPoint = center + new Vector3(radius, 0f, 0f);
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = angleStep * i * Mathf.Deg2Rad;
+            Vector3 nextPoint = center + new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0f);
+            Gizmos.DrawLine(prevPoint, nextPoint);
+            prevPoint = nextPoint;
+        }
+    }
+
+    /// <summary>
+    /// 기즈모용 현재 거리 계산.
+    /// 런타임 로직의 GetDistanceToTarget()과 같은 기준으로 맞춘다.
+    /// </summary>
+    private float GetDistanceForGizmo(Vector3 from, Vector3 to)
+    {
+        if (use2DDistanceOnly)
+        {
+            from.z = 0f;
+            to.z = 0f;
+        }
+
+        return Vector3.Distance(from, to);
+    }
+#endregion
 }

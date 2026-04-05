@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     [Header("Panel")]
     public UIPause pause;
     public UIClear clear;
+    public UICutScene cutScene;
 
     [Header("Player")]
     [SerializeField] private GameObject healthBar;
@@ -25,8 +26,6 @@ public class UIManager : MonoBehaviour
     [Header("Transition")]
     [SerializeField] private Fader fader;
 
-
-    [SerializeField] private NoticeText noticeText;
     
 
     private void Awake()
@@ -163,12 +162,7 @@ public class UIManager : MonoBehaviour
         clear?.gameObject.SetActive(active);
     }
     #endregion
-
-    public void ShowNotice(string message)
-    {
-        if (noticeText != null) noticeText.Show(message);
-    }
-
+    
     #region Fader
     public void FadeIn(float duration = -1f, Action onComplete = null)
     {
