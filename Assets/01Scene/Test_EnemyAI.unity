@@ -1553,18 +1553,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2091297025273819467, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 2091297025273819467, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.17
-      objectReference: {fileID: 0}
-    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
-      propertyPath: m_ColliderPaths.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4942595833017858441, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
       propertyPath: m_LocalPosition.x
       value: -43.84
@@ -1608,18 +1596,6 @@ PrefabInstance:
     - target: {fileID: 5289968908756280565, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
       propertyPath: m_Name
       value: Boos_Met
-      objectReference: {fileID: 0}
-    - target: {fileID: 5289968908756280565, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6579791146066719525, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6579791146066719525, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.77
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1867,44 +1843,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45d2cf7935c7bb4499f660065a4f85c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraShake
-  globalShakeForce: 1
-  impulseDefinition:
-    ImpulseChannel: 1
-    ImpulseShape: 0
-    CustomImpulseShape:
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    ImpulseDuration: 0.2
-    ImpulseType: 3
-    DissipationRate: 0
-    RawSignal: {fileID: 0}
-    AmplitudeGain: 1
-    FrequencyGain: 1
-    RepeatMode: 0
-    Randomize: 1
-    TimeEnvelope:
-      AttackShape:
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      DecayShape:
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      AttackTime: 0
-      SustainTime: 0.2
-      DecayTime: 0.7
-      ScaleWithImpact: 1
-      HoldForever: 0
-    ImpactRadius: 100
-    DirectionMode: 0
-    DissipationMode: 2
-    DissipationDistance: 100
-    PropagationSpeed: 343
 --- !u!114 &1722468537
 MonoBehaviour:
   m_ObjectHideFlags: 0
