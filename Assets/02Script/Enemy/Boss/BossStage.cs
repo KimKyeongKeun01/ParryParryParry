@@ -129,11 +129,6 @@ public class BossStage : MonoBehaviour
         UIManager.Instance.FadeHUDOut();
     }
 
-    public void S_CameraShake()
-    {
-
-    }
-
     public void OnIntroFinished(PlayableDirector director)  // 컷신 종료 
     {
         if (director != bossIntro) return;
