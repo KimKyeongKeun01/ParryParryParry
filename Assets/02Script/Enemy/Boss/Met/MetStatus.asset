@@ -27,13 +27,13 @@ MonoBehaviour:
   defultWindDownTime: 0.5
   patternInterval: 1.5
   maxApproachTime: 2
-  meleeRange: 15
-  dashSpeed: 50
+  meleeRange: 20
+  dashSpeed: 40
   dashCooldown: 6
   dashDamage: 1
   dashKnockback: 12
   wallDetectRange: 4.6
-  wallHitShake: 0.5
+  wallHitShake: 1
   tuskRange: 6
   tuskSpeed: 60
   tuskCooldown: 3
@@ -43,5 +43,5 @@ MonoBehaviour:
   slamSpeed: 80
   slamCooldown: 4
   slamDamage: 1
-  slamXForce: 20
+  slamXForce: 30
   slamGuardKnockback: 4

@@ -31,4 +31,13 @@ public class BossStatus_Met : BaseBossStatus
     [Tooltip("들이받기 데미지")] public int slamDamage = 1;
     [Tooltip("들이받기 수평 넉백 파워")] public float slamXForce = 14f;
     [Tooltip("들이받기 가드 시 넉백 파워")] public float slamGuardKnockback = 4f;
+
+
+    [Header("Ground Slam")]
+    public float groundSlamJumpHeight = 8f;    // 올라가는 높이
+    public float groundSlamRiseSpeed = 3f;    // 올라가는 속도
+    public float groundSlamDownSpeed = 5f;    // 내려찍는 속도
+    public float groundSlamCooldown = 20f;    // 패턴 쿨타임
+    public int groundSlamDamage = 1;     // 데미지
+    public float groundSlamKnockback = 15f;   // 넉백 강도
 }
