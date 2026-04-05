@@ -161,6 +161,11 @@ public class UIManager : MonoBehaviour
     {
         clear?.gameObject.SetActive(active);
     }
+
+    public void SetCutscenePanel(bool active)
+    {
+        cutScene?.gameObject.SetActive(active);
+    }
     #endregion
     
     #region Fader

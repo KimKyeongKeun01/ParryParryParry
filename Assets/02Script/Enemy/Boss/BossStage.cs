@@ -94,6 +94,8 @@ public class BossStage : MonoBehaviour
         // 2. 보스 컷신
         if (bossIntro != null)
         {
+            UIManager.Instance.cutScene.gameObject.SetActive(true);
+            UIManager.Instance.cutScene.PlayLetterboxIn();
             isCutscenePlaying = true;
 
             bossObj.SetActive(true);
