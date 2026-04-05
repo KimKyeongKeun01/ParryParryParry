@@ -51,7 +51,7 @@ MonoBehaviour:
   jumpSmashCooldown: 6
   jumpSmashHeight: 8
   jumpSmashAirDuration: 0.2
-  jumpSmashDropSpeed: 25
+  jumpSmashDropSpeed: 120
   jummpSmashDamange: 1
   jumpSmashKnockback: 15
   comboCooldown: 10

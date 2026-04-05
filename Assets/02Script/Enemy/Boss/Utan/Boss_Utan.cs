@@ -120,8 +120,9 @@ public class Boss_Utan : BaseBoss
 
         if (phase >= 2)
         {
-            nextPattern = AttackPattern.DoubleSwing;
-            /*
+            if (canDoubleSwing)
+                nextPattern = AttackPattern.DoubleSwing;
+
             // [2페이즈 우선순위 1] 가까이 있을 때 스파이크
             if (dist < Status.meleeRange && canCombo)
             {
@@ -135,7 +136,6 @@ public class Boss_Utan : BaseBoss
             // [2페이즈 우선순위 3] 나머지가 쿨일 때 기본 두팔찍기
             else
                 nextPattern = AttackPattern.ArmSmash;
-                */
         }
         else
         {
@@ -564,6 +564,7 @@ public class Boss_Utan : BaseBoss
     {
         transform.rotation = Quaternion.identity;
         transform.position = new Vector2(transform.position.x, originY);
+        LookAtPlayer();
     }
 
     public void OnSwingHit(Player player)
