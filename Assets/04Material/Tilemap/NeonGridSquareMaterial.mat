@@ -83,7 +83,7 @@ Material:
     - _HeatWorldSize: {r: 50, g: 8, b: 0, a: 0}
     - _HighlightCellCenter: {r: 51.5, g: 9.5, b: 0, a: 0}
     - _NeonColor: {r: 0, g: 0.44864368, b: 1, a: 1}
-    - _TilemapOrigin: {r: -53, g: -23, b: 0, a: 0}
-    - _TilemapSize: {r: 955, g: 53, b: 0, a: 0}
+    - _TilemapOrigin: {r: -53, g: -21, b: 0, a: 0}
+    - _TilemapSize: {r: 964, g: 88, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
