@@ -137,10 +137,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 229.2498779296875,
-            "y": -191.49998474121095,
-            "width": 208.0001220703125,
-            "height": 301.9999694824219
+            "x": 250.00003051757813,
+            "y": -170.0,
+            "width": 208.0,
+            "height": 302.0000305175781
         }
     },
     "m_Slots": [
@@ -160,7 +160,7 @@
         "x"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": true,
+    "m_PreviewExpanded": false,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -180,10 +180,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 79.2498779296875,
-            "y": -10.5,
-            "width": 0.0,
-            "height": 0.0
+            "x": 80.00005340576172,
+            "y": -33.99998092651367,
+            "width": 120.99999237060547,
+            "height": 33.99999237060547
         }
     },
     "m_Slots": [
@@ -287,10 +287,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "Vector2",
+    "m_Name": "Distance",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Vector2",
-    "m_DefaultReferenceName": "_Vector2",
+    "m_RefNameGeneratedByDisplayName": "Distance",
+    "m_DefaultReferenceName": "_Distance",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -331,7 +331,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
     "m_ObjectId": "61477fcf203b474fb5b431035f2e972c",
     "m_Id": 0,
-    "m_DisplayName": "Vector2",
+    "m_DisplayName": "Distance",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -632,10 +632,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 533.25,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
+            "x": 480.0000305175781,
+            "y": -170.00003051757813,
+            "width": 119.00003051757813,
+            "height": 77.0000228881836
         }
     },
     "m_Slots": [

@@ -37,10 +37,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _RingWidth: 0.018
-    - _RingWidth_1: 0.018
-    - _RingWidth_2: 0.018
-    - _RingWidth_3: 0.018
+    - _RingWidth: 0.15
+    - _RingWidth_1: 0.15
+    - _RingWidth_2: 0.15
+    - _RingWidth_3: 0.15
     - _ShockProgress: -10
     - _ShockProgress_1: -10
     - _ShockProgress_2: -10
