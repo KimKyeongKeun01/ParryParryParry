@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5285402172296838311}
   - component: {fileID: 5428587508502532921}
-  - component: {fileID: 8093424537277820258}
+  - component: {fileID: 7468674992853688010}
   m_Layer: 0
   m_Name: EffectManager
   m_TagString: Untagged
@@ -53,11 +53,11 @@ MonoBehaviour:
   guardEffectPrefab: {fileID: 5901054716662270857, guid: fe2ba17b19d7575438c804713425f912, type: 3}
   perfectGuardEffectPrefab: {fileID: -8436912499194383893, guid: 14f44fdd8051119429c3870cb5e8735d, type: 3}
   slamAnticipationEffectPrefab: {fileID: 6162588001418079846, guid: 64406d7b17b995341bb1ef81b74a2e03, type: 3}
-  fullscreenShockwaveController: {fileID: 8093424537277820258}
-  slamStartEffectOffset: -1.5
-  slamStartEffectAngleOffset: -25
+  fullscreenShockwaveController: {fileID: 7468674992853688010}
+  slamStartEffectOffset: 0
+  slamStartEffectAngleOffset: 0
   slamAnticipationOffset: {x: 0, y: 0}
---- !u!114 &8093424537277820258
+--- !u!114 &7468674992853688010
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -68,12 +68,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44821ac568b05814aa4d5514dca83975, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FullscreenShockwaveController
+  m_EditorClassIdentifier: Assembly-CSharp::SlamEffectController
   _fullscreenMaterial: {fileID: 2100000, guid: 2d738a55f1307e54f8be2519d90adfbd, type: 2}
   _targetCamera: {fileID: 0}
   _duration: 0.35
-  _radius: 0.35
-  _ringWidth: 0.018
-  _strength: 0.012
+  _radius: 0.25
+  _ringWidth: 0.15
+  _strength: 1
   _playOnStart: 0
   _debugWorldTarget: {fileID: 0}

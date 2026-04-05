@@ -17,6 +17,7 @@ public class FullscreenShockwaveController : MonoBehaviour
     [SerializeField] private Transform _debugWorldTarget;
 
     private const int SlotCount = 4;
+    private static readonly Vector2 HiddenViewportUV = new Vector2(-10f, -10f);
 
     private readonly ShockwaveSlot[] _slots = new ShockwaveSlot[SlotCount];
     private int _nextSlotIndex;
@@ -64,6 +65,8 @@ public class FullscreenShockwaveController : MonoBehaviour
     private struct ShockwaveSlot
     {
         public bool IsPlaying;
+        public bool UseWorldAnchor;
+        public Vector3 WorldPosition;
         public Vector2 ViewportUV;
         public float Elapsed;
     }
@@ -92,8 +95,11 @@ public class FullscreenShockwaveController : MonoBehaviour
         PlayAtViewportUV(new Vector2(0.5f, 0.5f));
     }
 
-    private void Update()
+    private void LateUpdate()
     {
+        if (_targetCamera == null)
+            _targetCamera = Camera.main;
+
         for (int i = 0; i < SlotCount; i++)
         {
             if (_slots[i].IsPlaying == false)
@@ -101,12 +107,16 @@ public class FullscreenShockwaveController : MonoBehaviour
 
             _slots[i].Elapsed += Time.deltaTime;
 
+            if (_slots[i].UseWorldAnchor)
+                _slots[i].ViewportUV = ConvertWorldToViewport(_slots[i].WorldPosition);
+
             float normalizedTime = Mathf.Clamp01(_slots[i].Elapsed / _duration);
             float easedTime = 1f - Mathf.Pow(1f - normalizedTime, 3f);
 
             float progress = Mathf.Lerp(0f, _radius, easedTime);
             float currentStrength = Mathf.Lerp(_strength, 0f, normalizedTime);
 
+            _fullscreenMaterial.SetVector(HitCenterUVIds[i], _slots[i].ViewportUV);
             _fullscreenMaterial.SetFloat(ShockProgressIds[i], progress);
             _fullscreenMaterial.SetFloat(StrengthIds[i], currentStrength);
 
@@ -117,25 +127,18 @@ public class FullscreenShockwaveController : MonoBehaviour
 
     public void PlayAtWorld(Vector3 worldPosition)
     {
-        if (_targetCamera == null)
-            _targetCamera = Camera.main;
+        int slotIndex = AllocateSlot();
 
-        if (_targetCamera == null)
-        {
-            Debug.LogWarning("[FullscreenShockwaveController] PlayAtWorld 실패 - target camera가 없습니다.");
-            return;
-        }
+        _slots[slotIndex].IsPlaying = true;
+        _slots[slotIndex].UseWorldAnchor = true;
+        _slots[slotIndex].WorldPosition = worldPosition;
+        _slots[slotIndex].ViewportUV = ConvertWorldToViewport(worldPosition);
+        _slots[slotIndex].Elapsed = 0f;
 
-        Vector3 screenPoint = _targetCamera.WorldToScreenPoint(worldPosition);
-        if (screenPoint.z <= 0f)
-            return;
-
-        Vector2 viewportUV = new Vector2(
-            screenPoint.x / Screen.width,
-            screenPoint.y / Screen.height
-        );
-
-        PlayAtViewportUV(viewportUV);
+        ApplyStaticPropertiesToSlot(slotIndex);
+        _fullscreenMaterial.SetVector(HitCenterUVIds[slotIndex], _slots[slotIndex].ViewportUV);
+        _fullscreenMaterial.SetFloat(ShockProgressIds[slotIndex], 0f);
+        _fullscreenMaterial.SetFloat(StrengthIds[slotIndex], _strength);
     }
 
     public void PlayAtWorld(Vector2 worldPosition)
@@ -158,6 +161,8 @@ public class FullscreenShockwaveController : MonoBehaviour
         int slotIndex = AllocateSlot();
 
         _slots[slotIndex].IsPlaying = true;
+        _slots[slotIndex].UseWorldAnchor = false;
+        _slots[slotIndex].WorldPosition = Vector3.zero;
         _slots[slotIndex].ViewportUV = viewportUV;
         _slots[slotIndex].Elapsed = 0f;
 
@@ -193,10 +198,12 @@ public class FullscreenShockwaveController : MonoBehaviour
     private void StopSlot(int slotIndex)
     {
         _slots[slotIndex].IsPlaying = false;
-        _slots[slotIndex].ViewportUV = Vector2.zero;
+        _slots[slotIndex].UseWorldAnchor = false;
+        _slots[slotIndex].WorldPosition = Vector3.zero;
+        _slots[slotIndex].ViewportUV = HiddenViewportUV;
         _slots[slotIndex].Elapsed = 0f;
 
-        _fullscreenMaterial.SetVector(HitCenterUVIds[slotIndex], Vector2.zero);
+        _fullscreenMaterial.SetVector(HitCenterUVIds[slotIndex], HiddenViewportUV);
         _fullscreenMaterial.SetFloat(ShockProgressIds[slotIndex], -10f);
         _fullscreenMaterial.SetFloat(StrengthIds[slotIndex], 0f);
     }
@@ -206,7 +213,9 @@ public class FullscreenShockwaveController : MonoBehaviour
         for (int i = 0; i < SlotCount; i++)
         {
             _slots[i].IsPlaying = false;
-            _slots[i].ViewportUV = Vector2.zero;
+            _slots[i].UseWorldAnchor = false;
+            _slots[i].WorldPosition = Vector3.zero;
+            _slots[i].ViewportUV = HiddenViewportUV;
             _slots[i].Elapsed = 0f;
         }
     }
@@ -228,9 +237,22 @@ public class FullscreenShockwaveController : MonoBehaviour
     {
         for (int i = 0; i < SlotCount; i++)
         {
-            _fullscreenMaterial.SetVector(HitCenterUVIds[i], Vector2.zero);
+            _fullscreenMaterial.SetVector(HitCenterUVIds[i], HiddenViewportUV);
             _fullscreenMaterial.SetFloat(ShockProgressIds[i], -10f);
             _fullscreenMaterial.SetFloat(StrengthIds[i], 0f);
         }
+    }
+
+    private Vector2 ConvertWorldToViewport(Vector3 worldPosition)
+    {
+        if (_targetCamera == null)
+            return HiddenViewportUV;
+
+        Vector3 viewportPoint = _targetCamera.WorldToViewportPoint(worldPosition);
+
+        if (viewportPoint.z <= 0f)
+            return HiddenViewportUV;
+
+        return new Vector2(viewportPoint.x, viewportPoint.y);
     }
 }

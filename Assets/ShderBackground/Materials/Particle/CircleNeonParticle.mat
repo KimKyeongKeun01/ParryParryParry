@@ -58,6 +58,6 @@ Material:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _BaseFillColor: {r: 0, g: 0, b: 0, a: 1}
     - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _NeonColor: {r: 0, g: 0.5533332, b: 0.83, a: 1}
+    - _NeonColor: {r: 0, g: 1.1066664, b: 1.66, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
