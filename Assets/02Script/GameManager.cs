@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.title.gameObject.SetActive(true);
             UIManager.Instance.SetHealthBar(false);
             UIManager.Instance.SetPausePanel(false);
-            UIManager.Instance.SetCutscenePanel(false);
         }
         else
         {

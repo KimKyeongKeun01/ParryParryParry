@@ -66,7 +66,7 @@ public class Boss_Met : BaseBoss
 
     protected override void Update()
     {
-        //if (isPlayingCutScene) return;
+        if (isPlayingCutScene) return;
         if (isDead) return;
 
         // 스턴 시 패턴 초기화
