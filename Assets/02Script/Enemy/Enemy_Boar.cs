@@ -200,7 +200,7 @@ public class Enemy_Boar : BaseEnemy
         // 레이 시작 지점: 콜라이더의 앞쪽 끝 중앙
         float rayX = _coll.bounds.center.x + (facingX * _coll.bounds.extents.x);
         Vector2 rayOrigin = new Vector2(rayX, _coll.bounds.center.y);
-
+        Debug.DrawRay(rayOrigin, Vector2.right * facingX * (wallOffset + 0.1f), Color.blue);
         // 아주 짧은 거리만 쏴서 바로 앞의 벽만 감지
         return Physics2D.Raycast(rayOrigin, Vector2.right * facingX, wallOffset + 0.1f, groundLayer);
     }

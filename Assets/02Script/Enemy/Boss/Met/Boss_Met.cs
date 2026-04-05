@@ -114,7 +114,17 @@ public class Boss_Met : BaseBoss
     {
         if (!isExhausted) return;
         isExhausted = false;
-        Vector2 exhaustedPos = new Vector2(_rigid.position.x, groundSlamOriginY);
+        Debug.Log(new Vector2(_rigid.position.x, groundSlamOriginY));
+        Vector2 exhaustedPos;
+        if (groundSlamOriginY != 0f) 
+        {
+            exhaustedPos = new Vector2(_rigid.position.x, groundSlamOriginY); 
+        }
+        else
+        {
+            exhaustedPos = _rigid.position;
+        }
+        
         _rigid.MovePosition(exhaustedPos + Vector2.left * facingX * 5);
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         
@@ -144,7 +154,7 @@ public class Boss_Met : BaseBoss
         else if (dist <= Status.meleeRange)
         {
             if (canTusk && Random.value > 0.5f) next = AttackPattern.TuskDrive;
-            else if (canGroundSlam) next = AttackPattern.GroundSlam;
+            //else if (canGroundSlam) next = AttackPattern.GroundSlam;
             else if (canSlam) next = AttackPattern.BodySlam;
             else if (canDash) next = AttackPattern.PowerDash;
         }
@@ -169,7 +179,7 @@ public class Boss_Met : BaseBoss
             case AttackPattern.PowerDash:   yield return Co_PowerDash();    break;
             case AttackPattern.TuskDrive:   yield return Co_TuskDrive();    break;
             case AttackPattern.BodySlam:    yield return Co_BodySlam();     break;
-            case AttackPattern.GroundSlam: yield return Co_GroundSlam(); break;
+            //case AttackPattern.GroundSlam: yield return Co_GroundSlam(); break;
         }
 
         curAttack = AttackPattern.None;
@@ -502,7 +512,7 @@ public class Boss_Met : BaseBoss
             float targetY = groundSlamOriginY + Status.groundSlamJumpHeight;
             Vector2 jumpTarget = new Vector2(targetX, targetY);
 
-            Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}");
+            Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}"); 
 
             yield return StartCoroutine(Co_MoveToTarget(
             jumpTarget,
@@ -685,10 +695,21 @@ public class Boss_Met : BaseBoss
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         base.EndExhausted();
         DisableHitbox(); //기절 상태 히트박스 OFf
-        Visual?.PlayAnim("Motion_Reset");
         Visual?.OffStunVisual();
+        Visual?.PlayAnim("Motion_Reset");
+        //StartCoroutine(Co_RecoverFromExhausted());
     }
-    
+    private IEnumerator Co_RecoverFromExhausted()
+    {
+        isPhaseTransitioning = true; // 기존 무적 플래그를 재활용해 Attack 전환 차단
+
+
+        
+        yield return new WaitUntil(() => Visual.IsAnimFinished);
+
+        isPhaseTransitioning = false;
+        ChangeState(EnemyState.Idle); // 애니메이션 완료 후 전환
+    }
     //기절 후 일어날 때 플레이어 넉백
     public void ShoutKnockback()
     {
