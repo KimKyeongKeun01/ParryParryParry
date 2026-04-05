@@ -45,3 +45,16 @@ MonoBehaviour:
   slamDamage: 1
   slamXForce: 30
   slamGuardKnockback: 4
+  groundSlamJumpHeight: 8
+  groundSlamRiseSpeed: 3
+  groundSlamDownSpeed: 5
+  groundSlamCooldown: 20
+  groundSlamDamage: 1
+  groundSlamKnockback: 15
+  stampMoveRange: 8
+  stampMoveSpeed: 5
+  stampBetweenDelay: 0.3
+  stampCooldown: 5
+  stampDamage: 1
+  stampKnockback: 12
+  stampGuardKnockback: 4

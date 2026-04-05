@@ -94,14 +94,14 @@ Material:
     - _Cellsize: {r: 0, g: 0, b: 0, a: 0}
     - _ChangeCellSize: {r: 1, g: 1, b: 0, a: 0}
     - _ChangeClor: {r: 0.8567905, g: 1, b: 0, a: 1}
-    - _ChangeColor: {r: 0.8117647, g: 0.7861807, b: 0.10980393, a: 1}
+    - _ChangeColor: {r: 1, g: 0, b: 0, a: 1}
     - _ChangeColor_1: {r: 0, g: 0, b: 0, a: 1}
     - _EffectColor: {r: 1, g: 0, b: 0, a: 1}
     - _HeatWorldOrigin: {r: -20, g: -8, b: 0, a: 0}
     - _HeatWorldSize: {r: 50, g: 8, b: 0, a: 0}
     - _HighlightCellCenter: {r: 51.5, g: 9.5, b: 0, a: 0}
     - _NeonColor: {r: 0, g: 0.44864368, b: 1, a: 1}
-    - _TilemapOrigin: {r: -20, g: -15, b: 0, a: 0}
-    - _TilemapSize: {r: 94, g: 36, b: 0, a: 0}
+    - _TilemapOrigin: {r: -53, g: -21, b: 0, a: 0}
+    - _TilemapSize: {r: 964, g: 88, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

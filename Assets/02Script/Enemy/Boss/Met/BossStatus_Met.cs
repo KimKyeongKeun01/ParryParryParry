@@ -34,10 +34,19 @@ public class BossStatus_Met : BaseBossStatus
 
 
     [Header("Ground Slam")]
-    public float groundSlamJumpHeight = 8f;    // 올라가는 높이
+    public float groundSlamJumpHeight = 3f;    // 올라가는 높이
     public float groundSlamRiseSpeed = 3f;    // 올라가는 속도
     public float groundSlamDownSpeed = 5f;    // 내려찍는 속도
     public float groundSlamCooldown = 20f;    // 패턴 쿨타임
     public int groundSlamDamage = 1;     // 데미지
     public float groundSlamKnockback = 15f;   // 넉백 강도
+
+    [Header(" === Pattern: Stamp (발굽 내려찍기) === ")]
+    [Tooltip("찍기 1회당 전진 거리")] public float stampMoveRange = 2.5f;
+    [Tooltip("전진 속도")] public float stampMoveSpeed = 5f;
+    [Tooltip("찍기와 찍기 사이 딜레이")] public float stampBetweenDelay = 0.3f;
+    [Tooltip("쿨타임")] public float stampCooldown = 5f;
+    [Tooltip("데미지")] public int stampDamage = 1;
+    [Tooltip("넉백 파워")] public float stampKnockback = 12f;
+    [Tooltip("가드 시 넉백 파워")] public float stampGuardKnockback = 4f;
 }

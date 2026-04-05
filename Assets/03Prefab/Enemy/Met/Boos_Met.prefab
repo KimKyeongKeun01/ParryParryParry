@@ -1097,6 +1097,8 @@ MonoBehaviour:
   isTusk: 0
   hitSlam: 0
   isSlam: 0
+  hitStamp: 0
+  isStamping: 0
   hitGroundSlam: 0
   isGroundSlamming: 0
   attackCollider: {fileID: 6773658326182549456}
@@ -1124,7 +1126,7 @@ MonoBehaviour:
   - {fileID: 3484353012527026343}
   - {fileID: 8190348225363604174}
   - {fileID: 1516683587995182767}
-  _anim: {fileID: 0}
+  _anim: {fileID: 2000250132464336804}
   originColor: {r: 0.17254902, g: 0.07058824, b: 0.058823533, a: 1}
   hitColor: {r: 0.17254902, g: 0.07058824, b: 0.05882353, a: 0.78431374}
   blinkInterval: 0.08
@@ -1831,7 +1833,7 @@ Transform:
   m_GameObject: {fileID: 7558177343858304925}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.025878899, w: 0.9996651}
-  m_LocalPosition: {x: 3.2539997, y: 0.1, z: 0}
+  m_LocalPosition: {x: 3.254, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2277,7 +2279,7 @@ Transform:
   m_GameObject: {fileID: 9076365978234150722}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.037287656, w: 0.9993046}
-  m_LocalPosition: {x: 2.7199993, y: 0.1, z: 0}
+  m_LocalPosition: {x: 2.719999, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
