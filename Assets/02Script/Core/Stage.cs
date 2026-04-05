@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Unity.Cinemachine;
+//using Unity.Cinemachine;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D))]
-[ExecuteAlways]
+//[ExecuteAlways]
 [DisallowMultipleComponent]
 public class Stage : MonoBehaviour
 {

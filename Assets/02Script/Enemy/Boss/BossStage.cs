@@ -20,7 +20,6 @@ public class BossStage : MonoBehaviour
 
     [Header("Timeline")]
     [SerializeField] private PlayableDirector bossIntro;
-    [SerializeField] private CameraShakeProfile shakeProfile;
     private bool isCutscenePlaying = false;
     private bool hasBossStarted = false;
 
@@ -44,6 +43,11 @@ public class BossStage : MonoBehaviour
     {
         // 초기 상태 설정
         if (bossObj != null) bossObj.SetActive(false);
+        if (bossScript != null)
+        {
+            bossScript = bossObj.GetComponent<BaseBoss>();
+            bossScript.isDead = true;
+        }
 
         // 출입구 세팅
         if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
@@ -154,10 +158,5 @@ public class BossStage : MonoBehaviour
 
         // 5. 입구 문 다시 열기 (선택 사항)
         if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
-    }
-
-    public void S_CameraShake()
-    {
-        CameraManager.Instance.Shake.Play(shakeProfile);
     }
 }
