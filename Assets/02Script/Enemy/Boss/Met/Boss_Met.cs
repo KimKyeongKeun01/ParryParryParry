@@ -45,7 +45,6 @@ public class Boss_Met : BaseBoss
     private Tween _groundSlamTween;
 
 
-    private bool isPlayingScene = false;
     protected override void Awake()
     {
         base.Awake();
@@ -65,13 +64,9 @@ public class Boss_Met : BaseBoss
         #endregion
     }
 
-    private void Start()
-    {
-        isPlayingScene = true;
-    }
     protected override void Update()
     {
-        if (isPlayingScene) return;
+        //if (isPlayingCutScene) return;
         if (isDead) return;
 
         // 스턴 시 패턴 초기화

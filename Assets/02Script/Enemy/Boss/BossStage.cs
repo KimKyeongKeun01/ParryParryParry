@@ -133,6 +133,7 @@ public class BossStage : MonoBehaviour
         {
             bossObj.transform.position = spawnPoint.position;
             bossObj.SetActive(true);
+            bossScript.isPlayingCutScene = false;
         }
     }
 

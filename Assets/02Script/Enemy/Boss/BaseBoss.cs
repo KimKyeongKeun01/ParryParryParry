@@ -24,13 +24,13 @@ public abstract class BaseBoss : BaseEnemy
     [Tooltip("보스 현재 스턴 피격 횟수")] protected int curHits = 0;
 
     [Tooltip("현재 실행 중인 보스 패턴 코루틴")] protected Coroutine patternCoroutine;
-
+    public bool isPlayingCutScene = false;
     protected override void Awake()
     {
         base.Awake();
         _visual = GetComponent<BaseBossVisual>();
         _visual?.Init(this);
-
+        isPlayingCutScene=true;
         #region Status 동기화
         maxHp = _status.maxHp;
         curHp = maxHp;
