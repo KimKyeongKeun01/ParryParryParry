@@ -99,10 +99,16 @@ MonoBehaviour:
   wallStunTime: 3
   edgeOffset: 0.5
   wallOffset: 1.5
-  _sprite: {fileID: 5766530618428021833}
+  _sprite: {fileID: 0}
   windupColor: {r: 1, g: 0, b: 0, a: 1}
   stunColor: {r: 0.49019608, g: 0.4509804, b: 0, a: 1}
   hitColor: {r: 0.16862746, g: 0.08627451, b: 0.050980397, a: 0.78431374}
+  visualRoot: {fileID: 2429641713441868203}
+  slamCounterKnockbackForce: 20
+  slamCounterDuration: 0.5
+  slamCounterLiftY: 4
+  slamCounterScale: {x: 0.85, y: 1.2, z: 1}
+  slamCounterEase: 6
 --- !u!1 &2897284825811041732
 GameObject:
   m_ObjectHideFlags: 0
