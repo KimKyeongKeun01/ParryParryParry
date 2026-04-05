@@ -41,18 +41,18 @@ Material:
     - _RingWidth_1: 0.018
     - _RingWidth_2: 0.018
     - _RingWidth_3: 0.018
-    - _ShockProgress: 0.34347388
-    - _ShockProgress_1: 0.33758932
-    - _ShockProgress_2: 0.34878945
-    - _ShockProgress_3: 0.34670487
-    - _Strength: 0.0031820713
-    - _Strength_1: 0.003942368
-    - _Strength_2: 0.0018147526
-    - _Strength_3: 0.0025338635
+    - _ShockProgress: -10
+    - _ShockProgress_1: -10
+    - _ShockProgress_2: -10
+    - _ShockProgress_3: -10
+    - _Strength: 0
+    - _Strength_1: 0
+    - _Strength_2: 0
+    - _Strength_3: 0
     m_Colors:
-    - _HitCenterUV: {r: 0.66338825, g: 0.05664012, b: 0, a: 0}
-    - _HitCenterUV_1: {r: 0.2923083, g: 0.03914839, b: 0, a: 0}
-    - _HitCenterUV_2: {r: 0.3059786, g: -0.029560804, b: 0, a: 0}
-    - _HitCenterUV_3: {r: 0.74144053, g: 0.032225013, b: 0, a: 0}
+    - _HitCenterUV: {r: 0, g: 0, b: 0, a: 0}
+    - _HitCenterUV_1: {r: 0, g: 0, b: 0, a: 0}
+    - _HitCenterUV_2: {r: 0, g: 0, b: 0, a: 0}
+    - _HitCenterUV_3: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
