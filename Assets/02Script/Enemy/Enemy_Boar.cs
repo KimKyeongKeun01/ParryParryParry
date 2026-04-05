@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using DG.Tweening;
+
 public class Enemy_Boar : BaseEnemy
 {
     [Header(" === Wild Boar ===")]
@@ -30,16 +30,6 @@ public class Enemy_Boar : BaseEnemy
     [SerializeField] private Color hitColor;
     private Color originalColor;
     private Vector3 defaultScale;
-    [SerializeField] private Transform visualRoot;
-
-    [Header("Slam Counter")]
-    [SerializeField] private float slamCounterKnockbackForce = 12f;
-    [SerializeField] private float slamCounterDuration = 0.35f;
-    [SerializeField] private float slamCounterLiftY = 0.4f;
-    [SerializeField] private Vector3 slamCounterScale = new Vector3(0.85f, 1.2f, 1f);
-    [SerializeField] private Ease slamCounterEase = Ease.OutQuad;
-    private bool isSlamCountering = false;
-    private Sequence slamCounterSequence;
 
     protected override void Awake()
     {
@@ -53,7 +43,7 @@ public class Enemy_Boar : BaseEnemy
 
     protected override void Update()
     {
-        if(isDead || isSlamCountering) return;
+        if (isDead) return;
         base.Update();
 
         UpdateVisualFlip();
@@ -200,7 +190,7 @@ public class Enemy_Boar : BaseEnemy
         // 레이 시작 지점: 콜라이더의 앞쪽 끝 중앙
         float rayX = _coll.bounds.center.x + (facingX * _coll.bounds.extents.x);
         Vector2 rayOrigin = new Vector2(rayX, _coll.bounds.center.y);
-        Debug.DrawRay(rayOrigin, Vector2.right * facingX * (wallOffset + 0.1f), Color.blue);
+
         // 아주 짧은 거리만 쏴서 바로 앞의 벽만 감지
         return Physics2D.Raycast(rayOrigin, Vector2.right * facingX, wallOffset + 0.1f, groundLayer);
     }
@@ -215,19 +205,6 @@ public class Enemy_Boar : BaseEnemy
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isSlamCountering) return;
-        // 플레이어 슬램 카운터 판정
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            Player player = Player.Instance;
-            if (player != null && player.isSlam && CurState != EnemyState.Stun)
-            {
-                Debug.Log("[Boar] Slam Countered!");
-                StartSlamCounter(player);
-                return;
-            }
-        }
-
         if (CurState != EnemyState.Attack)
         {
             base.OnCollisionEnter2D(collision);
@@ -323,93 +300,6 @@ public class Enemy_Boar : BaseEnemy
         }
     }
     #endregion
-
-    // 플레이어 슬램 반사
-    private void StopAllActions()
-    {
-        StopDash();
-
-        if (dashRoutine != null)
-        {
-            StopCoroutine(dashRoutine);
-            dashRoutine = null;
-        }
-
-        isDashing = false;
-        _rigid.linearVelocity = Vector2.zero;
-    }
-    private void StartSlamCounter(Player player)
-    {
-        if (player == null || isDead || isSlamCountering) return;
-        if (CurState == EnemyState.Stun) return;   // 스턴 때는 기존 슬램 피격 유지
-
-        isSlamCountering = true;
-
-        // 기존 행동 중지
-        StopAllActions();
-
-        // 상태를 잠깐 멈춘 느낌으로
-        ChangeState(EnemyState.Idle);
-
-        // 플레이어를 위로 들어올리는 반격
-        player.controller.OnKnockback(Vector2.left, slamCounterKnockbackForce);
-        player.TakeDamaged(damage);
-        // 중복 충돌 방지
-        StartCoroutine(Co_IgnorePlayer(player, 0.7f));
-
-        PlaySlamCounterTween();
-        StartCoroutine(Co_EndSlamCounter());
-    }
-    private IEnumerator Co_EndSlamCounter()
-    {
-        yield return new WaitForSeconds(slamCounterDuration);
-
-        isSlamCountering = false;
-
-        if (!isDead && CurState != EnemyState.Stun)
-        {
-            ChangeState(EnemyState.Attack);
-        }
-    }
-    private void PlaySlamCounterTween()
-    {
-        if (visualRoot == null) return;
-
-        if (slamCounterSequence != null)
-        {
-            slamCounterSequence.Kill();
-            slamCounterSequence = null;
-        }
-
-        Vector3 startLocalPos = visualRoot.localPosition;
-        Vector3 startLocalScale = visualRoot.localScale;
-        Vector3 startLocalRot = visualRoot.localEulerAngles;
-
-        Vector3 targetPos = startLocalPos + Vector3.up * slamCounterLiftY;
-        Vector3 targetScale = new Vector3(
-            startLocalScale.x * slamCounterScale.x,
-            startLocalScale.y * slamCounterScale.y,
-            startLocalScale.z * slamCounterScale.z
-        );
-        Vector3 targetRot = startLocalRot + new Vector3(0f, 0f, -40f);
-
-        slamCounterSequence = DOTween.Sequence()
-        .Append(visualRoot.DOLocalMove(targetPos, slamCounterDuration * 0.4f).SetEase(slamCounterEase))
-        .Join(visualRoot.DOScale(targetScale, slamCounterDuration * 0.4f).SetEase(slamCounterEase))
-        .Join(visualRoot.DOLocalRotate(targetRot, slamCounterDuration * 0.4f).SetEase(slamCounterEase))
-        .Append(visualRoot.DOLocalMove(startLocalPos, slamCounterDuration * 0.6f).SetEase(Ease.InQuad))
-        .Join(visualRoot.DOScale(startLocalScale, slamCounterDuration * 0.6f).SetEase(Ease.OutQuad))
-        .Join(visualRoot.DOLocalRotate(startLocalRot, slamCounterDuration * 0.6f).SetEase(Ease.OutQuad))
-        .OnKill(() =>
-        {
-            if (visualRoot != null)
-            {
-                visualRoot.localPosition = startLocalPos;
-                visualRoot.localScale = startLocalScale;
-                visualRoot.localEulerAngles = startLocalRot;
-            }
-        });
-    }
 
     #region 비주얼
     private void UpdateVisualFlip()
