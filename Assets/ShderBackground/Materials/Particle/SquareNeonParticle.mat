@@ -49,8 +49,8 @@ Material:
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _Aspect: {r: 5, g: 5, b: 0, a: 0}
-    - _BaseFillColor: {r: 0.01258044, g: 0, b: 0.15094337, a: 1}
-    - _NeonColor: {r: 0, g: 0.5553288, b: 0.8301887, a: 1}
+    - _BaseFillColor: {r: 1, g: 1, b: 1, a: 1}
+    - _NeonColor: {r: 0, g: 1.0020665, b: 1.4980391, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &990469959423842588

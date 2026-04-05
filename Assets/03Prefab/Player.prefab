@@ -476,9 +476,13 @@ MonoBehaviour:
   dashSquashOutTime: 0.06
   dashSquashInEase: 9
   dashSquashOutEase: 27
-  dashTrailColor: {r: 1, g: 1, b: 1, a: 0.45}
+  dashTrailAfterImageMaterial: {fileID: 2100000, guid: 758aae58d258bcc43ba75af9bed07a96, type: 2}
+  dashTrailStartColor: {r: 0.35251257, g: 0, b: 0.4811321, a: 0.2509804}
+  dashTrailEndColor: {r: 0, g: 0.1273585, b: 0.4528302, a: 0.2509804}
+  dashTrailStartIntensity: 0.5
+  dashTrailEndIntensity: 1
   dashTrailSpawnInterval: 0.03
-  dashTrailLifetime: 0.12
+  dashTrailLifetime: 0.2
   dashTrailSortingOrderOffset: -1
   moveParticleRenderer: {fileID: 0}
   jumpParticleRenderer: {fileID: 0}
