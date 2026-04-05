@@ -14,6 +14,7 @@ public class UICutScene : MonoBehaviour
     [Header("Cutscene Settings")]
     [Tooltip("레터박스 차오르는 시간"), SerializeField] private float letterboxDuration;
     [Tooltip("레터박스 차오르는 높이"), SerializeField] private float targetHeight;
+    private Coroutine letterboxRoutine;
 
 
     private void Awake()
@@ -22,26 +23,23 @@ public class UICutScene : MonoBehaviour
         if (bottomBox != null) bottomRect = bottomBox.rectTransform;
     }
 
-    private void Start()
-    {
-        PlayLetterboxIn();
-    }
-
     public void Init()
     {
+        if (topRect == null || bottomRect == null) return;
 
+        SetLetterbox(topRect, 0);
+        SetLetterbox(bottomRect, 0);
     }
 
-    public void PlayLetterboxIn()
+    #region Core
+    private void SetLetterbox(RectTransform rect, float height)
     {
-        // 레터박스 차오르는 연출
-        StartCoroutine(Co_Letterbox(targetHeight, letterboxDuration));
-    }
+        if (rect == null) return;
 
-    public void PlayLetterboxOut()
-    {
-        // 레터박스 사라지는 연출
-        StartCoroutine(Co_Letterbox(0, letterboxDuration));
+        // 레터박스 사이즈 지정
+        Vector2 size = rect.sizeDelta;
+        size.y = height;
+        rect.sizeDelta = size;
     }
 
     private IEnumerator Co_Letterbox(float endHeight, float duration)
@@ -55,16 +53,39 @@ public class UICutScene : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
+            float easeT = 1f - (1f - t) * (1f - t);
 
-            float currentHeight = Mathf.Lerp(startHeight, endHeight, t);
-            Vector2 topSize = topRect.sizeDelta;
-            topSize.y = currentHeight;
-            topRect.sizeDelta = topSize;
+            float currentHeight = Mathf.Lerp(startHeight, endHeight, easeT);
+            SetLetterbox(topRect, currentHeight);
+            SetLetterbox(bottomRect, currentHeight);
 
-            Vector2 bottomSize = bottomRect.sizeDelta;
-            bottomSize.y = currentHeight;
-            bottomRect.sizeDelta = bottomSize;
+            yield return null;
         }
+
+        SetLetterbox(topRect, endHeight);
+        SetLetterbox(bottomRect, endHeight);
+        letterboxRoutine = null;
+    }
+    #endregion 
+
+    public void PlayLetterboxIn()
+    {
+        if (letterboxRoutine != null) StopCoroutine(letterboxRoutine);
+
+        // 레터박스 차오르는 연출
+        letterboxRoutine = StartCoroutine(Co_Letterbox(targetHeight, letterboxDuration));
+
+        Debug.Log("[UI] Letterbox In");
+    }
+
+    public void PlayLetterboxOut()
+    {
+        if (letterboxRoutine != null) StopCoroutine(letterboxRoutine);
+
+        // 레터박스 사라지는 연출
+        letterboxRoutine = StartCoroutine(Co_Letterbox(0, letterboxDuration));
+
+        Debug.Log("[UI] Letterbox Out");
     }
 
 }

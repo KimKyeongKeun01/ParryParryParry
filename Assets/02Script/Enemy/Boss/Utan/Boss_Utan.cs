@@ -52,12 +52,11 @@ public class Boss_Utan : BaseBoss
         stunDuration = Status.exhaustedDuration;
         stunHitLimit = Status.exhaustedHitLimit;
         #endregion
-
-        isDead = true;
     }
 
     protected override void Update()
     {
+        if (isPlayingCutScene) return;
         if (isDead) return;
 
         if (CurState == EnemyState.Stun)
