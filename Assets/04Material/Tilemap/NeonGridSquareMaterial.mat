@@ -64,8 +64,8 @@ Material:
     m_Floats:
     - _BandWidth: 0.9
     - _CenterTileX: 0
-    - _CenterWorldX: 545.2815
-    - _CenterWorldY: 4.904486
+    - _CenterWorldX: 555.794
+    - _CenterWorldY: 4.9048634
     - _EdgeSoftness: 0
     - _EmissionStrength: 1.5
     - _FadeDuration: 0.25
@@ -77,15 +77,15 @@ Material:
     - _MapOriginX: 0
     - _MarginWidth: 0.8
     - _Radius: 3
-    - _RadiusWorld: 1
+    - _RadiusWorld: 8
     - _Range: 0.1
     - _RowHalfHeight: 1
     - _RowSoftness: 0.4
     - _SpreadSoftness: 0.4
-    - _StartTime: 111.30417
+    - _StartTime: 33.718815
     - _TileWidth: 3
-    - _TotalDuration: 1
-    - _WaveSpeed: 10
+    - _TotalDuration: 0.5
+    - _WaveSpeed: 15
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _Aspect: {r: 5, g: 5, b: 0, a: 0}
@@ -96,7 +96,7 @@ Material:
     - _ChangeClor: {r: 0.8567905, g: 1, b: 0, a: 1}
     - _ChangeColor: {r: 1, g: 0, b: 0, a: 1}
     - _ChangeColor_1: {r: 0, g: 0, b: 0, a: 1}
-    - _EffectColor: {r: 0, g: 1, b: 1, a: 1}
+    - _EffectColor: {r: 1, g: 1, b: 1, a: 1}
     - _HeatWorldOrigin: {r: -20, g: -8, b: 0, a: 0}
     - _HeatWorldSize: {r: 50, g: 8, b: 0, a: 0}
     - _HighlightCellCenter: {r: 51.5, g: 9.5, b: 0, a: 0}

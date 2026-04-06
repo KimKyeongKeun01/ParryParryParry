@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("메인 메뉴 씬 이름")][SerializeField] private string mainSceneName;
     [Tooltip("게임 시작 씬 이름")][SerializeField] private string gameSceneName;
 
+    [Header("Test")]
+    //[SerializeField] private BossStage bossStage;
+
 
     // Reference
     public TimeManager timeManager { get; private set; }
@@ -140,6 +143,11 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.FadeOut(onComplete: () =>
         {
             var respawnPos = StageManager.Instance.GetRespawnPoint(); // 리셋 + Activate 포함
+            if (StageManager.Instance.CurrentIndex == 7 || StageManager.Instance.CurrentIndex == 11)
+            {
+
+                //bossStage.StartBoss();
+            }
             player.Setup(respawnPos);
 
             UIManager.Instance.UpdateHealth(true);

@@ -987,6 +987,15 @@ public class Boss_Met : BaseBoss
         Visual?.PlayAnim("IsBool", true);
     }
 
+    protected override void OnEnable() 
+    {
+        StopAttack();
+        base.OnEnable();
+    }
+    private void OnDisable()
+    {
+        isPlayingCutScene = true;
+    }
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {

@@ -131,7 +131,7 @@ public class Player : MonoBehaviour
     }
     #endregion
 
-    private void ResetPlayerState()
+    public void ResetPlayerState()
     {
         ResetActionStates();
         WasGrounded = true;

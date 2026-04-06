@@ -228,8 +228,6 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IEnemy
                 // 기절 중엔 플레이어 피격 안됨
                 if (curState == EnemyState.Stun) return;
 
-                Debug.Log("[Enemy] Collided with Dashing Player!");
-
                 // 중복 충돌 방지
                 StartCoroutine(Co_IgnorePlayer(player, 1f));
 
@@ -247,7 +245,6 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IEnemy
             // 슬램 피격
             if (player != null && player.isSlam)
             {
-                Debug.Log("[Enemy] Player Attacked Slam!");
 
                 // 중복 충돌 방지
                 StartCoroutine(Co_IgnorePlayer(player, 0.2f));
@@ -264,7 +261,6 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IEnemy
             {
                 // 기절 중엔 플레이어 피격 안됨
                 if (curState == EnemyState.Stun) return;
-                Debug.Log("[Utan] Player Body Crash!");
 
                 // 중복 충돌 방지
                 StartCoroutine(Co_IgnorePlayer(player, 1f));

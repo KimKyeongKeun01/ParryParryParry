@@ -8,6 +8,9 @@ using UnityEngine.Playables;
 /// </summary>
 public class BossStage : MonoBehaviour
 {
+    [Header("Test")]
+    [SerializeField] private GameObject _entranceDoor;
+
     [Header("Boss Reference")]
     [SerializeField] private Stage stage;
     [SerializeField] private GameObject bossObj;
@@ -32,11 +35,13 @@ public class BossStage : MonoBehaviour
     { 
         Stage.OnPlayerEnteredStage += OnStageEntered;
         if (bossIntro != null) bossIntro.stopped += OnIntroFinished;
+        StageManager.OnBossInit += OpenDoor;
     }
     private void OnDisable() 
     { 
         Stage.OnPlayerEnteredStage -= OnStageEntered;
         if (bossIntro != null) bossIntro.stopped -= OnIntroFinished;
+        StageManager.OnBossInit -= OpenDoor;
     }
 
     private void Start()
@@ -91,7 +96,7 @@ public class BossStage : MonoBehaviour
 
             return;
         }
-
+        Debug.Log("StartBoss실행됨");
         Player.Instance.controller.Setup();
         Player.Instance.isPlaying = false;
         
@@ -108,6 +113,7 @@ public class BossStage : MonoBehaviour
         // 입구 문 닫기
         if (entrance_Door != null) entrance_Door.SetExternalSignal(true);
     }
+
 
     public void S_LetterboxIn()
     {
@@ -142,17 +148,19 @@ public class BossStage : MonoBehaviour
 
     private void StartBattle()  // 컷신 종료 후 보스 전투 시작
     {
+        Debug.Log($"[BossStage] {gameObject.name}: Boss Battle Start!");
+
         if (isBossBattle) return;
 
         Player.Instance.isPlaying = true;
         isBossBattle = true;
         isCutscenePlaying = false;
 
-        Debug.Log($"[BossStage] {gameObject.name}: Boss Battle Start!");
 
         // 보스 위치 설정 및 활성화
         if (bossObj != null && spawnPoint != null)
         {
+            Debug.Log("StartBattle내부 if실행됨");
             bossObj.transform.position = spawnPoint.position;
             bossObj.SetActive(true);
             bossScript.isPlayingCutScene = false;
@@ -161,11 +169,12 @@ public class BossStage : MonoBehaviour
 
     public void BossClear() // 보스 사망시 실행
     {
+        Debug.Log($"[BossStage] {gameObject.name}: Boss Clear!");
+
         if (stageCleared) return;
         stageCleared = true;
         isCutscenePlaying = false;
 
-        Debug.Log($"[BossStage] {gameObject.name}: Boss Clear!");
 
         // 3. StageManager 클리어 알림
         if (StageManager.Instance != null)

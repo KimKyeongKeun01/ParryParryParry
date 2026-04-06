@@ -1018,7 +1018,7 @@ GameObject:
   - component: {fileID: 3930683227452276652}
   m_Layer: 29
   m_Name: Boos_Met
-  m_TagString: Untagged
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

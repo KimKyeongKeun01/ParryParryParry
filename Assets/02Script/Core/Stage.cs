@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.Hierarchy;
+
 //using Unity.Cinemachine;
 using UnityEngine;
 
@@ -55,7 +57,11 @@ public class Stage : MonoBehaviour
     /// <summary>플레이어가 이 스테이지에 진입할 때 발생. StageManager가 구독하여 전환 처리.</summary>
     public static event Action<Stage> OnPlayerEnteredStage;
 
+    public void Init(int index)
+    {
+        Index = index;
 
+    }
     public Vector2 GetRespawnPoint(bool isCleared)
     {
         Transform point = isCleared ? afterClearSavePoint : beforeClearSavePoint;
@@ -78,7 +84,16 @@ public class Stage : MonoBehaviour
             Gizmos.DrawSphere(afterClearSavePoint.position, 0.3f);
         }
     }
-
+    public void ResetEnemys()
+    {
+        foreach (Transform child in GetComponentsInChildren<Transform>(true))
+        {
+            if (child.CompareTag("Enemy"))
+                child.gameObject.SetActive(true);
+            if (child.CompareTag("Boss"))
+                child.gameObject.SetActive(false);
+        }
+    }
     /* 스테이지 카메라 세팅
     private void Awake()
     {
@@ -102,13 +117,7 @@ public class Stage : MonoBehaviour
     }
     
 
-    public void Init(int index)
-    {
-        Index = index;
-
-        if (index == 0)
-            Activate();
-    }
+    
 
     private bool isFollowMode;
 
@@ -129,18 +138,22 @@ public class Stage : MonoBehaviour
     }
     */
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Player") && !other.isTrigger)
-            OnPlayerEnteredStage?.Invoke(this);
+        Debug.Log($"[Stage] Trigger Enter | {name} collided with {collision.gameObject.name}");
+        if (collision.CompareTag("Player"))
+        {
+            // Manager에게 나(gameObject)를 전달합니다.
+            StageManager.Instance.UpdateCurrentStage(gameObject);
+        }
     }
 
     // SetActive(true) 시 이미 트리거 안에 있으면 Enter가 발생하지 않으므로 Stay로 보완
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.CompareTag("Player") && !other.isTrigger)
-            OnPlayerEnteredStage?.Invoke(this);
-    }
+    //private void OnTriggerStay2D(Collider2D other)
+    //{
+    //    if (other.CompareTag("Player") && !other.isTrigger)
+    //        OnPlayerEnteredStage?.Invoke(this);
+    //}
 
     /*
 #if UNITY_EDITOR

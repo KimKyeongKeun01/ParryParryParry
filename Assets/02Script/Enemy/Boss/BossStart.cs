@@ -24,4 +24,5 @@ public class BossStart : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
+
 }

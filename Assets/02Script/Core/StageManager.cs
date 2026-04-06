@@ -1,13 +1,19 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+
 //using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class StageManager : MonoBehaviour
 {
+    public static event Action OnBossInit;
+
     public static StageManager Instance { get; private set; }
 
-    [SerializeField] private List<GameObject> stages = new();
+    [SerializeField] public List<GameObject> stages = new();
 
     [Tooltip("스테이지별 추가 오프셋 (자동 배치 위치에 더해짐)")]
     [SerializeField] private List<Vector2> stageOffsets = new();
@@ -27,6 +33,9 @@ public class StageManager : MonoBehaviour
     private void OnEnable() => Stage.OnPlayerEnteredStage += HandlePlayerEnteredStage;
     private void OnDisable() => Stage.OnPlayerEnteredStage -= HandlePlayerEnteredStage;
 
+    private void Update()
+    {
+    }
     private void HandlePlayerEnteredStage(Stage stage)
     {
         if (stage.Index == _currentIndex) return;
@@ -82,54 +91,66 @@ public class StageManager : MonoBehaviour
         _stagePositions = new Vector3[stages.Count];
         _cleared = new bool[stages.Count];
 
-        InstantiateAndPositionStages();
-        UpdateActiveStages();
-        //RegisterCamerasToManager();
+        for (int i = 0; i < stages.Count; i++)
+        {
+            _instances.Add(stages[i]);
+            _stagePositions[i] = stages[i].transform.position;
+
+            // Index 설정
+            if (stages[i].TryGetComponent(out Stage stage))
+                stage.Init(i);
+        }
+
         SetupPlayerAtStart();
+    }
+
+    public void BossInit()
+    {
+        OnBossInit?.Invoke();
     }
 
     // 모든 프리팹을 원점에 생성 후 bounds 기반으로 순차 배치
     // Y는 이전 스테이지 afterClearSavePoint ↔ 다음 스테이지 beforeClearSavePoint가 같은 높이가 되도록 계산
-    private void InstantiateAndPositionStages()
-    {
-        for (int i = 0; i < stages.Count; i++)
-            _instances.Add(Instantiate(stages[i], Vector3.zero, Quaternion.identity));
+    //private void InstantiateAndPositionStages()
+    //{
+    //    for (int i = 0; i < stages.Count; i++)
+    //        _instances.Add(Instantiate(stages[i], Vector3.zero, Quaternion.identity));
 
-        float nextX = 0f, nextY = 0f;
-        for (int i = 0; i < _instances.Count; i++)
-        {
-            Bounds bounds = GetStageBounds(_instances[i]);
-            float leftOffset = bounds.min.x - _instances[i].transform.position.x;
+    //    float nextX = 0f, nextY = 0f;
+    //    for (int i = 0; i < _instances.Count; i++)
+    //    {
+    //        Bounds bounds = GetStageBounds(_instances[i]);
+    //        float leftOffset = bounds.min.x - _instances[i].transform.position.x;
 
-            Vector3 pos = _instances[i].transform.position;
-            pos.x = nextX - leftOffset;
-            pos.y = nextY;
-            if (i < stageOffsets.Count)
-                pos += (Vector3)stageOffsets[i];
+    //        Vector3 pos = _instances[i].transform.position;
+    //        pos.x = nextX - leftOffset;
+    //        pos.y = nextY;
+    //        if (i < stageOffsets.Count)
+    //            pos += (Vector3)stageOffsets[i];
 
-            _instances[i].transform.position = pos;
-            _stagePositions[i] = pos;
-            nextX += bounds.size.x;
+    //        _instances[i].transform.position = pos;
+    //        _stagePositions[i] = pos;
+    //        nextX += bounds.size.x;
 
-            if (!_instances[i].TryGetComponent(out Stage stage)) continue;
-            //stage.Init(i);
-            nextY = ComputeNextStageY(stage, i);
-        }
-    }
+    //        if (!_instances[i].TryGetComponent(out Stage stage)) continue;
+    //        //stage.Init(i);
+    //        nextY = ComputeNextStageY(stage, i);
+    //    }
+    //}
 
     // 다음 스테이지 Y: 현재 afterClearSavePoint 세계 Y = 다음 beforeClearSavePoint 세계 Y
     // instances[i+1]은 아직 원점에 있으므로 position.y = 스테이지 루트 기준 로컬 Y
-    private float ComputeNextStageY(Stage stage, int i)
-    {
-        if (i + 1 < _instances.Count
-            && stage.AfterClearSavePoint != null
-            && _instances[i + 1].TryGetComponent(out Stage nextStage)
-            && nextStage.BeforeClearSavePoint != null)
-        {
-            return stage.AfterClearSavePoint.position.y - nextStage.BeforeClearSavePoint.position.y;
-        }
-        return 0f;
-    }
+    //private float ComputeNextStageY(Stage stage, int i)
+    //{
+    //    if (i + 1 < _instances.Count
+    //        && stage.AfterClearSavePoint != null
+    //        && _instances[i + 1].TryGetComponent(out Stage nextStage)
+    //        && nextStage.BeforeClearSavePoint != null)
+    //    {
+    //        return stage.AfterClearSavePoint.position.y - nextStage.BeforeClearSavePoint.position.y;
+    //    }
+    //    return 0f;
+    //}
 
     /*
     private void RegisterCamerasToManager()
@@ -148,11 +169,35 @@ public class StageManager : MonoBehaviour
         Player player = Player.Instance;
         if (player == null) return;
 
-        player.Setup(GetStageEntryPoint(_currentIndex));
+        if (_currentIndex == 7 || _currentIndex == 11)
+        {
+            SetCurrentStage(_currentIndex-1);
+            player.Setup(GetStageEntryPoint(_currentIndex));
+            //GetComponent<PlayableDirector>().enabled = false;
+            //_instances[_currentIndex].SetActive(false);
+            //Debug.Log("실행됨");
+            //player.ResetPlayerState();
+            //player.controller.Setup();
+            //player.status.Setup();
+            //player.visual.Setup();
+            //StartCoroutine(Co_WaitOneSec());
+            //GetComponent<PlayableDirector>().enabled = true;
+            //_instances[_currentIndex].SetActive(true);
+
+
+        }
+        else
+        {
+            player.Setup(GetStageEntryPoint(_currentIndex));
+        }
         //if (CameraManager.Instance != null)
         //    CameraManager.Instance.SnapCurrentCamera();
     }
 
+    private IEnumerator Co_WaitOneSec()
+    {
+        yield return new WaitForSeconds(1f);
+    }
     // 현재 스테이지 클리어 처리
     public void ClearCurrentStage() => _cleared[_currentIndex] = true;
 
@@ -188,25 +233,9 @@ public class StageManager : MonoBehaviour
 
         if (!_cleared[i])
         {
-            Destroy(_instances[i]);
-            var fresh = Instantiate(stages[i], _stagePositions[i], Quaternion.identity);
-            _instances[i] = fresh;
-
-            /*
-            if (fresh.TryGetComponent(out Stage newStage))
-            {
-                newStage.Init(i);
-                //if (CameraManager.Instance != null)
-                    //CameraManager.Instance.UpdateCameraAt(i, newStage.VirtualCamera);
-            }
-            */
+            if (_instances[i].TryGetComponent(out Stage stage))
+                stage.ResetEnemys(); // 자식 몬스터들 전부 SetActive(true)
         }
-
-        //if (_instances[i].TryGetComponent(out Stage stage))
-        //    stage.Activate();
-
-        //if (CameraManager.Instance != null)
-            //CameraManager.Instance.SwitchToCamera(i);
     }
 
     public Stage GetCurrentStage()
@@ -230,28 +259,20 @@ public class StageManager : MonoBehaviour
         }
 
         _currentIndex = index;
-        UpdateActiveStages();
         //if (CameraManager.Instance != null)
         //    CameraManager.Instance.SwitchToCamera(index);
     }
 
     // 현재 ±1 범위만 활성화, 나머지 비활성화
     // 활성화 시 계산된 위치로 복원
-    private void UpdateActiveStages()
+    public void UpdateCurrentStage(GameObject stageObject)
     {
-        for (int i = 0; i < _instances.Count; i++)
-        {
-            bool shouldBeActive = Mathf.Abs(i - _currentIndex) <= 1;
+        int index = stages.IndexOf(stageObject);
 
-            if (shouldBeActive && !_instances[i].activeSelf)
-            {
-                _instances[i].transform.position = _stagePositions[i];
-                _instances[i].SetActive(true);
-            }
-            else if (!shouldBeActive && _instances[i].activeSelf)
-            {
-                _instances[i].SetActive(false);
-            }
+        if (index != -1) // 리스트에 존재하는 경우
+        {
+            _currentIndex = index;
+            Debug.Log($"현재 스테이지 인덱스: {_currentIndex}");
         }
     }
 
