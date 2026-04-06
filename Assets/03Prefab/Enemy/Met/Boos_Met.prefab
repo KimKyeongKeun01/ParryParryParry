@@ -1130,12 +1130,12 @@ MonoBehaviour:
   - {fileID: 8190348225363604174}
   - {fileID: 1516683587995182767}
   _anim: {fileID: 2000250132464336804}
-  originColor: {r: 0.17254902, g: 0.07058824, b: 0.058823533, a: 1}
+  originColor: {r: 0.10980392, g: 0, b: 0, a: 1}
   hitColor: {r: 0.17254902, g: 0.07058824, b: 0.05882353, a: 0.78431374}
   blinkInterval: 0.08
   blinkCount: 3
   fadeOutDuration: 2
-  groggyColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  groggyColor: {r: 0.105882354, g: 0.07450981, b: 0, a: 1}
   _hornSprites:
   - {fileID: 2573519349472725452}
   - {fileID: 7405163208545519598}
