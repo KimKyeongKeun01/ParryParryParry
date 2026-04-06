@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Boss_Utan : BaseBoss
 {
+    //! 보스 순간이동 파티클을 public 으로 받아와 사용(armsmash, _phase2에 사용)
+
     public enum AttackPattern { None, ArmSmash, RockThrow, Swing, ArmSmash_Phase2, ComboRockSmash, DoubleSwing }
 
     private BossStatus_Utan Status => (BossStatus_Utan)_status;
@@ -26,13 +28,16 @@ public class Boss_Utan : BaseBoss
     public Vector2 swingPosition;
     private const float GROUND_Y_OFFSET = 1.94f;
 
+    [Header("Wave Effect")]
+    [SerializeField] private FullscreenShockwaveController fullscreenShockwaveController;
     // 패턴 타이머
     private float lastArmSmashTime = -99f;
     private float lastRockTime = -99f;
     private float lastSwingTime = -99f;
-    private float lastJumpSmashTime = -99f;
     private float lastComboTime = -99f;
     private float lastDoubleSwingTime = -99f;
+
+    private bool isAfterStun = false;
 
     protected override void Awake()
     {
@@ -102,6 +107,14 @@ public class Boss_Utan : BaseBoss
         Player player = Player.Instance;
         if (player == null) return -1;
 
+        // 그로기 이후 1순위
+        if (isAfterStun)
+        {
+            isAfterStun = false;
+
+            return phase >= 2 ? (int)AttackPattern.ComboRockSmash - 1 : (int)AttackPattern.RockThrow - 1;
+        }
+
         // 현재 거리 판단
         float dist = Vector2.Distance(transform.position, Player.Instance.transform.position);
         float curTime = Time.time;
@@ -130,12 +143,6 @@ public class Boss_Utan : BaseBoss
             {
                 nextPattern = AttackPattern.DoubleSwing;
             }
-            // [2페이즈 우선순위 3] 그로기 직후
-            // Todo 그로기 직후를 알리는 변수에 맞게 if문 내부 수정 필요
-            else if (canCombo)
-            {
-                nextPattern = AttackPattern.ComboRockSmash;
-            }
         }
         else
         {
@@ -148,12 +155,6 @@ public class Boss_Utan : BaseBoss
             else if (canSwing)
             {
                 nextPattern = AttackPattern.Swing;
-            }
-            // [1페이즈 우선순위 3] 그로기 직후
-            // Todo 그로기 직후를 알리는 변수에 맞게 if문 내부 수정 필요
-            else if (canRock)
-            {
-                nextPattern = AttackPattern.RockThrow;
             }
         }
 
@@ -283,7 +284,6 @@ public class Boss_Utan : BaseBoss
         _rigid.position = targetPos;
 
         // airduration만큼 공중에서 대기
-        yield return new WaitForSeconds(Status.armSmashAirDuration);
         if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
         {
             yield break;
@@ -308,7 +308,7 @@ public class Boss_Utan : BaseBoss
             float nextX = Mathf.Lerp(fallStartPos.x, landingPos.x, t);
             float baseY = Mathf.Lerp(fallStartPos.y, landingPos.y, t);
             float arcY = Mathf.Sin(t * Mathf.PI) * arcHeight;
-
+ 
             if (!isPlaySmash && elapsed >= 0.4f)
             {
                 Visual?.PlayAnim("ArmSmash_Action");
@@ -726,6 +726,9 @@ public class Boss_Utan : BaseBoss
         Player player = Player.Instance;
         if (player == null) yield break;
 
+        // 1초정도 대기
+        yield return new WaitForSeconds(1f);
+
         // 공을 토스
         LookAtPlayer();
         Visual?.PlayAnim("ArmSmash_Prepare"); 
@@ -1048,7 +1051,22 @@ public class Boss_Utan : BaseBoss
         {
             EndExhausted();
             ChangeState(EnemyState.Idle);
+
+            ShoutKnockback();
+            isAfterStun = true;
         }
+    }
+    
+    //기절 후 일어날 때 플레이어 넉백
+    public void ShoutKnockback()
+    {
+        Player player = Player.Instance;
+        float dirX = Mathf.Sign(player.transform.position.x - transform.position.x);
+        Vector2 hitDir = new Vector2(dirX, 0.2f).normalized;
+        player.controller.OnKnockback(hitDir, 50);
+
+        //wave effect
+        fullscreenShockwaveController.PlayAtWorld(transform.position);
     }
     #endregion
 
@@ -1115,7 +1133,6 @@ public class Boss_Utan : BaseBoss
 
                 // 플레이어 넉백
                 player.controller.OnKnockback(Vector2.up, slamKnockbackForce, -1, true);
-
                 TakeDamage(1);
                 return;
             }
