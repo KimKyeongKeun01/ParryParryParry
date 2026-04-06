@@ -682,7 +682,7 @@ public class Boss_Met : BaseBoss
 
         // 시작 시 Y위치 저장 (착지 기준점)
         groundSlamOriginY = _rigid.position.y;
-
+        float temporalJumpHeight = Status.groundSlamJumpHeight;
         hitStamp = false;
         isStamping = false;
 
@@ -690,7 +690,7 @@ public class Boss_Met : BaseBoss
         // 패턴 시작 애니메이션
         _visual.PlayAnim("Stamp_Prepare");
         if (curAttack == AttackPattern.None) yield break;
-
+        float Co_StampMoveDuration = 0.3f;
         // 2회 반복
         for (int i = 0; i < 2; i++)
         {
@@ -700,20 +700,17 @@ public class Boss_Met : BaseBoss
             // 목표 X: 보스와 플레이어 사이의 3/4 지점
             
             float targetX = _rigid.position.x + (player.transform.position.x - _rigid.position.x) * 0.75f;
-            float targetY = groundSlamOriginY + Status.groundSlamJumpHeight;
+            float targetY = groundSlamOriginY + temporalJumpHeight;
             Vector2 jumpTarget = new Vector2(targetX, targetY);
-            
             
             Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}");
 
             yield return StartCoroutine(Co_StampMove(
             jumpTarget,
-            0.3f,   //  0.2f ~ 0.3f
+            Co_StampMoveDuration,   //  0.2f ~ 0.3f
             Ease.OutQuad                     // 처음 빠르게 치고 올라감
             ));
-
             
-
             if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
             {
                 KillStampDrive();
@@ -722,12 +719,14 @@ public class Boss_Met : BaseBoss
 
             _rigid.position = jumpTarget;
             _rigid.linearVelocity = Vector2.zero;
-            if (i != 1)// 0회차만
-            { yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None); }
+            
             // ── 공중 대기 1초 ─────────────────────────────────────
             Debug.Log("[Met] GroundSlam Hovering...");
             if (i != 1)// 0회차만
-            { yield return new WaitForSeconds(0.5f); }
+            {
+                yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+                yield return new WaitForSeconds(0.5f); 
+            }
                 
             if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
             {
@@ -737,16 +736,15 @@ public class Boss_Met : BaseBoss
 
             // ── 내려찍기 (플레이어 방향 대각선 낙하) ──────────────
             
-            
             LookAtPlayer();
-            
             // 낙하 시작 시점 플레이어 위치 스냅
             Vector2 slamTarget = new Vector2(player.transform.position.x, groundSlamOriginY);
             hitStamp = false;
             isStamping = true;
             EnableHitbox();// TODO 여기에 히트박스 겸 이펙트 
 
-
+            Co_StampMoveDuration -= 0.1f;
+            temporalJumpHeight -= 3f;
 
             yield return StartCoroutine(Co_StampMove(
             slamTarget,
@@ -782,7 +780,7 @@ public class Boss_Met : BaseBoss
             else
             {
                 // 첫 번째 착지 후 짧은 딜레이
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSeconds(0.8f);
             }
         }
         KillStampDrive();
@@ -820,6 +818,7 @@ public class Boss_Met : BaseBoss
 
         KillStampDrive();
     }
+
     private void KillStampDrive()
     {
         if (_groundSlamTween != null && _groundSlamTween.IsActive())
@@ -837,7 +836,7 @@ public class Boss_Met : BaseBoss
         hitStamp = true;
 
         // 내려찍기이므로 아래→위 방향 넉백
-        Vector2 hitDir = new Vector2(facingX * 0.1f, 1f).normalized;
+        Vector2 hitDir = new Vector2(facingX , 0.5f).normalized;
         Player.GuardType guard = player.controller.OnKnockback(hitDir, Status.stampKnockback);
 
         if (guard == Player.GuardType.PerfectGuard)
@@ -922,11 +921,10 @@ public class Boss_Met : BaseBoss
         Player player = Player.Instance;
         //여기에 울리는 이펙트 필요
         Vector2 direction = player.transform.position - transform.position;
-
-        direction.Normalize();
+        direction.y = 0f;
         direction = direction.normalized;
         
-        player.controller.OnKnockback(direction, 30f);
+        player.controller.OnKnockback(direction, 25f);
     }
     #endregion
 
