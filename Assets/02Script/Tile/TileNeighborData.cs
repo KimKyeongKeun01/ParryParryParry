@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static UnityEditor.PlayerSettings;
@@ -10,46 +11,92 @@ public class TileNeighborData : MonoBehaviour
     [SerializeField] private Material targetMaterial;
     [SerializeField] private Transform feetPoint;
 
-    [Header("Static Tile Data Shader Property Names")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½")]
     [SerializeField] private string tileDataTexProperty = "_TileDataTex";
     [SerializeField] private string tilemapOriginProperty = "_TilemapOrigin";
     [SerializeField] private string tilemapSizeProperty = "_TilemapSize";
     [SerializeField] private string cellSizeProperty = "_CellSize";
 
-    [Header("Step Heat Shader Property Names")]
+    [Header("ï¿½ï¿½ï¿½Ú±ï¿½")]
     [SerializeField] private string stepHeatTexProperty = "_StepHeatTex";
     [SerializeField] private string changeColorProperty = "_ChangeColor";
-
-    [Header("Step Heat Settings")]
     [SerializeField] private Color changeColor = Color.cyan;
     [SerializeField] private float fadeSpeed = 1.5f;
-
-    [Header("Heat Texture Limits")]
     [SerializeField] private int maxHeatTextureWidth = 512;
-    [SerializeField] private int maxHeatTextureHeight = 512;
+    [SerializeField] private int maxHeatTextureHeight = 100;
+    [SerializeField] private float sampleOffsetY = 0.05f;
+    
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] private float waveSpeed = 10f;
+    [SerializeField] private Color effectColor = Color.cyan;
+    [SerializeField] private float centerWorldX = 0f;
+    [SerializeField] private float radiusWorld = 1f;
+    [SerializeField] private float totalDuration = 1f;
+    [SerializeField] private float spreadSoftness = .4f;
+    [SerializeField] private float rowHalfHeight = 1f;
+    [SerializeField] private float rowSoftness = .4f;
+    [Header("ï¿½×½ï¿½Æ® ï¿½ï¿½")]
+    [SerializeField] private Transform playerFeetPos;
 
-    private Texture2D dataTexture;      // ±âÁ¸ »óÇÏÁÂ¿ì Á¤º¸
-    private Texture2D stepHeatTexture;  // ¹âÈû °­µµ Á¤º¸
-
-    private float[] stepHeatValues;
-    private Color[] stepHeatPixels;
+    private Texture2D dataTexture;
+    private Texture2D stepHeatTexture;
 
     private BoundsInt cachedBounds;
     private int width;
     private int height;
 
-    // active pixel optimization
-    private readonly List<int> activeIndices = new List<int>();
-    private int[] activeIndexLookup; // -1: ºñÈ°¼º, ±× ¿Ü: activeIndices ³» À§Ä¡
+    private float[] stepHeatValues;
 
-    // dirty pixel optimization
-    private readonly List<int> dirtyIndices = new List<int>();
+    private readonly List<int> activeIndices = new();
+    private int[] activeIndexLookup;
+
+    private readonly List<int> dirtyIndices = new();
     private bool[] dirtyLookup;
 
     private Color _lastAppliedColor = Color.clear;
+    private Vector2 _lastOriginWorld;
+    private Vector2 _lastCellSize;
+    private Vector2 _lastTilemapSize;
 
+    private bool hasValidReferences;
+
+    // width/height -> heat texture ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½Î¿ï¿½ Ä³ï¿½ï¿½
+    private float heatScaleX;
+    private float heatScaleY;
+
+    private void Awake()
+    {
+        CacheReferenceState();
+    }
+
+    private void Start()
+    {
+        Bake();
+        Player.Instance.controller.onSlamImpact += PlayWave;
+    }
+    private void CacheReferenceState()
+    {
+        hasValidReferences = tilemap != null && targetMaterial != null && feetPoint != null;
+    }
+    public void PlayWave(Vector2 j, Vector2 i,Color _)
+    {
+        Vector3 skillStartWorldPos = playerFeetPos.position;
+
+        targetMaterial.SetFloat("_WaveSpeed", waveSpeed);
+        targetMaterial.SetFloat("_StartTime", Time.time);
+        targetMaterial.SetColor("_EffectColor", effectColor);
+        targetMaterial.SetFloat("_CenterWorldX", skillStartWorldPos.x);
+        targetMaterial.SetFloat("_RadiusWorld", radiusWorld);
+        targetMaterial.SetFloat("_TotalDuration", totalDuration);
+        targetMaterial.SetFloat("_SpreadSoftness", spreadSoftness);
+        targetMaterial.SetFloat("_CenterWorldY", skillStartWorldPos.y);
+        targetMaterial.SetFloat("_RowHalfHeight", rowHalfHeight);
+        targetMaterial.SetFloat("_RowSoftness", rowSoftness);
+    }
     public void Bake()
     {
+        CacheReferenceState();
+
         if (tilemap == null || targetMaterial == null)
         {
             Debug.LogWarning("Tilemap or Material is missing.");
@@ -77,17 +124,25 @@ public class TileNeighborData : MonoBehaviour
     {
         if (dataTexture == null || dataTexture.width != width || dataTexture.height != height)
         {
-            dataTexture = new Texture2D(width, height, TextureFormat.RGBA32, false, true);
-            dataTexture.filterMode = FilterMode.Point;
-            dataTexture.wrapMode = TextureWrapMode.Clamp;
-            dataTexture.name = "Tilemap_Data_Texture";
+            if (dataTexture != null)
+                DestroyTexture(dataTexture);
+
+            dataTexture = new Texture2D(width, height, TextureFormat.RGBA32, false, true)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                name = "Tilemap_Data_Texture"
+            };
         }
 
         for (int y = 0; y < height; y++)
         {
+            int cellY = cachedBounds.yMin + y;
+
             for (int x = 0; x < width; x++)
             {
-                Vector3Int pos = new Vector3Int(cachedBounds.xMin + x, cachedBounds.yMin + y, 0);
+                int cellX = cachedBounds.xMin + x;
+                Vector3Int pos = new(cellX, cellY, 0);
 
                 if (!tilemap.HasTile(pos))
                 {
@@ -100,7 +155,7 @@ public class TileNeighborData : MonoBehaviour
                 bool down = tilemap.HasTile(pos + Vector3Int.down);
                 bool left = tilemap.HasTile(pos + Vector3Int.left);
 
-                Color data = new Color(
+                Color data = new(
                     up ? 0f : 1f,
                     right ? 0f : 1f,
                     down ? 0f : 1f,
@@ -117,8 +172,6 @@ public class TileNeighborData : MonoBehaviour
 
     private void InitializeStepHeatTexture()
     {
-        // TODO ÇØ°á:
-        // ¿ø·¡ width * height ±×´ë·Î ÀâÁö ¾Ê°í Á¦ÇÑµÈ ÇØ»óµµ·Î »ç¿ë
         int texWidth = Mathf.Min(width, maxHeatTextureWidth);
         int texHeight = Mathf.Min(height, maxHeatTextureHeight);
 
@@ -128,25 +181,31 @@ public class TileNeighborData : MonoBehaviour
             stepHeatTexture.height != texHeight ||
             stepHeatValues == null ||
             stepHeatValues.Length != texWidth * texHeight ||
-            stepHeatPixels == null ||
-            stepHeatPixels.Length != texWidth * texHeight ||
             activeIndexLookup == null ||
             activeIndexLookup.Length != texWidth * texHeight ||
             dirtyLookup == null ||
             dirtyLookup.Length != texWidth * texHeight;
 
         if (!needCreate)
+        {
+            RecalculateHeatScales(texWidth, texHeight);
+            targetMaterial.SetTexture(stepHeatTexProperty, stepHeatTexture);
             return;
+        }
 
-        stepHeatTexture = new Texture2D(texWidth, texHeight, TextureFormat.RGBA32, false, true);
-        stepHeatTexture.filterMode = FilterMode.Point;
-        stepHeatTexture.wrapMode = TextureWrapMode.Clamp;
-        stepHeatTexture.name = "Tilemap_StepHeat_Texture";
+        if (stepHeatTexture != null)
+            DestroyTexture(stepHeatTexture);
+
+        stepHeatTexture = new Texture2D(texWidth, texHeight, TextureFormat.RGBA32, false, true)
+        {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp,
+            name = "Tilemap_StepHeat_Texture"
+        };
 
         int pixelCount = texWidth * texHeight;
 
         stepHeatValues = new float[pixelCount];
-        stepHeatPixels = new Color[pixelCount];
         activeIndexLookup = new int[pixelCount];
         dirtyLookup = new bool[pixelCount];
 
@@ -156,25 +215,55 @@ public class TileNeighborData : MonoBehaviour
         for (int i = 0; i < pixelCount; i++)
         {
             stepHeatValues[i] = 0f;
-            stepHeatPixels[i] = Color.black;
             activeIndexLookup[i] = -1;
             dirtyLookup[i] = false;
         }
 
-        stepHeatTexture.SetPixels(stepHeatPixels);
-        stepHeatTexture.Apply(false, false);
+        ClearHeatTexture(texWidth, texHeight);
+        RecalculateHeatScales(texWidth, texHeight);
 
         targetMaterial.SetTexture(stepHeatTexProperty, stepHeatTexture);
     }
 
+    private void RecalculateHeatScales(int texWidth, int texHeight)
+    {
+        heatScaleX = width > 0 ? texWidth / (float)width : 0f;
+        heatScaleY = height > 0 ? texHeight / (float)height : 0f;
+    }
+
+    private void ClearHeatTexture(int texWidth, int texHeight)
+    {
+        Color32[] clear = new Color32[texWidth * texHeight];
+        stepHeatTexture.SetPixels32(clear);
+        stepHeatTexture.Apply(false, false);
+    }
+
     private void ApplyCommonMaterialProperties()
     {
-        Vector3 cellSize = tilemap.cellSize;
-        Vector3 originWorld = tilemap.CellToWorld(new Vector3Int(cachedBounds.xMin, cachedBounds.yMin, 0));
+        Vector3 cellSize3 = tilemap.cellSize;
+        Vector3 originWorld3 = tilemap.CellToWorld(new Vector3Int(cachedBounds.xMin, cachedBounds.yMin, 0));
 
-        targetMaterial.SetVector(tilemapOriginProperty, new Vector2(originWorld.x, originWorld.y));
-        targetMaterial.SetVector(tilemapSizeProperty, new Vector2(width, height));
-        targetMaterial.SetVector(cellSizeProperty, new Vector2(cellSize.x, cellSize.y));
+        Vector2 originWorld = new(originWorld3.x, originWorld3.y);
+        Vector2 cellSize = new(cellSize3.x, cellSize3.y);
+        Vector2 tilemapSize = new(width, height);
+
+        if (_lastOriginWorld != originWorld)
+        {
+            targetMaterial.SetVector(tilemapOriginProperty, originWorld);
+            _lastOriginWorld = originWorld;
+        }
+
+        if (_lastTilemapSize != tilemapSize)
+        {
+            targetMaterial.SetVector(tilemapSizeProperty, tilemapSize);
+            _lastTilemapSize = tilemapSize;
+        }
+
+        if (_lastCellSize != cellSize)
+        {
+            targetMaterial.SetVector(cellSizeProperty, cellSize);
+            _lastCellSize = cellSize;
+        }
 
         if (_lastAppliedColor != changeColor)
         {
@@ -185,11 +274,10 @@ public class TileNeighborData : MonoBehaviour
 
     private void Update()
     {
-        
-        if (tilemap == null || targetMaterial == null || feetPoint == null)
+        if (!hasValidReferences)
             return;
 
-        if (stepHeatTexture == null || stepHeatValues == null || stepHeatPixels == null)
+        if (stepHeatTexture == null || stepHeatValues == null)
             return;
 
         FadeStepHeatActiveOnly();
@@ -203,7 +291,7 @@ public class TileNeighborData : MonoBehaviour
         }
     }
 
-    // ÀüÃ¼ ¼øÈ¸ Á¦°Å: È°¼º ÇÈ¼¿¸¸ °¨¼Ò
+
     private void FadeStepHeatActiveOnly()
     {
         float delta = fadeSpeed * Time.deltaTime;
@@ -211,24 +299,29 @@ public class TileNeighborData : MonoBehaviour
         for (int i = activeIndices.Count - 1; i >= 0; i--)
         {
             int index = activeIndices[i];
-            float next = Mathf.Max(0f, stepHeatValues[index] - delta);
+            float next = stepHeatValues[index] - delta;
+
+            if (next <= 0f)
+            {
+                stepHeatValues[index] = 0f;
+                MarkDirty(index);
+                RemoveActiveIndexAt(i);
+                continue;
+            }
 
             if (!Mathf.Approximately(stepHeatValues[index], next))
             {
                 stepHeatValues[index] = next;
                 MarkDirty(index);
             }
-
-            if (next <= 0f)
-            {
-                RemoveActiveIndexAt(i);
-            }
         }
     }
 
     private void StampFootstep()
     {
-        Vector3 samplePos = feetPoint.position + Vector3.down * 0.05f;
+        Vector3 samplePos = feetPoint.position;
+        samplePos.y -= sampleOffsetY;
+
         Vector3Int cell = tilemap.WorldToCell(samplePos);
 
         if (!cachedBounds.Contains(cell))
@@ -237,18 +330,17 @@ public class TileNeighborData : MonoBehaviour
         if (!tilemap.HasTile(cell))
             return;
 
-        // ½ÇÁ¦ Å¸ÀÏ ÁÂÇ¥¸¦ Á¦ÇÑµÈ heat texture ÁÂÇ¥·Î ¾ÐÃà ¸ÅÇÎ
         int x = cell.x - cachedBounds.xMin;
         int y = cell.y - cachedBounds.yMin;
 
-        if (x < 0 || x >= width || y < 0 || y >= height)
+        if ((uint)x >= (uint)width || (uint)y >= (uint)height)
             return;
 
         int texWidth = stepHeatTexture.width;
         int texHeight = stepHeatTexture.height;
 
-        int mappedX = Mathf.Clamp(Mathf.FloorToInt((x / (float)width) * texWidth), 0, texWidth - 1);
-        int mappedY = Mathf.Clamp(Mathf.FloorToInt((y / (float)height) * texHeight), 0, texHeight - 1);
+        int mappedX = Mathf.Min((int)(x * heatScaleX), texWidth - 1);
+        int mappedY = Mathf.Min((int)(y * heatScaleY), texHeight - 1);
 
         int index = mappedY * texWidth + mappedX;
 
@@ -261,7 +353,6 @@ public class TileNeighborData : MonoBehaviour
         AddActiveIndex(index);
     }
 
-    // ÀüÃ¼ ¾÷·Îµå Á¦°Å: ¹Ù²ï ÇÈ¼¿¸¸ ¾÷·Îµå
     private void UploadDirtyPixelsOnly()
     {
         if (dirtyIndices.Count == 0)
@@ -275,11 +366,8 @@ public class TileNeighborData : MonoBehaviour
             int x = index % texWidth;
             int y = index / texWidth;
 
-            float v = stepHeatValues[index];
-            Color c = new Color(v, v, v, 1f);
-
-            stepHeatPixels[index] = c;
-            stepHeatTexture.SetPixel(x, y, c);
+            byte v = (byte)Mathf.RoundToInt(stepHeatValues[index] * 255f);
+            stepHeatTexture.SetPixel(x, y, new Color32(v, v, v, 255));
             dirtyLookup[index] = false;
         }
 
@@ -309,30 +397,52 @@ public class TileNeighborData : MonoBehaviour
     {
         int removedIndex = activeIndices[listIndex];
         int lastListIndex = activeIndices.Count - 1;
-        int lastIndex = activeIndices[lastListIndex];
 
-        activeIndices[listIndex] = lastIndex;
-        activeIndexLookup[lastIndex] = listIndex;
+        if (listIndex != lastListIndex)
+        {
+            int lastIndex = activeIndices[lastListIndex];
+            activeIndices[listIndex] = lastIndex;
+            activeIndexLookup[lastIndex] = listIndex;
+        }
 
         activeIndices.RemoveAt(lastListIndex);
         activeIndexLookup[removedIndex] = -1;
     }
 
+
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (!Application.isPlaying)
+        CacheReferenceState();
+
+        if (!Application.isPlaying && tilemap != null && targetMaterial != null)
         {
-            if (tilemap != null && targetMaterial != null)
-            {
-                Bake();
-            }
+            Bake();
         }
     }
 #endif
 
-    private void Start()
+    private void OnDisable()
     {
-        Bake();
+        hasValidReferences = false;
+    }
+
+    private void OnDestroy()
+    {
+        Player.Instance.controller.onSlamImpact -= PlayWave;
+        DestroyTexture(dataTexture);
+        DestroyTexture(stepHeatTexture);
+    }
+
+    private void DestroyTexture(Texture2D tex)
+    {
+        if (tex == null)
+            return;
+
+        if (Application.isPlaying)
+            Destroy(tex);
+        else
+            DestroyImmediate(tex);
     }
 }

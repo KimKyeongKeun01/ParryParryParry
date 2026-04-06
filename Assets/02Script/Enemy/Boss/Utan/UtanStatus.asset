@@ -35,6 +35,10 @@ MonoBehaviour:
   armSmashDamage: 1
   armSmashKnockback: 10
   armSmashStunTime: 2
+  armSmashHeight: 8
+  armSmashMeleeRange: 5.5
+  armSmashAirDuration: 0.1
+  armSmashAirDuration_Phase2: 0.6
   rockThrowCooldown: 5
   rockDamage: 1
   rockKnockback: 10
@@ -51,7 +55,7 @@ MonoBehaviour:
   jumpSmashCooldown: 6
   jumpSmashHeight: 8
   jumpSmashAirDuration: 0.2
-  jumpSmashDropSpeed: 25
+  jumpSmashDropSpeed: 120
   jummpSmashDamange: 1
   jumpSmashKnockback: 15
   comboCooldown: 10

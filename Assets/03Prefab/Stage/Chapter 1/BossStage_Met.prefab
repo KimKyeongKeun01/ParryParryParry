@@ -129,7 +129,7 @@ MonoBehaviour:
   entrance_Door: {fileID: 7882806475275990256}
   exit_Door: {fileID: 4074397048622820318}
   bossIntro: {fileID: 4179202141410155517}
-  shakeProfile: {fileID: 0}
+  growlingProfile: {fileID: 0}
 --- !u!320 &4179202141410155517
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -144,7 +144,11 @@ PlayableDirector:
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
-  m_SceneBindings: []
+  m_SceneBindings:
+  - key: {fileID: -3500288848643935632, guid: 6be04ce8a4115904795fc09790bc17eb, type: 2}
+    value: {fileID: 3353805066560694403}
+  - key: {fileID: 4195542749310274857, guid: 6be04ce8a4115904795fc09790bc17eb, type: 2}
+    value: {fileID: 8944418946668360658}
   m_ExposedReferences:
     m_References: []
 --- !u!114 &4279744813073299840
@@ -639,6 +643,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1303888431829636723}
     m_Modifications:
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_CompositePaths.m_Paths.Array.data[0].Array.data[0].x
+      value: 3.5698168
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_CompositePaths.m_Paths.Array.data[0].Array.data[1].x
+      value: 3.5698168
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_CompositePaths.m_Paths.Array.data[0].Array.data[2].x
+      value: -1.4299536
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_CompositePaths.m_Paths.Array.data[0].Array.data[3].x
+      value: -1.4299244
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_ColliderPaths.Array.data[0].m_ColliderPaths.Array.data[0].Array.data[0].X
+      value: 35698460
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_ColliderPaths.Array.data[0].m_ColliderPaths.Array.data[0].Array.data[1].X
+      value: -14299536
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_ColliderPaths.Array.data[0].m_ColliderPaths.Array.data[0].Array.data[2].X
+      value: -14299536
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930683227452276652, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+      propertyPath: m_ColliderPaths.Array.data[0].m_ColliderPaths.Array.data[0].Array.data[3].X
+      value: 35698460
+      objectReference: {fileID: 0}
     - target: {fileID: 4942595833017858441, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.78
@@ -1505,3 +1541,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6137af7f9689ff84ba8a319f537bc914, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss_Met
+--- !u!95 &8944418946668360658 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2000250132464336804, guid: 6fa62bc55c30f85478dcfce9e6632cda, type: 3}
+  m_PrefabInstance: {fileID: 7485727232338824310}
+  m_PrefabAsset: {fileID: 0}

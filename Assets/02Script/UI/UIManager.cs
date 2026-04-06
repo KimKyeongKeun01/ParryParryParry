@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +15,8 @@ public class UIManager : MonoBehaviour
     public UIClear clear;
     public UICutScene cutScene;
 
-    [Header("Player")]
+    [Header("Player HUD")]
+    [SerializeField] private CanvasGroup playerHUD;
     [SerializeField] private GameObject healthBar;
     [SerializeField] private Icon[] healthIcon;
     [SerializeField] private Sprite fullHeart;
@@ -25,8 +27,10 @@ public class UIManager : MonoBehaviour
 
     [Header("Transition")]
     [SerializeField] private Fader fader;
+    [SerializeField] private float hudFadeDuration;
+    private Coroutine hudFadeRoutine;
 
-    
+
 
     private void Awake()
     {
@@ -53,11 +57,33 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        // 테스트용
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            FadeHUDOut();
+        }
+        else if (Input.GetKeyDown(KeyCode.Y))
+        {
+            cutScene.PlayLetterboxIn();
+        }
+        else if (Input.GetKeyDown(KeyCode.U))
+        {
+            cutScene.PlayLetterboxOut();
+        }
+        else if (Input.GetKeyDown(KeyCode.I))
+        {
+            FadeHUDIn();
+        }
+    }
+
     private void Init()
     {
         title.Init();
         pause.Init();
         clear.Init();
+        cutScene.Init();
 
         Debug.Log("[UI Manager] UI Init Complete");
     }
@@ -197,6 +223,40 @@ public class UIManager : MonoBehaviour
 
         if (color.HasValue) fader.SetFadeColor(color.Value);
         fader.FadeInOut(fadeInDuration, holdTime, fadeOutDuration, onMidComplete, onComplete);
+    }
+
+    public void FadeHUDIn()
+    {
+        if (playerHUD == null) return;
+        if (hudFadeRoutine != null) StopCoroutine(hudFadeRoutine);
+
+        hudFadeRoutine = StartCoroutine(Co_FadeHUD(1f));
+    }
+
+    public void FadeHUDOut()
+    {
+        if (playerHUD == null) return;
+        if (hudFadeRoutine != null) StopCoroutine(hudFadeRoutine);
+
+        hudFadeRoutine = StartCoroutine(Co_FadeHUD(0f));
+    }
+
+    private IEnumerator Co_FadeHUD(float endAlpha)
+    {
+        float startAlpha = playerHUD.alpha;
+        float elapsed = 0f;
+
+        while (elapsed < hudFadeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / hudFadeDuration);
+
+            playerHUD.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+            yield return null;
+        }
+
+        playerHUD.alpha = endAlpha;
+        hudFadeRoutine = null;
     }
     #endregion
 }

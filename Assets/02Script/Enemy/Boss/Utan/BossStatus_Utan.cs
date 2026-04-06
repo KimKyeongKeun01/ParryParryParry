@@ -11,12 +11,18 @@ public class BossStatus_Utan : BaseBossStatus
     [Tooltip("근거리 판정 거리")] public float meleeRange = 4f;
     [Tooltip("중거리 판정 거리")] public float midRange = 8f;
 
-    [Header(" === Pattern: Arm Smash")]
-    [Tooltip("양팔 휘두르기 최소 거리")] public float armSmashStopDistance = 2.8f;
+    [Header(" === Pattern: Arm Smash === ")]
     [Tooltip("양팔 휘두르기 쿨타임")] public float armSmashCooldown = 3f;
     [Tooltip("양팔 휘두르기 데미지")] public int armSmashDamage = 1;
     [Tooltip("양팔 휘두르기 넉백 파워")] public float armSmashKnockback = 10f;
     [Tooltip("양팔 휘두르기 퍼펙트 가드시 스턴 시간")] public float armSmashStunTime = 2f;
+    [Tooltip("플레이어 위로의 텔레포트 추가 높이")] public float armSmashHeight = 6;
+    [Tooltip("양팔 휘두르기 공격 범위")] public float armSmashMeleeRange = 5.5f;
+    [Tooltip("양팔 휘두르기 공중 체공 시간")] public float armSmashAirDuration = 0.3f;
+    [Tooltip("양팔 휘두르기 공중 체공 시간")] public float armSmashAirDuration_Phase2 = 0.6f;
+
+    [Tooltip("플레이어에게 포물선으로 날아가는 시간")] public float dropDuration = 0.5f;
+    [Tooltip("포물선의 높이")] public float arcHeight = 5f;
 
     [Header(" === Pattern: Rock Throw === ")]
     [Tooltip("암석 뽑기 쿨타임")] public float rockThrowCooldown = 5f;
