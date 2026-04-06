@@ -188,8 +188,8 @@ public class CameraAssist : MonoBehaviour
     {
         float velocityX = _player.controller.rb.linearVelocityX;
 
-        if (velocityX > 0.05) return 1;
-        if (velocityX < -0.05) return -1;
+        if (velocityX > 0.1) return 1;
+        if (velocityX < -0.1) return -1;
         return 0;
     }
     #endregion
