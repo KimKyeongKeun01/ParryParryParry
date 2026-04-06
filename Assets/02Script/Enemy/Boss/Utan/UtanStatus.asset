@@ -30,7 +30,6 @@ MonoBehaviour:
   phase2PatternIntervalMulti: 0.85
   meleeRange: 10
   midRange: 20
-  armSmashStopDistance: 6
   armSmashCooldown: 3
   armSmashDamage: 1
   armSmashKnockback: 10
@@ -39,25 +38,21 @@ MonoBehaviour:
   armSmashMeleeRange: 5.5
   armSmashAirDuration: 0.1
   armSmashAirDuration_Phase2: 0.6
-  rockThrowCooldown: 5
+  dropDuration: 0.5
+  arcHeight: 5
+  rockThrowCooldown: 6
   rockDamage: 1
   rockKnockback: 10
   rockSpeed: 10
   rockApexOffset: 12
   swingHeight: 20
   swingLopeLength: 18
-  swingCooldown: 10
+  swingCooldown: 8
   swingDamage: 1
   swingKnockback: 10
   swingSpeed: 15
   swingDuration: 3
-  doubleSwingCooldown: 0
-  jumpSmashCooldown: 6
-  jumpSmashHeight: 8
-  jumpSmashAirDuration: 0.2
-  jumpSmashDropSpeed: 120
-  jummpSmashDamange: 1
-  jumpSmashKnockback: 15
+  doubleSwingCooldown: 6
   comboCooldown: 10
   comboBackstepDist: 12
   comboBackstepTime: 0.2

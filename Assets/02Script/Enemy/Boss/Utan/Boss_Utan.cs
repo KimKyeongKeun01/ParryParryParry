@@ -28,6 +28,8 @@ public class Boss_Utan : BaseBoss
     public Vector2 swingPosition;
     private const float GROUND_Y_OFFSET = 1.94f;
 
+    [Header("Wave Effect")]
+    [SerializeField] private FullscreenShockwaveController fullscreenShockwaveController;
     // 패턴 타이머
     private float lastArmSmashTime = -99f;
     private float lastRockTime = -99f;
@@ -1062,6 +1064,9 @@ public class Boss_Utan : BaseBoss
         float dirX = Mathf.Sign(player.transform.position.x - transform.position.x);
         Vector2 hitDir = new Vector2(dirX, 0.2f).normalized;
         player.controller.OnKnockback(hitDir, 50);
+
+        //wave effect
+        fullscreenShockwaveController.PlayAtWorld(transform.position);
     }
     #endregion
 
@@ -1128,7 +1133,6 @@ public class Boss_Utan : BaseBoss
 
                 // 플레이어 넉백
                 player.controller.OnKnockback(Vector2.up, slamKnockbackForce, -1, true);
-
                 TakeDamage(1);
                 return;
             }
