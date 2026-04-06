@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4571736952207030443}
   - component: {fileID: 7577941423407067004}
   - component: {fileID: 84678285351788573}
+  - component: {fileID: 4753454079250022174}
   m_Layer: 2
   m_Name: Camera - 12m
   m_TagString: Untagged
@@ -49,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
   Priority:
     Enabled: 1
-    m_Value: 0
+    m_Value: 10
   OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20241001
@@ -95,11 +96,11 @@ MonoBehaviour:
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
-      Enabled: 0
-      Size: {x: 0, y: 0}
+      Enabled: 1
+      Size: {x: 0.1, y: 0}
     HardLimits:
       Enabled: 0
-      Size: {x: 0, y: 0}
+      Size: {x: 0.1, y: 0}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 2, z: 0}
@@ -108,7 +109,7 @@ MonoBehaviour:
     Enabled: 1
     Time: 0.2
     Smoothing: 10
-    IgnoreY: 0
+    IgnoreY: 1
 --- !u!114 &7577941423407067004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,3 +154,22 @@ MonoBehaviour:
     FrequencyGain: 1
     Duration: 2
     m_NoiseOffsets: {x: -602.99634, y: -556.85376, z: -739.92346}
+--- !u!114 &4753454079250022174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225470032416778957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3f831036a1f9884dba142fac588f56e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraAssist
+  _camera: {fileID: 0}
+  _player: {fileID: 0}
+  groundYHeight: 0
+  airboneYHeight: 1
+  landingYHeight: 0
+  landingDelay: 0.1
+  landingDuration: 0.2
