@@ -16,6 +16,8 @@ public class BossStage : MonoBehaviour
     [SerializeField] private GameObject bossObj;
     [SerializeField] private BaseBoss bossScript;
     [SerializeField] private Transform spawnPoint;
+    [SerializeField] private string bossName;
+    [SerializeField] private string bossTitle;
 
     [Header("Stage Door")]
     [SerializeField] private Platform_Moving entrance_Door;
@@ -114,6 +116,10 @@ public class BossStage : MonoBehaviour
         if (entrance_Door != null) entrance_Door.SetExternalSignal(true);
     }
 
+    public void S_BossName()
+    {
+        UIManager.Instance.cutScene.PlayBossName(bossName, bossTitle);
+    }
 
     public void S_LetterboxIn()
     {
@@ -190,5 +196,31 @@ public class BossStage : MonoBehaviour
 
         // 5. 입구 문 다시 열기 (선택 사항)
         if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
+    }
+
+    public void BossReset()
+    {
+        Debug.Log("[Boss Stage] Stage Reset");
+        isBossBattle = false;
+        stageCleared = false;
+        hasBossStarted = false;
+        isCutscenePlaying = false;
+
+        // 보스 비활성화
+        if (bossObj != null)
+        {
+            bossObj.transform.position = spawnPoint.position;
+            bossObj.SetActive(false);
+        }
+            
+        // 문 열기
+        if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
+
+        // 타임라인 초기화
+        if (bossIntro != null)
+        {
+            bossIntro.time = 0;
+            bossIntro.Stop();
+        }
     }
 }

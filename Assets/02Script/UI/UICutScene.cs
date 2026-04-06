@@ -16,6 +16,13 @@ public class UICutScene : MonoBehaviour
     [Tooltip("레터박스 차오르는 높이"), SerializeField] private float targetHeight;
     private Coroutine letterboxRoutine;
 
+    [Header("Boss")]
+    [SerializeField] private CanvasGroup bossPanel;
+    [SerializeField] private Text titleText;
+    [SerializeField] private Text nameText;
+    [SerializeField] private float bossDuration;
+    [SerializeField] private float showDuration;
+
 
     private void Awake()
     {
@@ -31,7 +38,7 @@ public class UICutScene : MonoBehaviour
         SetLetterbox(bottomRect, 0);
     }
 
-    #region Core
+    #region Letter Box
     private void SetLetterbox(RectTransform rect, float height)
     {
         if (rect == null) return;
@@ -66,7 +73,7 @@ public class UICutScene : MonoBehaviour
         SetLetterbox(bottomRect, endHeight);
         letterboxRoutine = null;
     }
-    #endregion 
+    
 
     public void PlayLetterboxIn()
     {
@@ -87,5 +94,59 @@ public class UICutScene : MonoBehaviour
 
         Debug.Log("[UI] Letterbox Out");
     }
+    #endregion
 
+    #region Boss
+    public void PlayBossName(string name, string title)
+    {
+        if (bossPanel == null) return;
+        if (titleText == null || nameText == null) return;
+
+        titleText.text = title;
+        nameText.text = name;
+
+        StartCoroutine(Co_BossName());
+    }
+
+    private IEnumerator Co_BossName()
+    {
+        float currentAlpha = bossPanel.alpha;
+        float targetAlpha = 1;
+        float elapsed = 0f;
+
+        // 보스 이름 페이드 인
+        while (elapsed < bossDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / bossDuration);
+            float easeT = 1f - (1f - t) * (1f - t);
+
+            bossPanel.alpha = Mathf.Lerp(currentAlpha, targetAlpha, easeT);
+
+            yield return null;
+        }
+        bossPanel.alpha = targetAlpha;
+        
+        // 보스 이름 보여주는 시간
+        yield return new WaitForSecondsRealtime(showDuration);
+
+        currentAlpha = bossPanel.alpha;
+        targetAlpha = 0;
+        elapsed = 0f;
+
+        // 보스 이름 페이드 아웃
+        while (elapsed < bossDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / bossDuration);
+            float easeT = 1f - (1f - t) * (1f - t);
+
+            bossPanel.alpha = Mathf.Lerp(currentAlpha, targetAlpha, easeT);
+
+            yield return null;
+        }
+
+        bossPanel.alpha = targetAlpha;
+    }
+    #endregion
 }
