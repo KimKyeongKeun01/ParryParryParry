@@ -174,8 +174,7 @@ public class Boss_Utan : BaseBoss
         originY = transform.position.y;
 
         // 패턴 시작 시 플레이어 방향 보기
-        float lookDir = Mathf.Sign(Player.Instance.transform.position.x - transform.position.x);
-        Visual.Flip(lookDir > 0);
+        LookAtPlayer();
 
         curAttack = (AttackPattern)(index + 1);
         attackTimer = 10f;
@@ -322,12 +321,12 @@ public class Boss_Utan : BaseBoss
         _rigid.position = targetPos;
 
         // airduration만큼 공중에서 대기
-        LookAtPlayer();
         yield return new WaitForSeconds(Status.armSmashAirDuration);
         if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
         {
             yield break;
         }
+        LookAtPlayer();
 
         // 포물선을 그리며 플레이어에게 내려찍기
         Vector2 fallStartPos = _rigid.position;
@@ -451,12 +450,12 @@ public class Boss_Utan : BaseBoss
         targetPos = new Vector2(targetX, originY + Status.armSmashHeight);
         _rigid.position = targetPos;
 
-        LookAtPlayer();
         yield return new WaitForSeconds(Status.armSmashAirDuration);
         if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
         {
             yield break;
         }
+        LookAtPlayer();
 
         // 애니메이션과 동시에 내려찍기 수행
         Vector2 fallStartPos = _rigid.position;
@@ -619,14 +618,25 @@ public class Boss_Utan : BaseBoss
         originY = transform.position.y;
 
         // 나무 오르기
+
+        Vector2 ascendStartPos = _rigid.position;
+        Vector2 ascendTargetPos = new Vector2(transform.position.x, swingPosition.y + 10);
+
         Visual?.PlayAnim("Swing_Prepare");
-        yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
+        yield return new WaitForSeconds(0.8f);
         if (curAttack == AttackPattern.None) { ResetSwing(); yield break; }
 
-        // 실제 위치 이동
-        Vector2 startPos = swingPosition + new Vector2(startSide * lopeLength, 5f);
-        _rigid.MovePosition(startPos);
-        transform.position = startPos;
+        float ascendDuration = 0.3f;
+        float elapsed = 0f;
+        while (elapsed < ascendDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / ascendDuration;
+            _rigid.MovePosition(Vector2.Lerp(ascendStartPos, ascendTargetPos, t));
+            yield return null;
+        }
+        transform.position = swingPosition + new Vector2(startSide * lopeLength, 9f);;
 
         Visual?.PlayAnim("Swing_Action");
         Debug.Log("[Utan] Swing!");
@@ -637,7 +647,7 @@ public class Boss_Utan : BaseBoss
 
         float startAngle = currentAngle;
         float totalRotated = 0f;
-        float targetRotation = 205f; // 총 205도 회전
+        float targetRotation = 240f;
 
         while (totalRotated < targetRotation)
         {
@@ -646,7 +656,6 @@ public class Boss_Utan : BaseBoss
                 ResetSwing();
                 yield break;
             }
-            
             
             // swingSpeed를 각속도로 사용하여 각도 업데이트
             // (speed가 높을수록 초당 더 많은 각도를 회전)
@@ -673,6 +682,24 @@ public class Boss_Utan : BaseBoss
 
         Debug.Log("[Utan] Vine Swing End");
         transform.rotation = Quaternion.identity;
+
+        Vector2 descendStartPos = transform.position;
+        Vector2 descendTargetPos = new Vector2(transform.position.x, originY);
+        float descendDuration = 0.17f;
+        elapsed = 0f;
+        Visual.PlayAnim("Swing_Landing");
+
+        while (elapsed < descendDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / descendDuration;
+            
+            _rigid.MovePosition(Vector2.Lerp(descendStartPos, descendTargetPos, t));
+            yield return null;
+        }
+
+        transform.position = descendTargetPos;
+        _rigid.position = descendTargetPos;
 
         ValidateStage();    // 착지 위치 x값 보정
         Visual.PlayAnim("Motion_Reset");
@@ -999,14 +1026,24 @@ public class Boss_Utan : BaseBoss
         float lopeLength = Status.swingLopeLength;
 
         // 올라가는 애니메이션 수행
+        Vector2 ascendStartPos = _rigid.position;
+        Vector2 ascendTargetPos = new Vector2(transform.position.x, swingPosition.y + 10);
+
         Visual?.PlayAnim("Swing_Prepare");
-        yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
+        yield return new WaitForSeconds(0.8f);
         if (curAttack == AttackPattern.None) { ResetSwing(); yield break; }
 
-        // 시작 위치로 이동
-        Vector2 startPos = swingPosition + new Vector2(startSide * lopeLength, 5f);
-        _rigid.MovePosition(startPos);
-        transform.position = startPos;
+        float ascendDuration = 0.3f;
+        float elapsed = 0f;
+        while (elapsed < ascendDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / ascendDuration;
+            _rigid.MovePosition(Vector2.Lerp(ascendStartPos, ascendTargetPos, t));
+            yield return null;
+        }
+
+        transform.position = swingPosition + new Vector2(startSide * lopeLength, 9f);
 
         Visual?.PlayAnim("Swing_Action");
 
@@ -1015,7 +1052,7 @@ public class Boss_Utan : BaseBoss
         float totalRotated = 0f;
 
         // 1타 진행
-        while (totalRotated < 205f)
+        while (totalRotated < 240f)
         {
             if (curAttack == AttackPattern.None || CurState != EnemyState.Attack) { ResetSwing(); yield break; }
             
@@ -1042,7 +1079,7 @@ public class Boss_Utan : BaseBoss
         swingPosition = new Vector2(player != null ? player.transform.position.x : transform.position.x, originY + Status.swingHeight);
 
         // 처음 시작위치 반대에 지정
-        startPos = swingPosition + new Vector2(startSide * lopeLength, 5f);
+        Vector2 startPos = swingPosition + new Vector2(startSide * lopeLength, 9f);
         _rigid.MovePosition(startPos);
         transform.position = startPos;
         
@@ -1053,7 +1090,7 @@ public class Boss_Utan : BaseBoss
         totalRotated = 0f; 
         float secondSwingSpeed = Status.swingSpeed;
         
-        float targetRotation = 205f; 
+        float targetRotation = 240f; 
 
         // 2타 진행
         while (totalRotated < targetRotation)
@@ -1076,8 +1113,25 @@ public class Boss_Utan : BaseBoss
 
         // 착지 및 마무리
         Debug.Log("[Utan] Double Swing End");
-
         transform.rotation = Quaternion.identity;
+
+        Vector2 descendStartPos = transform.position;
+        Vector2 descendTargetPos = new Vector2(transform.position.x, originY);
+        float descendDuration = 0.17f;
+        elapsed = 0f;
+        Visual?.PlayAnim("Swing_Landing");
+
+        while (elapsed < descendDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / descendDuration;
+            
+            _rigid.MovePosition(Vector2.Lerp(descendStartPos, descendTargetPos, t));
+            yield return null;
+        }
+        
+        transform.position = descendTargetPos;
+        _rigid.position = descendTargetPos;
         
         ValidateStage();
         Visual?.PlayAnim("Motion_Reset");
