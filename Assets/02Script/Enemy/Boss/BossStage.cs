@@ -35,13 +35,13 @@ public class BossStage : MonoBehaviour
     { 
         Stage.OnPlayerEnteredStage += OnStageEntered;
         if (bossIntro != null) bossIntro.stopped += OnIntroFinished;
-        StageManager.OnBossInit += OpenDoor;
+        //StageManager.OnBossInit += OpenDoor;
     }
     private void OnDisable() 
     { 
         Stage.OnPlayerEnteredStage -= OnStageEntered;
         if (bossIntro != null) bossIntro.stopped -= OnIntroFinished;
-        StageManager.OnBossInit -= OpenDoor;
+        //StageManager.OnBossInit -= OpenDoor;
     }
 
     private void Start()
