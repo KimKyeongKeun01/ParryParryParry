@@ -42,14 +42,6 @@ public class BossStatus_Utan : BaseBossStatus
 
     [Header(" === [Phase2] Pattern: Double Swing === ")]
     [Tooltip("더블스윙 쿨타임")] public float doubleSwingCooldown;
-
-    [Header(" === [Phase2] Pattern: Jump Smash === ")]
-    [Tooltip("점프 내려치기 쿨타임")] public float jumpSmashCooldown;
-    [Tooltip("현재 위치로부터 점프 최고 높이")] public float jumpSmashHeight;
-    [Tooltip("공중 체공 시간")] public float jumpSmashAirDuration;
-    [Tooltip("내려찍기 속도")] public float jumpSmashDropSpeed;
-    [Tooltip("내려찍기 데미지")] public int jummpSmashDamange = 1;
-    [Tooltip("내려찍기 넉백 파워")] public float jumpSmashKnockback;
     
     [Header(" === [Phase2] Pattern: Volleyball Combo === ")]
     [Tooltip("콤보 쿨타임")] public float comboCooldown;
