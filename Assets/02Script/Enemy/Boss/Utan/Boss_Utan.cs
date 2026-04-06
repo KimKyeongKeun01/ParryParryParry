@@ -141,12 +141,6 @@ public class Boss_Utan : BaseBoss
             {
                 nextPattern = AttackPattern.DoubleSwing;
             }
-            // [2페이즈 우선순위 3] 그로기 직후
-            // Todo 그로기 직후를 알리는 변수에 맞게 if문 내부 수정 필요
-            else if (canCombo)
-            {
-                nextPattern = AttackPattern.ComboRockSmash;
-            }
         }
         else
         {
@@ -159,12 +153,6 @@ public class Boss_Utan : BaseBoss
             else if (canSwing)
             {
                 nextPattern = AttackPattern.Swing;
-            }
-            // [1페이즈 우선순위 3] 그로기 직후
-            // Todo 그로기 직후를 알리는 변수에 맞게 if문 내부 수정 필요
-            else if (canRock)
-            {
-                nextPattern = AttackPattern.RockThrow;
             }
         }
 
