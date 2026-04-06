@@ -64,8 +64,8 @@ Material:
     m_Floats:
     - _BandWidth: 0.9
     - _CenterTileX: 0
-    - _CenterWorldX: 555.794
-    - _CenterWorldY: 4.9048634
+    - _CenterWorldX: 827.4302
+    - _CenterWorldY: 3.90458
     - _EdgeSoftness: 0
     - _EmissionStrength: 1.5
     - _FadeDuration: 0.25
@@ -82,7 +82,7 @@ Material:
     - _RowHalfHeight: 1
     - _RowSoftness: 0.4
     - _SpreadSoftness: 0.4
-    - _StartTime: 33.718815
+    - _StartTime: 24.994974
     - _TileWidth: 3
     - _TotalDuration: 0.5
     - _WaveSpeed: 15

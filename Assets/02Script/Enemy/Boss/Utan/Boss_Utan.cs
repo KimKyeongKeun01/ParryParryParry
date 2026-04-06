@@ -1105,6 +1105,15 @@ public class Boss_Utan : BaseBoss
         // TODO: 스테이지 매니저 보스 사망 처리
         Visual?.PlayAnim("IsBool", true);
     }
+    protected override void OnEnable()
+    {
+        //TODO: 여기에 패턴 전체 중지 넣을 것
+        base.OnEnable();
+    }
+    private void OnDisable()
+    {
+        isPlayingCutScene = true;
+    }
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {

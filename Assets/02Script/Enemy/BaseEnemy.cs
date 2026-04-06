@@ -211,7 +211,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IEnemy
         isDead = true;
 
         curState = EnemyState.Dead;
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
