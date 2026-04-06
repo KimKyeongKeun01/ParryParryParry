@@ -43,7 +43,7 @@ Material:
     - _Softness: 0.005
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
-    - _BorderColor: {r: 0, g: 0.666666, b: 3.9999995, a: 1}
+    - _BorderColor: {r: 155.74857, g: 155.74857, b: 155.74857, a: 1}
     - _FillColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

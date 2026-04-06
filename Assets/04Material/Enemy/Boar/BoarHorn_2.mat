@@ -53,7 +53,7 @@ Material:
     - _Thickness: 0.15
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 4.4979963, g: 1.4243655, b: 0, a: 1}
+    - _Color: {r: 4.503884, g: 4.503884, b: 4.503884, a: 0.078431375}
     - _PointA: {r: 0.5, g: 1, b: 0, a: 0}
     - _PointB: {r: 0, g: 0, b: 0, a: 0}
     - _PointC: {r: 1, g: 0, b: 0, a: 0}
