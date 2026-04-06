@@ -46,7 +46,7 @@ Material:
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _BaseFillColor: {r: 0, g: 0, b: 0, a: 1}
-    - _NeonColor: {r: 0, g: 0.5533332, b: 0.83, a: 1}
+    - _NeonColor: {r: 0, g: 1.1066664, b: 1.66, a: 1}
     - _PointA: {r: 0.5, g: 0.9, b: 0, a: 0}
     - _PointB: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _PointC: {r: 0.9, g: 0.1, b: 0, a: 0}

@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class Boss_Utan : BaseBoss
 {
-    public enum AttackPattern { None, ArmSmash, RockThrow, Swing, JumpSmash, ComboRockSmash, DoubleSwing }
+    public enum AttackPattern { None, ArmSmash, RockThrow, Swing, ArmSmash_Phase2, ComboRockSmash, DoubleSwing }
 
     private BossStatus_Utan Status => (BossStatus_Utan)_status;
     private BossVisual_Utan Visual => (BossVisual_Utan)_visual;
-
 
     
     [Header(" === Boss Utan === ")]
@@ -52,12 +51,11 @@ public class Boss_Utan : BaseBoss
         stunDuration = Status.exhaustedDuration;
         stunHitLimit = Status.exhaustedHitLimit;
         #endregion
-
-        isDead = true;
     }
 
     protected override void Update()
     {
+        if (isPlayingCutScene) return;
         if (isDead) return;
 
         if (CurState == EnemyState.Stun)
@@ -122,46 +120,41 @@ public class Boss_Utan : BaseBoss
 
         if (phase >= 2)
         {
-            nextPattern = AttackPattern.DoubleSwing;
-            /*
-            // [2페이즈 우선순위 1] 가까이 있을 때 스파이크
-            if (dist < Status.meleeRange && canCombo)
+            // [2페이즈 우선순위 1] 내려찍기 - 쿨타임마다 3 : 7
+            if (canArm)
             {
-                nextPattern = AttackPattern.ComboRockSmash; 
+                float rand = Random.Range(1f, 100f);
+                nextPattern = rand <= 30 ? AttackPattern.ArmSmash : AttackPattern.ArmSmash_Phase2;
             }
-            // [2페이즈 우선순위 2] 날아찍기
-            else if (canJumpSmash)
+            // [2페이즈 우선순위 2] 더블스윙 - 내려찍기가 쿨타임인 경우
+            else if (canDoubleSwing)
             {
-                nextPattern = AttackPattern.JumpSmash;
+                nextPattern = AttackPattern.DoubleSwing;
             }
-            // [2페이즈 우선순위 3] 나머지가 쿨일 때 기본 두팔찍기
-            else
-                nextPattern = AttackPattern.ArmSmash;
-                */
+            // [2페이즈 우선순위 3] 그로기 직후
+            // Todo 그로기 직후를 알리는 변수에 맞게 if문 내부 수정 필요
+            else if (canCombo)
+            {
+                nextPattern = AttackPattern.ComboRockSmash;
+            }
         }
         else
         {
-            // [1페이즈 우선순위 1] 멀리 있으면 스윙 시도
-            if (canSwing && dist > Status.meleeRange * 0.7f)
-            {
-                nextPattern = AttackPattern.Swing;
-            }
-            // [1페이즈 우선순위 2] 근접 상황
-            else if (dist <= Status.meleeRange && canArm)
+            // [1페이즈 우선순위 1] 내려찍기 - 쿨타임마다
+            if (canArm)
             {
                 nextPattern = AttackPattern.ArmSmash;
             }
-            // [1페이즈 우선순위 3] 원거리 상황
-            else if (dist >= Status.meleeRange && canRock)
+            // [1페이즈 우선순위 2] 바야바 - 내려찍기가 쿨타임인 경우
+            else if (canSwing)
+            {
+                nextPattern = AttackPattern.Swing;
+            }
+            // [1페이즈 우선순위 3] 그로기 직후
+            // Todo 그로기 직후를 알리는 변수에 맞게 if문 내부 수정 필요
+            else if (canRock)
             {
                 nextPattern = AttackPattern.RockThrow;
-            }
-            // [1페이즈 우선순위 4] Fallback (남는 패턴 중 가능한 것 실행)
-            else
-            {
-                if (canRock) nextPattern = AttackPattern.RockThrow;
-                else if (canSwing) nextPattern = AttackPattern.Swing;
-                else if (canArm) nextPattern = AttackPattern.ArmSmash;
             }
         }
 
@@ -181,20 +174,19 @@ public class Boss_Utan : BaseBoss
         originY = transform.position.y;
 
         // 패턴 시작 시 플레이어 방향 보기
-        float lookDir = Mathf.Sign(Player.Instance.transform.position.x - transform.position.x);
-        Visual.Flip(lookDir > 0);
+        LookAtPlayer();
 
         curAttack = (AttackPattern)(index + 1);
         attackTimer = 10f;
 
         switch (curAttack)
         {
-            case AttackPattern.ArmSmash:    yield return Co_ArmSmash();     break;
-            case AttackPattern.RockThrow:   yield return Co_RockThrow();    break;
-            case AttackPattern.Swing:       yield return Co_Swing();        break;
-            case AttackPattern.JumpSmash:   yield return Co_JumpSmash();    break;
-            case AttackPattern.ComboRockSmash: yield return Co_ComboRockSmash();    break;
-            case AttackPattern.DoubleSwing: yield return Co_DoubleSwing();  break;
+            case AttackPattern.ArmSmash:        yield return Co_ArmSmash();         break;
+            case AttackPattern.ArmSmash_Phase2: yield return Co_ArmSmash_Phase2();  break;
+            case AttackPattern.RockThrow:       yield return Co_RockThrow();        break;
+            case AttackPattern.Swing:           yield return Co_Swing();            break;
+            case AttackPattern.ComboRockSmash:  yield return Co_ComboRockSmash();   break;
+            case AttackPattern.DoubleSwing:     yield return Co_DoubleSwing();      break;
         }
 
         // 3. 패턴 종료 후 상태 리셋
@@ -262,7 +254,7 @@ public class Boss_Utan : BaseBoss
         facingX = dirX;
     }
 
-
+    /*
     /// <summary> 공격 직전 플레이어를 향해 이동하는 메소드 </summary>
     private IEnumerator Co_MoveToRange(float stopDistance, float maxTime)
     {
@@ -297,6 +289,7 @@ public class Boss_Utan : BaseBoss
         // 정지
         StopMove();
     }
+    */
     #endregion
 
     #region 공격
@@ -307,12 +300,12 @@ public class Boss_Utan : BaseBoss
         patternCoroutine = StartCoroutine(Co_PatternCycle());
     }
 
-    #region 양팔 휘두르기
+    #region 내려찍기
     private IEnumerator Co_ArmSmash()
     {
         Debug.Log("[Utan] Arm Smash!");
-        yield return StartCoroutine(Co_MoveToRange(Status.armSmashStopDistance, Status.maxApproachTime));
 
+        // 팔 들어올리기
         yield return new WaitForSeconds(Status.defultWindUpTime);
         Visual?.PlayAnim("ArmSmash_Prepare");
         yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
@@ -320,11 +313,56 @@ public class Boss_Utan : BaseBoss
         // 패턴 안전장치
         if (curAttack == AttackPattern.None) yield break;
 
-        Visual?.PlayAnim("ArmSmash_Action");
-        yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
-        yield return new WaitForSeconds(Status.defultWindDownTime);
+        // 플레이어의 머리 위 armSmashMeleeRange 옆에 텔레포트
+        Player player = Player.Instance;
+        Vector2 startPos = _rigid.position; 
+        float targetX = player.transform.position.x + (facingX < 0? 1 : -1) * Status.armSmashMeleeRange;
+        Vector2 targetPos = new Vector2(targetX, startPos.y + Status.armSmashHeight);
+        _rigid.position = targetPos;
 
+        // airduration만큼 공중에서 대기
+        yield return new WaitForSeconds(Status.armSmashAirDuration);
+        if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
+        {
+            yield break;
+        }
+        LookAtPlayer();
+
+        // 포물선을 그리며 플레이어에게 내려찍기
+        Vector2 fallStartPos = _rigid.position;
+        Vector2 landingPos = new Vector2(player.transform.position.x, originY);
+
+        float dropDuration = Status.dropDuration;
+        float arcHeight = Status.arcHeight;
+        float elapsed = 0f;
+        bool isPlaySmash = false;
+
+        while (elapsed < dropDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / dropDuration;   // 진행률
+            float nextX = Mathf.Lerp(fallStartPos.x, landingPos.x, t);
+            float baseY = Mathf.Lerp(fallStartPos.y, landingPos.y, t);
+            float arcY = Mathf.Sin(t * Mathf.PI) * arcHeight;
+
+            if (!isPlaySmash && elapsed >= 0.4f)
+            {
+                Visual?.PlayAnim("ArmSmash_Action");
+                isPlaySmash = true;
+            }
+
+            float nextY = baseY + arcY;
+
+            _rigid.MovePosition(new Vector2(nextX, nextY));
+            yield return null;
+        }
+
+        // 착지 후 복구 및 종료
+        ValidateStage();
+        LookAtPlayer();
         StopMove();
+        _rigid.position = new Vector2(_rigid.position.x, originY);
         lastArmSmashTime = Time.time;
     }
 
@@ -376,6 +414,91 @@ public class Boss_Utan : BaseBoss
             Debug.Log("[Utan] Attack Pattern: Arm Smash, Player: Hit!");
             player.TakeDamaged(Status.armSmashDamage); // Status에 데미지 설정이 있다고 가정
         }
+    }
+    #endregion
+
+    #region 2페이즈 내려찍기
+    private IEnumerator Co_ArmSmash_Phase2()
+    {
+        Debug.Log("[Utan] Phase2 Arm Smash!");
+
+        // 패턴 안전장치
+        if (curAttack == AttackPattern.None) yield break;
+
+        Player player = Player.Instance;
+        Vector2 startPos = _rigid.position;
+        
+        // 팔 들어올리기
+        Visual?.PlayAnim("ArmSmash_Prepare");
+        yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
+
+        // 가짜 텔레포트
+        float targetX = player.transform.position.x + (facingX < 0? 1 : -1) * Status.armSmashMeleeRange;
+        Vector2 targetPos = new Vector2(targetX, originY + Status.armSmashHeight);
+        _rigid.position = targetPos;
+
+        // airduration만큼 공중에서 대기
+        LookAtPlayer();
+        yield return new WaitForSeconds(Status.armSmashAirDuration_Phase2);
+        if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
+        {
+            yield break;
+        }
+
+        // 두 번째 텔레포트
+        targetX = player.transform.position.x + (facingX < 0? -1 : 1) * Status.armSmashMeleeRange;
+        targetPos = new Vector2(targetX, originY + Status.armSmashHeight);
+        _rigid.position = targetPos;
+
+        yield return new WaitForSeconds(Status.armSmashAirDuration);
+        if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
+        {
+            yield break;
+        }
+        LookAtPlayer();
+
+        // 애니메이션과 동시에 내려찍기 수행
+        Vector2 fallStartPos = _rigid.position;
+        Vector2 landingPos = new Vector2(player.transform.position.x, originY);
+
+        float dropDuration = Status.dropDuration;
+        float arcHeight = Status.arcHeight;
+        float elapsed = 0f;
+        bool isPlaySmash = false;
+
+        while (elapsed < dropDuration)
+        {
+            if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
+            {
+                yield break;
+            }
+
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / dropDuration;   // 진행률
+            float nextX = Mathf.Lerp(fallStartPos.x, landingPos.x, t);
+            float baseY = Mathf.Lerp(fallStartPos.y, landingPos.y, t);
+            float arcY = Mathf.Sin(t * Mathf.PI) * arcHeight;
+
+            // 1페이즈와 동일한 타이밍에 액션 애니메이션 재생
+            if (!isPlaySmash && elapsed >= 0.4f)
+            {
+                Visual?.PlayAnim("ArmSmash_Action");
+                isPlaySmash = true;
+            }
+
+            float nextY = baseY + arcY;
+
+            _rigid.MovePosition(new Vector2(nextX, nextY));
+            yield return null;
+        }
+
+        // 착지 후 복구 및 종료
+        ValidateStage();
+        LookAtPlayer();
+        StopMove();
+        _rigid.position = new Vector2(_rigid.position.x, originY);
+        lastArmSmashTime = Time.time;
     }
     #endregion
 
@@ -495,14 +618,25 @@ public class Boss_Utan : BaseBoss
         originY = transform.position.y;
 
         // 나무 오르기
+
+        Vector2 ascendStartPos = _rigid.position;
+        Vector2 ascendTargetPos = new Vector2(transform.position.x, swingPosition.y + 10);
+
         Visual?.PlayAnim("Swing_Prepare");
-        yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
+        yield return new WaitForSeconds(0.8f);
         if (curAttack == AttackPattern.None) { ResetSwing(); yield break; }
 
-        // 실제 위치 이동
-        Vector2 startPos = swingPosition + new Vector2(startSide * lopeLength, 5f);
-        _rigid.MovePosition(startPos);
-        transform.position = startPos;
+        float ascendDuration = 0.3f;
+        float elapsed = 0f;
+        while (elapsed < ascendDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / ascendDuration;
+            _rigid.MovePosition(Vector2.Lerp(ascendStartPos, ascendTargetPos, t));
+            yield return null;
+        }
+        transform.position = swingPosition + new Vector2(startSide * lopeLength, 9f);;
 
         Visual?.PlayAnim("Swing_Action");
         Debug.Log("[Utan] Swing!");
@@ -513,7 +647,7 @@ public class Boss_Utan : BaseBoss
 
         float startAngle = currentAngle;
         float totalRotated = 0f;
-        float targetRotation = 205f; // 총 205도 회전
+        float targetRotation = 240f;
 
         while (totalRotated < targetRotation)
         {
@@ -522,7 +656,6 @@ public class Boss_Utan : BaseBoss
                 ResetSwing();
                 yield break;
             }
-            
             
             // swingSpeed를 각속도로 사용하여 각도 업데이트
             // (speed가 높을수록 초당 더 많은 각도를 회전)
@@ -550,6 +683,24 @@ public class Boss_Utan : BaseBoss
         Debug.Log("[Utan] Vine Swing End");
         transform.rotation = Quaternion.identity;
 
+        Vector2 descendStartPos = transform.position;
+        Vector2 descendTargetPos = new Vector2(transform.position.x, originY);
+        float descendDuration = 0.17f;
+        elapsed = 0f;
+        Visual.PlayAnim("Swing_Landing");
+
+        while (elapsed < descendDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / descendDuration;
+            
+            _rigid.MovePosition(Vector2.Lerp(descendStartPos, descendTargetPos, t));
+            yield return null;
+        }
+
+        transform.position = descendTargetPos;
+        _rigid.position = descendTargetPos;
+
         ValidateStage();    // 착지 위치 x값 보정
         Visual.PlayAnim("Motion_Reset");
         yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
@@ -566,6 +717,7 @@ public class Boss_Utan : BaseBoss
     {
         transform.rotation = Quaternion.identity;
         transform.position = new Vector2(transform.position.x, originY);
+        LookAtPlayer();
     }
 
     public void OnSwingHit(Player player)
@@ -600,9 +752,8 @@ public class Boss_Utan : BaseBoss
     }
     #endregion
 
-    
+    /*
     #region 점프 내려치기
-
     private IEnumerator Co_JumpSmash()
     {
         Debug.Log("[Utan] Phase 2: Jump Smash!");
@@ -681,14 +832,16 @@ public class Boss_Utan : BaseBoss
         lastJumpSmashTime = Time.time;
     }
     #endregion
+    */
 
     #region 스파이크 콤보
     private IEnumerator Co_ComboRockSmash()
     {
-        Debug.Log("[Utan] Phase 2: Volleyball Spike Combo!");
+        Debug.Log("[Utan] Phase 2: Volleyball Spike Combo");
         Player player = Player.Instance;
         if (player == null) yield break;
 
+        /*
         // 백스텝 (거리 벌리기)
         float elapsed = 0f;
         float backstepMaxTime = Status.comboBackstepTime;
@@ -709,6 +862,7 @@ public class Boss_Utan : BaseBoss
         }
         StopMove();
         if (CurState != EnemyState.Attack) yield break;
+        */
 
         // 공을 토스
         LookAtPlayer();
@@ -745,7 +899,7 @@ public class Boss_Utan : BaseBoss
             if (actualTossHeight < 0.5f) actualTossHeight = 0.5f;
 
             // 포물선 물리 계산 (공식: h = 0.5 * g * t^2)
-            float neededGravity = (2f * actualTossHeight) / (timeToApex * timeToApex);
+            float neededGravity = 2f * actualTossHeight / (timeToApex * timeToApex);
             float gravityScale = neededGravity / Mathf.Abs(Physics2D.gravity.y);
             
             // 계산된 중력과 속도를 강제 주입
@@ -778,7 +932,7 @@ public class Boss_Utan : BaseBoss
 
         // 보스가 도약하는 시간 = 공이 최고점에 도달하기까지 남은 시간
         float bossJumpTime = timeToApex - bossWaitTime; 
-        elapsed = 0f;
+        float elapsed = 0f;
 
         while (elapsed < bossJumpTime)
         {
@@ -871,14 +1025,25 @@ public class Boss_Utan : BaseBoss
         swingPosition = new Vector2(player.transform.position.x, pivotY);
         float lopeLength = Status.swingLopeLength;
 
+        // 올라가는 애니메이션 수행
+        Vector2 ascendStartPos = _rigid.position;
+        Vector2 ascendTargetPos = new Vector2(transform.position.x, swingPosition.y + 10);
+
         Visual?.PlayAnim("Swing_Prepare");
-        yield return new WaitUntil(() => Visual.IsAnimFinished || curAttack == AttackPattern.None);
+        yield return new WaitForSeconds(0.8f);
         if (curAttack == AttackPattern.None) { ResetSwing(); yield break; }
 
-        // 시작 위치로 이동
-        Vector2 startPos = swingPosition + new Vector2(startSide * lopeLength, 5f);
-        _rigid.MovePosition(startPos);
-        transform.position = startPos;
+        float ascendDuration = 0.3f;
+        float elapsed = 0f;
+        while (elapsed < ascendDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / ascendDuration;
+            _rigid.MovePosition(Vector2.Lerp(ascendStartPos, ascendTargetPos, t));
+            yield return null;
+        }
+
+        transform.position = swingPosition + new Vector2(startSide * lopeLength, 9f);
 
         Visual?.PlayAnim("Swing_Action");
 
@@ -887,11 +1052,11 @@ public class Boss_Utan : BaseBoss
         float totalRotated = 0f;
 
         // 1타 진행
-        while (totalRotated < 205f)
+        while (totalRotated < 240f)
         {
             if (curAttack == AttackPattern.None || CurState != EnemyState.Attack) { ResetSwing(); yield break; }
             
-            float angleStep = Status.swingSpeed * 10f * Time.deltaTime;
+            float angleStep = Status.swingSpeed * 10f * Time.deltaTime; // deltaTime당 이동 각도
             totalRotated += angleStep;
             currentAngle += angleStep * -startSide; // 진행 방향
 
@@ -900,7 +1065,7 @@ public class Boss_Utan : BaseBoss
             float nextY = swingPosition.y + Mathf.Sin(rad) * radius;
 
             transform.position = new Vector2(nextX, nextY);
-            transform.rotation = Quaternion.Euler(0, 0, currentAngle + 90f);
+            transform.rotation = Quaternion.Euler(0, 0, currentAngle + 90f);    // 각에 맞게 rotation 전환
 
             yield return null;
         }
@@ -910,8 +1075,13 @@ public class Boss_Utan : BaseBoss
         player = Player.Instance;
         LookAtPlayer();
         
-        // 피벗(나뭇가지)을 기존 1페이즈 스윙처럼 기본 높이로 내림
+        // 기존 1페이즈 스윙 높이로 피벗을 낮춤
         swingPosition = new Vector2(player != null ? player.transform.position.x : transform.position.x, originY + Status.swingHeight);
+
+        // 처음 시작위치 반대에 지정
+        Vector2 startPos = swingPosition + new Vector2(startSide * lopeLength, 9f);
+        _rigid.MovePosition(startPos);
+        transform.position = startPos;
         
         // 공중에 멈춘 현재 위치 기준으로 반지름과 각도 새로 계산
         radius = Vector2.Distance(transform.position, swingPosition);
@@ -920,7 +1090,7 @@ public class Boss_Utan : BaseBoss
         totalRotated = 0f; 
         float secondSwingSpeed = Status.swingSpeed;
         
-        float targetRotation = 205f; 
+        float targetRotation = 240f; 
 
         // 2타 진행
         while (totalRotated < targetRotation)
@@ -943,8 +1113,25 @@ public class Boss_Utan : BaseBoss
 
         // 착지 및 마무리
         Debug.Log("[Utan] Double Swing End");
-
         transform.rotation = Quaternion.identity;
+
+        Vector2 descendStartPos = transform.position;
+        Vector2 descendTargetPos = new Vector2(transform.position.x, originY);
+        float descendDuration = 0.17f;
+        elapsed = 0f;
+        Visual?.PlayAnim("Swing_Landing");
+
+        while (elapsed < descendDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / descendDuration;
+            
+            _rigid.MovePosition(Vector2.Lerp(descendStartPos, descendTargetPos, t));
+            yield return null;
+        }
+        
+        transform.position = descendTargetPos;
+        _rigid.position = descendTargetPos;
         
         ValidateStage();
         Visual?.PlayAnim("Motion_Reset");
@@ -1049,7 +1236,7 @@ public class Boss_Utan : BaseBoss
             if (player == null) return;
 
             // 스윙 패턴 충돌
-            if (curAttack == AttackPattern.Swing)
+            if (curAttack == AttackPattern.Swing || curAttack == AttackPattern.DoubleSwing)
             {
                 StartCoroutine(Co_IgnorePlayer(player, 1f));
                 OnSwingHit(player);
@@ -1147,14 +1334,12 @@ public class Boss_Utan : BaseBoss
 
         #region 근거리 범위
         Gizmos.color = Color.purple;
-        Gizmos.DrawWireSphere(pos, Status.armSmashStopDistance);
         
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(pos, Status.meleeRange);
 #if UNITY_EDITOR
         Handles.Label(pos + Vector2.up * (Status.detectRange + labelOffset), "Detect Range", GetLabelStyle(Color.gray));
-        Handles.Label(pos + Vector2.up * (Status.armSmashStopDistance + labelOffset), "Smash Range", GetLabelStyle(Color.purple));
         Handles.Label(pos + Vector2.up * (Status.meleeRange + labelOffset), "Melee Range", GetLabelStyle(Color.red));
         Handles.Label(pos + Vector2.up * (Status.midRange + labelOffset), "Mid Range", GetLabelStyle(Color.red));
 #endif

@@ -1,6 +1,7 @@
-using System.Collections;
-using UnityEngine;
 using DG.Tweening;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerVisual : MonoBehaviour
 {
@@ -45,7 +46,11 @@ public class PlayerVisual : MonoBehaviour
     [SerializeField] private Ease dashSquashOutEase = Ease.OutBack;
 
     [Header("Dash Trail")]
-    [SerializeField] private Color dashTrailColor = new Color(1f, 1f, 1f, 0.45f);
+    [SerializeField] private Material dashTrailAfterImageMaterial;
+    [SerializeField] private Color dashTrailStartColor = new Color(1f, 1f, 1f, 0.45f);
+    [SerializeField] private Color dashTrailEndColor = new Color(1f, 1f, 1f, 0.45f);
+    [SerializeField] private float dashTrailStartIntensity = 1f;
+    [SerializeField] private float dashTrailEndIntensity = 1f;
     [SerializeField] private float dashTrailSpawnInterval = 0.03f;
     [SerializeField] private float dashTrailLifetime = 0.12f;
     [SerializeField] private int dashTrailSortingOrderOffset = -1;
@@ -63,7 +68,16 @@ public class PlayerVisual : MonoBehaviour
 
     [SerializeField] private CameraShakeProfile slamShakeProfile;
 
-    #region State
+    private sealed class DashTrailAfterImageData
+    {
+        public GameObject trailObject;
+        public SpriteRenderer renderer;
+        public Material material;
+        public float fadeT;
+        public float sourceAlpha;
+        public float colorT;
+    }
+
     private Coroutine blinkCor;
     private Sequence squashSequence;
     private CapsuleCollider2D capsuleCollider;
@@ -77,7 +91,7 @@ public class PlayerVisual : MonoBehaviour
     private ParticleSystem moveParticles;
     private ParticleSystem jumpParticles;
     private ParticleSystem landingParticles;
-    #endregion
+    private readonly List<DashTrailAfterImageData> activeDashTrailAfterImages = new List<DashTrailAfterImageData>();
 
     #region Setup
     private void Reset()
@@ -587,24 +601,103 @@ public class PlayerVisual : MonoBehaviour
 
         var trailRenderer = trailObject.AddComponent<SpriteRenderer>();
         trailRenderer.sprite = modelSpriteRenderer.sprite;
-        trailRenderer.sharedMaterial = modelSpriteRenderer.sharedMaterial;
         trailRenderer.sortingLayerID = modelSpriteRenderer.sortingLayerID;
         trailRenderer.sortingOrder = modelSpriteRenderer.sortingOrder + dashTrailSortingOrderOffset;
         trailRenderer.flipX = modelSpriteRenderer.flipX;
         trailRenderer.flipY = modelSpriteRenderer.flipY;
+        trailRenderer.color = Color.white;
 
-        Color trailColor = dashTrailColor;
-        trailColor.a *= modelSpriteRenderer.color.a;
-        trailRenderer.color = trailColor;
+        Material runtimeMaterial = null;
 
-        trailRenderer
-            .DOFade(0f, dashTrailLifetime)
+        if (dashTrailAfterImageMaterial != null)
+            runtimeMaterial = new Material(dashTrailAfterImageMaterial);
+        else if (modelSpriteRenderer.sharedMaterial != null)
+            runtimeMaterial = new Material(modelSpriteRenderer.sharedMaterial);
+
+        if (runtimeMaterial != null)
+            trailRenderer.material = runtimeMaterial;
+
+        var afterImageData = new DashTrailAfterImageData
+        {
+            trailObject = trailObject,
+            renderer = trailRenderer,
+            material = runtimeMaterial,
+            fadeT = 0f,
+            sourceAlpha = modelSpriteRenderer.color.a,
+            colorT = 0f
+        };
+
+        activeDashTrailAfterImages.Add(afterImageData);
+        RefreshDashTrailAfterImageColors();
+
+        DOTween.To(
+                () => afterImageData.fadeT,
+                value =>
+                {
+                    afterImageData.fadeT = value;
+                    ApplyDashTrailAfterImageColor(afterImageData);
+                },
+                1f,
+                dashTrailLifetime
+            )
             .SetEase(Ease.OutQuad)
             .OnComplete(() =>
             {
-                if (trailObject != null)
-                    Destroy(trailObject);
+                activeDashTrailAfterImages.Remove(afterImageData);
+                RefreshDashTrailAfterImageColors();
+                ReleaseDashTrailAfterImage(afterImageData);
             });
+    }
+    private void RefreshDashTrailAfterImageColors()
+    {
+        for (int i = activeDashTrailAfterImages.Count - 1; i >= 0; i--)
+        {
+            DashTrailAfterImageData afterImageData = activeDashTrailAfterImages[i];
+            if (afterImageData == null || afterImageData.renderer == null)
+                activeDashTrailAfterImages.RemoveAt(i);
+        }
+
+        int count = activeDashTrailAfterImages.Count;
+        for (int i = 0; i < count; i++)
+        {
+            DashTrailAfterImageData afterImageData = activeDashTrailAfterImages[i];
+            afterImageData.colorT = count <= 1 ? 0f : (float)i / (count - 1);
+            ApplyDashTrailAfterImageColor(afterImageData);
+        }
+    }
+
+    private void ApplyDashTrailAfterImageColor(DashTrailAfterImageData afterImageData)
+    {
+        if (afterImageData == null || afterImageData.renderer == null)
+            return;
+
+        Color trailColor = Color.Lerp(dashTrailStartColor, dashTrailEndColor, afterImageData.colorT);
+        float trailIntensity = Mathf.Lerp(dashTrailStartIntensity, dashTrailEndIntensity, afterImageData.colorT);
+
+        trailColor.a *= afterImageData.sourceAlpha * (1f - afterImageData.fadeT);
+
+        Color hdrTrailColor = new Color(
+            trailColor.r * trailIntensity,
+            trailColor.g * trailIntensity,
+            trailColor.b * trailIntensity,
+            trailColor.a
+        );
+
+        afterImageData.renderer.color = Color.white;
+
+        if (afterImageData.material != null && afterImageData.material.HasProperty("_NeonColor"))
+            afterImageData.material.SetColor("_NeonColor", hdrTrailColor);
+    }
+    private void ReleaseDashTrailAfterImage(DashTrailAfterImageData afterImageData)
+    {
+        if (afterImageData == null)
+            return;
+
+        if (afterImageData.material != null)
+            Destroy(afterImageData.material);
+
+        if (afterImageData.trailObject != null)
+            Destroy(afterImageData.trailObject);
     }
 
     private IEnumerator BlinkCoroutine()

@@ -53,9 +53,15 @@ public class CameraShakeController : MonoBehaviour
     /// 방향 없이 재생.
     /// fallback 방향 사용(Vector2.down)
     /// </summary>
-    /// <param name="profile">적용할 흔들림 프로필</param>
-    /// <param name="source">흔들림을 방출할 Impulse Source. null이면 defaultSource 사용</param>
-    /// <param name="extraForceScale">추가 세기 배율</param>
+    public void Play(CameraShakeProfile profile, float extraForceScale, CinemachineImpulseSource source = null)
+    {
+        Play(profile, fallbackDirection, source, extraForceScale);
+    }
+
+    /// <summary>
+    /// 방향 없이 재생.
+    /// fallback 방향 사용(Vector2.down)
+    /// </summary>
     public void Play(CameraShakeProfile profile, CinemachineImpulseSource source = null, float extraForceScale = 1f)
     {
         Play(profile, fallbackDirection, source, extraForceScale);

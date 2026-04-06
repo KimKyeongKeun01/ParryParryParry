@@ -11,13 +11,13 @@ public class TileNeighborData : MonoBehaviour
     [SerializeField] private Material targetMaterial;
     [SerializeField] private Transform feetPoint;
 
-    [Header("»óÇÏÁÂ¿ì Å¸ÀÏ °è»ê")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½")]
     [SerializeField] private string tileDataTexProperty = "_TileDataTex";
     [SerializeField] private string tilemapOriginProperty = "_TilemapOrigin";
     [SerializeField] private string tilemapSizeProperty = "_TilemapSize";
     [SerializeField] private string cellSizeProperty = "_CellSize";
 
-    [Header("¹ßÀÚ±¹")]
+    [Header("ï¿½ï¿½ï¿½Ú±ï¿½")]
     [SerializeField] private string stepHeatTexProperty = "_StepHeatTex";
     [SerializeField] private string changeColorProperty = "_ChangeColor";
     [SerializeField] private Color changeColor = Color.cyan;
@@ -26,7 +26,7 @@ public class TileNeighborData : MonoBehaviour
     [SerializeField] private int maxHeatTextureHeight = 100;
     [SerializeField] private float sampleOffsetY = 0.05f;
     
-    [Header("½½·¥")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float waveSpeed = 10f;
     [SerializeField] private Color effectColor = Color.cyan;
     [SerializeField] private float centerWorldX = 0f;
@@ -35,9 +35,8 @@ public class TileNeighborData : MonoBehaviour
     [SerializeField] private float spreadSoftness = .4f;
     [SerializeField] private float rowHalfHeight = 1f;
     [SerializeField] private float rowSoftness = .4f;
-    [Header("Å×½ºÆ® ¿ë")]
+    [Header("ï¿½×½ï¿½Æ® ï¿½ï¿½")]
     [SerializeField] private Transform playerFeetPos;
-    [SerializeField] private PlayerController playerController;
 
     private Texture2D dataTexture;
     private Texture2D stepHeatTexture;
@@ -61,7 +60,7 @@ public class TileNeighborData : MonoBehaviour
 
     private bool hasValidReferences;
 
-    // width/height -> heat texture ÁÂÇ¥ ¸ÅÇÎ¿ë Ä³½Ã
+    // width/height -> heat texture ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½Î¿ï¿½ Ä³ï¿½ï¿½
     private float heatScaleX;
     private float heatScaleY;
 
@@ -73,7 +72,7 @@ public class TileNeighborData : MonoBehaviour
     private void Start()
     {
         Bake();
-        playerController.onSlamImpact += PlayWave;
+        Player.Instance.controller.onSlamImpact += PlayWave;
     }
     private void CacheReferenceState()
     {
@@ -431,7 +430,7 @@ public class TileNeighborData : MonoBehaviour
 
     private void OnDestroy()
     {
-        playerController.onSlamImpact -= PlayWave;
+        Player.Instance.controller.onSlamImpact -= PlayWave;
         DestroyTexture(dataTexture);
         DestroyTexture(stepHeatTexture);
     }

@@ -46,7 +46,6 @@ public class BossStage : MonoBehaviour
         if (bossScript != null)
         {
             bossScript = bossObj.GetComponent<BaseBoss>();
-            bossScript.isDead = true;
         }
 
         // 출입구 세팅
@@ -85,29 +84,52 @@ public class BossStage : MonoBehaviour
         hasBossStarted = true;
         Debug.Log($"[BossStage] {gameObject.name}: Boss Intro Start.");
 
-        // 1. 입구 문 닫기
-        if (entrance_Door != null)
-        {
-            entrance_Door.SetExternalSignal(true);
-        }
-
         // 2. 보스 컷신
-        if (bossIntro != null)
-        {
-            isCutscenePlaying = true;
-
-            bossObj.SetActive(true);
-            bossIntro.time = 0;
-            bossIntro.Evaluate();
-            bossIntro.Play();
-        }
-        else
+        if (bossIntro == null)
         {
             StartBattle();
+
+            return;
         }
+
+        Player.Instance.controller.Setup();
+        Player.Instance.isPlaying = false;
+        
+        bossIntro.time = 0;
+        bossIntro.Evaluate();
+        bossIntro.Play();
+
+        isCutscenePlaying = true;
+        bossObj.SetActive(true);
     }
 
-    public void OnIntroFinished(PlayableDirector director)
+    public void S_DoorClose()
+    {
+        // 입구 문 닫기
+        if (entrance_Door != null) entrance_Door.SetExternalSignal(true);
+    }
+
+    public void S_LetterboxIn()
+    {
+        UIManager.Instance.cutScene.PlayLetterboxIn();
+    }
+
+    public void S_LetterboxOut()
+    {
+        UIManager.Instance.cutScene.PlayLetterboxOut();
+    }
+
+    public void S_HUDIn()
+    {
+        UIManager.Instance.FadeHUDIn();
+    }
+
+    public void S_HUDOut()
+    {
+        UIManager.Instance.FadeHUDOut();
+    }
+
+    public void OnIntroFinished(PlayableDirector director)  // 컷신 종료 
     {
         if (director != bossIntro) return;
         if (!isCutscenePlaying || stageCleared) return;
@@ -118,11 +140,11 @@ public class BossStage : MonoBehaviour
     }
 
 
-    private void StartBattle()
+    private void StartBattle()  // 컷신 종료 후 보스 전투 시작
     {
         if (isBossBattle) return;
 
-        bossScript.isDead = false;
+        Player.Instance.isPlaying = true;
         isBossBattle = true;
         isCutscenePlaying = false;
 
@@ -137,7 +159,7 @@ public class BossStage : MonoBehaviour
         }
     }
 
-    public void BossClear()
+    public void BossClear() // 보스 사망시 실행
     {
         if (stageCleared) return;
         stageCleared = true;
