@@ -58,7 +58,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 7d7ff05b8d0f57c46aa2b10ed4e76a66, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,11 +81,11 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
-  m_Color: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 0.10980392, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 1, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -223,16 +223,21 @@ MonoBehaviour:
   moveSpeed: 5
   detectRangeLimit: 15
   evadeRange: 5
-  evadeSpeed: 40
+  evadeLength: 5
   evadeCooldown: 0.5
+  isEvading: 0
   bananaPrefab: {fileID: 8935413190152788703, guid: d52ea79ff5e81124a99201719ab68da3, type: 3}
   throwPoint: {fileID: 3868553388181464066}
   throwInterval: 2.5
   bananaSpeed: 10
   bananaApexOffset: 1.5
+  wallCheckDistance: 1
+  edgeCheckForwardOffset: 0.8
+  edgeCheckDistance: 1.5
   _sprite: {fileID: 8732108828631885706}
-  windupColor: {r: 1, g: 0, b: 0, a: 1}
-  stunColor: {r: 0.49019608, g: 0.4509804, b: 0, a: 1}
+  windupColor: {r: 0.050980393, g: 0.02745098, b: 0.011764706, a: 1}
+  stunColor: {r: 0.105882354, g: 0.07450981, b: 0, a: 1}
+  canNotMove: 0
 --- !u!1 &6004707215290832104
 GameObject:
   m_ObjectHideFlags: 0

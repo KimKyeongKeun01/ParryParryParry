@@ -33,7 +33,11 @@ public class Boss_Met : BaseBoss
     [Header("Stamp Drive")]
     [SerializeField] private bool hitStamp = false;
     [SerializeField] private bool isStamping = false;
-    
+
+    [Header("Wave Effect")]
+    [SerializeField] private Transform headPoint;
+    [SerializeField] private FullscreenShockwaveController fullscreenShockwaveController;
+
 
     private bool isExhausted = false;
 
@@ -50,7 +54,7 @@ public class Boss_Met : BaseBoss
     private float groundSlamOriginY;
     private Tween _groundSlamTween;
 
-    private bool isRecovering = false;
+    [SerializeField] private bool isRecovering = false;
 
     protected override void Awake()
     {
@@ -73,7 +77,7 @@ public class Boss_Met : BaseBoss
 
     protected override void Update()
     {
-        //if (isPlayingCutScene) return;
+        if (isPlayingCutScene) return;
         if (isDead) return;
 
         // 스턴 시 패턴 초기화
@@ -133,10 +137,22 @@ public class Boss_Met : BaseBoss
             exhaustedPos = _rigid.position;
         }
         Debug.Log(exhaustedPos);
-        _rigid.MovePosition(exhaustedPos + Vector2.left * facingX * 5);
+        if(exhaustedPos.y > 3f)
+        {
+            exhaustedPos.y = 2.94f;
+        }
+        _rigid.MovePosition(exhaustedPos + Vector2.left * facingX );
         _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
-        isExhausted = false;
+        StartCoroutine(WaitExhaustedMove(exhaustedPos));
 
+    }
+
+    private IEnumerator WaitExhaustedMove(Vector2 pos)
+    {
+        if (Vector2.Distance(_rigid.position, pos)<0.1)
+            yield return null;
+        isExhausted = false;
+        yield return null;
     }
 
     protected override int SelectNextPattern()
@@ -154,15 +170,16 @@ public class Boss_Met : BaseBoss
         bool canStamp = curTime - lastStampTime >= Status.stampCooldown;
 
         AttackPattern next = AttackPattern.None;
-
+        Debug.Log(dist);
+        Debug.Log(canStamp);
         // [우선순위 1] 멀리 있으면 무조건 돌진
-        if (dist > 20 && canDash)
+        if (dist >= 20 && canDash)
         {
             next = AttackPattern.PowerDash;
         }
-        if (dist > 10 && canStamp)
+        else if (dist<20 && dist > Status.meleeRange && canStamp)
         {
-            next = AttackPattern.PowerDash;
+            next = AttackPattern.StampDrive;
         }
         // [우선순위 2] 근접 상황
         else if (dist <= Status.meleeRange)
@@ -184,7 +201,7 @@ public class Boss_Met : BaseBoss
             yield return new WaitUntil(() => !isRecovering);
 
         // 상태 초기화
-        Visual?.ResetAnimTrigger("Motion_Reset");
+        //Visual?.ResetAnimTrigger("Motion_Reset");
 
         // 시작 시 플레이어 방향 보기
         LookAtPlayer();
@@ -421,7 +438,7 @@ public class Boss_Met : BaseBoss
     {
         hitSlam = false;
         Debug.Log("[Met] Body Slam Prepare...");
-        //yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime));
+        //yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime))
 
         _visual.PlayAnim("Slam_Prepare"); // 뒤로 뺐다 치기
         yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
@@ -924,11 +941,16 @@ public class Boss_Met : BaseBoss
     {
         Player player = Player.Instance;
         //여기에 울리는 이펙트 필요
+        fullscreenShockwaveController.PlayAtWorld(headPoint.position);
         Vector2 direction = player.transform.position - transform.position;
-        direction.y = 0.1f;
+        direction.y = 0f;
         direction = direction.normalized;
-        
-        player.controller.OnKnockback(direction, 25f);
+        Debug.Log(direction);
+        if (direction.x == 0)
+        {
+            direction.x = facingX; // 플레이어가 정확히 보스 위에 있을 때는 보스가 바라보는 방향으로 넉백
+        }
+        player.controller.OnKnockback(direction, 30f);
     }
     #endregion
 
@@ -1040,17 +1062,23 @@ public class Boss_Met : BaseBoss
     #endregion
 
     // 공격 판정 콜라이더 (애니메이션 이벤트에서 활성화/비활성화)
-    [SerializeField] private Collider2D attackCollider;
+    [SerializeField] private Collider2D[] attackColliders;
     public void EnableHitbox()
     {
         Debug.Log("히트박스 활성화");
-        attackCollider.enabled = true;
+        foreach (var col in attackColliders)
+        {
+            if (col != null) col.enabled = true;
+        }
     }
 
     public void DisableHitbox()
     {
         Debug.Log("히트박스 비활성화");
-        attackCollider.enabled = false;
+        foreach (var col in attackColliders)
+        {
+            if (col != null) col.enabled = false;
+        }
     }
     #region 디버깅
     protected override void OnDrawGizmos()

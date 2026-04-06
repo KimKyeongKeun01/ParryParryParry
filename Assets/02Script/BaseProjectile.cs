@@ -63,7 +63,10 @@ public abstract class BaseProjectile : MonoBehaviour
     {
         // 상태 갱신
         isReflect = true;
-        if (_sprite != null) _sprite.color = Color.yellow;
+        Color color;
+        // #FFFFFF 형식의 Hex 코드를 컬러로 변환
+        UnityEngine.ColorUtility.TryParseHtmlString("#1B011D", out color);
+        if (_sprite != null) _sprite.color = color;
 
         // TODO: 자식 클래스에서 발사체에 따라 반사 로직 구성
     }
