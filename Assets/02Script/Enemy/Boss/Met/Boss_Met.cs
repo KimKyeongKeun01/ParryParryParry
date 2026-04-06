@@ -156,7 +156,11 @@ public class Boss_Met : BaseBoss
         AttackPattern next = AttackPattern.None;
 
         // [우선순위 1] 멀리 있으면 무조건 돌진
-        if (dist > Status.meleeRange && canDash)
+        if (dist > 20 && canDash)
+        {
+            next = AttackPattern.PowerDash;
+        }
+        if (dist > 10 && canStamp)
         {
             next = AttackPattern.PowerDash;
         }
@@ -164,8 +168,8 @@ public class Boss_Met : BaseBoss
         else if (dist <= Status.meleeRange)
         {
             if (canTusk && Random.value > 0.5f) next = AttackPattern.TuskDrive;
-            else if (canStamp) next = AttackPattern.StampDrive;
             else if (canSlam) next = AttackPattern.BodySlam;
+            else if (canStamp) next = AttackPattern.StampDrive;
             else if (canDash) next = AttackPattern.PowerDash;
             //else if (canGroundSlam) next = AttackPattern.GroundSlam;
         }
@@ -921,7 +925,7 @@ public class Boss_Met : BaseBoss
         Player player = Player.Instance;
         //여기에 울리는 이펙트 필요
         Vector2 direction = player.transform.position - transform.position;
-        direction.y = 0f;
+        direction.y = 0.1f;
         direction = direction.normalized;
         
         player.controller.OnKnockback(direction, 25f);
