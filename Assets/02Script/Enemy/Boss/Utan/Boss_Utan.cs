@@ -158,8 +158,6 @@ public class Boss_Utan : BaseBoss
             }
         }
 
-        nextPattern = AttackPattern.None;
-
         // 3. 결과 반환
         if (nextPattern == AttackPattern.None) return -1;
 
