@@ -33,7 +33,11 @@ public class Boss_Met : BaseBoss
     [Header("Stamp Drive")]
     [SerializeField] private bool hitStamp = false;
     [SerializeField] private bool isStamping = false;
-    
+
+    [Header("Wave Effect")]
+    [SerializeField] private Transform headPoint;
+    [SerializeField] private FullscreenShockwaveController fullscreenShockwaveController;
+
 
     private bool isExhausted = false;
 
@@ -50,7 +54,7 @@ public class Boss_Met : BaseBoss
     private float groundSlamOriginY;
     private Tween _groundSlamTween;
 
-    private bool isRecovering = false;
+    [SerializeField] private bool isRecovering = false;
 
     protected override void Awake()
     {
@@ -134,7 +138,7 @@ public class Boss_Met : BaseBoss
         }
         Debug.Log(exhaustedPos);
         _rigid.MovePosition(exhaustedPos + Vector2.left * facingX * 5);
-        _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
+        //_rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         isExhausted = false;
 
     }
@@ -156,13 +160,13 @@ public class Boss_Met : BaseBoss
         AttackPattern next = AttackPattern.None;
 
         // [우선순위 1] 멀리 있으면 무조건 돌진
-        if (dist > 20 && canDash)
+        if (dist >= 20 && canDash)
         {
             next = AttackPattern.PowerDash;
         }
-        if (dist > 10 && canStamp)
+        else if (dist<20 && dist > Status.meleeRange && canStamp)
         {
-            next = AttackPattern.PowerDash;
+            next = AttackPattern.StampDrive;
         }
         // [우선순위 2] 근접 상황
         else if (dist <= Status.meleeRange)
@@ -184,7 +188,7 @@ public class Boss_Met : BaseBoss
             yield return new WaitUntil(() => !isRecovering);
 
         // 상태 초기화
-        Visual?.ResetAnimTrigger("Motion_Reset");
+        //Visual?.ResetAnimTrigger("Motion_Reset");
 
         // 시작 시 플레이어 방향 보기
         LookAtPlayer();
@@ -421,7 +425,7 @@ public class Boss_Met : BaseBoss
     {
         hitSlam = false;
         Debug.Log("[Met] Body Slam Prepare...");
-        //yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime));
+        //yield return StartCoroutine(Co_MoveToRange(Status.meleeRange, Status.maxApproachTime))
 
         _visual.PlayAnim("Slam_Prepare"); // 뒤로 뺐다 치기
         yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
@@ -924,11 +928,12 @@ public class Boss_Met : BaseBoss
     {
         Player player = Player.Instance;
         //여기에 울리는 이펙트 필요
+        fullscreenShockwaveController.PlayAtWorld(headPoint.position);
         Vector2 direction = player.transform.position - transform.position;
-        direction.y = 0.1f;
+        direction.y = 0f;
         direction = direction.normalized;
         
-        player.controller.OnKnockback(direction, 25f);
+        player.controller.OnKnockback(direction, 30f);
     }
     #endregion
 

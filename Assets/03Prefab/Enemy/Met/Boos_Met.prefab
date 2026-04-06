@@ -1081,7 +1081,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _status: {fileID: 11400000, guid: 13546bdc9e13c374b9ce3b493911ad60, type: 2}
-  _visual: {fileID: 0}
+  _visual: {fileID: 4174047035123686038}
   phase: 1
   phase2Threshold: 0.4
   stageLeftX: -93.2
@@ -1099,8 +1099,11 @@ MonoBehaviour:
   isSlam: 0
   hitStamp: 0
   isStamping: 0
+  headPoint: {fileID: 7033187268367277066}
+  fullscreenShockwaveController: {fileID: 0}
   hitGroundSlam: 0
   isGroundSlamming: 0
+  isRecovering: 0
   attackCollider: {fileID: 6773658326182549456}
 --- !u!114 &4174047035123686038
 MonoBehaviour:
