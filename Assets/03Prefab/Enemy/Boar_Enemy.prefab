@@ -100,8 +100,8 @@ MonoBehaviour:
   edgeOffset: 0.5
   wallOffset: 1.5
   _sprite: {fileID: 5766530618428021833}
-  windupColor: {r: 1, g: 0, b: 0, a: 1}
-  stunColor: {r: 0.49019608, g: 0.4509804, b: 0, a: 1}
+  windupColor: {r: 0.06666667, g: 0.007843138, b: 0.003921569, a: 1}
+  stunColor: {r: 0.105882354, g: 0.07450981, b: 0, a: 1}
   hitColor: {r: 0.16862746, g: 0.08627451, b: 0.050980397, a: 0.78431374}
 --- !u!1 &2897284825811041732
 GameObject:
@@ -162,7 +162,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 3a79a9a8206496d4198f468dcb8e7a9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -186,7 +186,7 @@ SpriteRenderer:
   m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.7372549, g: 0.6431373, b: 0.47058827, a: 1}
+  m_Color: {r: 0.14509805, g: 0.019607844, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -366,7 +366,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 28f73f6156977814699347c404e8c0cc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -390,7 +390,7 @@ SpriteRenderer:
   m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0.7372549, g: 0.6431373, b: 0.47058827, a: 1}
+  m_Color: {r: 0.14509805, g: 0.019607844, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -540,7 +540,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9dc1eebbdb3c03c49874d244685b8828, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -564,7 +564,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.17254902, g: 0.07058824, b: 0.058823533, a: 1}
+  m_Color: {r: 0.10980392, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

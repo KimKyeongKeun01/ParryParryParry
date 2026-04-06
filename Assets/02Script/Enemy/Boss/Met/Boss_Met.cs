@@ -77,7 +77,7 @@ public class Boss_Met : BaseBoss
 
     protected override void Update()
     {
-        //if (isPlayingCutScene) return;
+        if (isPlayingCutScene) return;
         if (isDead) return;
 
         // 스턴 시 패턴 초기화
@@ -137,10 +137,22 @@ public class Boss_Met : BaseBoss
             exhaustedPos = _rigid.position;
         }
         Debug.Log(exhaustedPos);
-        _rigid.MovePosition(exhaustedPos + Vector2.left * facingX * 5);
-        //_rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
-        isExhausted = false;
+        if(exhaustedPos.y > 3f)
+        {
+            exhaustedPos.y = 2.94f;
+        }
+        _rigid.MovePosition(exhaustedPos + Vector2.left * facingX );
+        _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
+        StartCoroutine(WaitExhaustedMove(exhaustedPos));
 
+    }
+
+    private IEnumerator WaitExhaustedMove(Vector2 pos)
+    {
+        if (Vector2.Distance(_rigid.position, pos)<0.1)
+            yield return null;
+        isExhausted = false;
+        yield return null;
     }
 
     protected override int SelectNextPattern()
@@ -158,7 +170,8 @@ public class Boss_Met : BaseBoss
         bool canStamp = curTime - lastStampTime >= Status.stampCooldown;
 
         AttackPattern next = AttackPattern.None;
-
+        Debug.Log(dist);
+        Debug.Log(canStamp);
         // [우선순위 1] 멀리 있으면 무조건 돌진
         if (dist >= 20 && canDash)
         {
@@ -932,7 +945,11 @@ public class Boss_Met : BaseBoss
         Vector2 direction = player.transform.position - transform.position;
         direction.y = 0f;
         direction = direction.normalized;
-        
+        Debug.Log(direction);
+        if (direction.x == 0)
+        {
+            direction.x = facingX; // 플레이어가 정확히 보스 위에 있을 때는 보스가 바라보는 방향으로 넉백
+        }
         player.controller.OnKnockback(direction, 30f);
     }
     #endregion
@@ -1045,17 +1062,23 @@ public class Boss_Met : BaseBoss
     #endregion
 
     // 공격 판정 콜라이더 (애니메이션 이벤트에서 활성화/비활성화)
-    [SerializeField] private Collider2D attackCollider;
+    [SerializeField] private Collider2D[] attackColliders;
     public void EnableHitbox()
     {
         Debug.Log("히트박스 활성화");
-        attackCollider.enabled = true;
+        foreach (var col in attackColliders)
+        {
+            if (col != null) col.enabled = true;
+        }
     }
 
     public void DisableHitbox()
     {
         Debug.Log("히트박스 비활성화");
-        attackCollider.enabled = false;
+        foreach (var col in attackColliders)
+        {
+            if (col != null) col.enabled = false;
+        }
     }
     #region 디버깅
     protected override void OnDrawGizmos()

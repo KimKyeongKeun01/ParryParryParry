@@ -38,7 +38,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BorderSize: 0.016
-    - _HalfHeight: 0.42
+    - _HalfHeight: 0.92
     - _HalfWidth: 0.4
     - _Softness: 0.005
     m_Colors:
