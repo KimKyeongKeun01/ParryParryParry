@@ -3,15 +3,11 @@ using UnityEngine;
 public class PerfectGuardEffectController : MonoBehaviour
 {
     [SerializeField] private ParticleSystem layer1;
-    //[SerializeField] private ParticleSystem layer2;
 
     public void Play()
     {
         if (layer1 != null)
             layer1.Play();
-
-        //if (layer2 != null)
-        //    layer2.Play();
     }
 
     public float GetLifetime()
@@ -20,9 +16,6 @@ public class PerfectGuardEffectController : MonoBehaviour
 
         if (layer1 != null)
             maxLifetime = Mathf.Max(maxLifetime, GetParticleLifetime(layer1));
-
-        //if (layer2 != null)
-        //    maxLifetime = Mathf.Max(maxLifetime, GetParticleLifetime(layer2));
 
         return maxLifetime;
     }

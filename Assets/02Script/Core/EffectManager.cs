@@ -140,6 +140,7 @@ public class EffectManager : MonoBehaviour
         }
 
         PerfectGuardEffectController spawned = Instantiate(perfectGuardEffectPrefab, position, Quaternion.identity);
+        PlaySlamWaveEffect(position);
         spawned.Play();
 
         float lifeTime = spawned.GetLifetime();
@@ -159,7 +160,7 @@ public class EffectManager : MonoBehaviour
         if(isAttack)
         {
             PlaySlamEffect(slamEnemyEffectPrefab, position, direction);
-            PlaySlamWaveEffect(position, direction);
+            PlaySlamWaveEffect(position);
         }
         else
         {
@@ -198,7 +199,7 @@ public class EffectManager : MonoBehaviour
             effect => HandleSlamAnticipationEffectFinished(owner, effect)
         );
     }
-    private void PlaySlamWaveEffect(Vector2 position, Vector2 direction)
+    private void PlaySlamWaveEffect(Vector2 position)
     {
         fullscreenShockwaveController.PlayAtWorld(position);
     }
