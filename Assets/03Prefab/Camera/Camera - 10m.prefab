@@ -170,6 +170,11 @@ MonoBehaviour:
   _player: {fileID: 0}
   groundYHeight: 0
   airboneYHeight: 1
-  landingYHeight: 0
   landingDelay: 0.1
   landingDuration: 0.2
+  centerScreenX: 0
+  screenLookAheadX: 0.2
+  screenSpeed: 1
+  enterDelay: 1
+  returnDelay: 0.5
+  dirChangeDelay: 0.5

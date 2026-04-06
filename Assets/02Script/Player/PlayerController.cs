@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour, IPlatformPassenger2D, IBounceable
 
     Player player;
     PlayerStatus stat;
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
 
     #region 기본 변수
     [Header("이동")]
