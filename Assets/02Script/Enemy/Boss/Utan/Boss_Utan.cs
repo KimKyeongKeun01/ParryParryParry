@@ -9,7 +9,6 @@ public class Boss_Utan : BaseBoss
     private BossStatus_Utan Status => (BossStatus_Utan)_status;
     private BossVisual_Utan Visual => (BossVisual_Utan)_visual;
 
-    
     [Header(" === Boss Utan === ")]
     [Header("Attack State Machine")]
     [SerializeField] private AttackPattern curAttack = AttackPattern.None;
@@ -17,6 +16,7 @@ public class Boss_Utan : BaseBoss
 
     [Header("Arm Smash")]
     public Utan_Arms arms;
+    private bool isSmashHit = false;    // 타격 중복 방지 플래그
 
     [Header("Rock Throw")]
     public Transform rockSpawnPoint;
@@ -112,7 +112,6 @@ public class Boss_Utan : BaseBoss
         bool canSwing = curTime - lastSwingTime >= Status.swingCooldown;
 
         // 2페이즈 쿨타임
-        bool canJumpSmash = curTime - lastJumpSmashTime >= Status.jumpSmashCooldown;
         bool canCombo = curTime - lastComboTime >= Status.comboCooldown;
         bool canDoubleSwing = curTime - lastDoubleSwingTime >= Status.doubleSwingCooldown;
 
@@ -253,43 +252,6 @@ public class Boss_Utan : BaseBoss
 
         facingX = dirX;
     }
-
-    /*
-    /// <summary> 공격 직전 플레이어를 향해 이동하는 메소드 </summary>
-    private IEnumerator Co_MoveToRange(float stopDistance, float maxTime)
-    {
-        Player player = Player.Instance;
-        if (player == null) yield break;
-
-        // 플레이어 위치 지정
-        float dx = player.transform.position.x - transform.position.x;
-        float moveDir = Mathf.Sign(dx);
-        float elapsed = 0f;
-
-        // 비주얼
-        LookAtPlayer();
-        Visual?.PlayAnim("IsMoving", true);
-
-        // 이동
-        while (elapsed < maxTime)
-        {
-            player = Player.Instance;
-            if (player == null) yield break;
-
-            if (Mathf.Abs(dx) <= stopDistance) break;
-
-            Vector2 nextPos = _rigid.position + Vector2.right * moveDir * Status.moveSpeed * Time.deltaTime;
-            _rigid.MovePosition(nextPos);
-            facingX = moveDir;
-
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        // 정지
-        StopMove();
-    }
-    */
     #endregion
 
     #region 공격
@@ -330,7 +292,8 @@ public class Boss_Utan : BaseBoss
 
         // 포물선을 그리며 플레이어에게 내려찍기
         Vector2 fallStartPos = _rigid.position;
-        Vector2 landingPos = new Vector2(player.transform.position.x, originY);
+        float playerPosX = player.transform.position.x + (facingX > 0 ? -4 : 4);
+        Vector2 landingPos = new Vector2(playerPosX, originY);
 
         float dropDuration = Status.dropDuration;
         float arcHeight = Status.arcHeight;
@@ -368,6 +331,7 @@ public class Boss_Utan : BaseBoss
 
     public void AE_SmashEnable()
     {
+        isSmashHit = false;
         arms.SetAttack(true);
     }
 
@@ -378,10 +342,12 @@ public class Boss_Utan : BaseBoss
 
     public void OnArmHit()
     {
-        if (CurState == EnemyState.Stun) return;
+        if (isSmashHit || CurState == EnemyState.Stun) return;
 
         Player player = Player.Instance;
         if (player == null) return;
+
+        isSmashHit = true;
 
         // 1. 플레이어 가드 확인
         Vector2 hitDir = new Vector2(facingX, 0.2f).normalized;
@@ -459,7 +425,8 @@ public class Boss_Utan : BaseBoss
 
         // 애니메이션과 동시에 내려찍기 수행
         Vector2 fallStartPos = _rigid.position;
-        Vector2 landingPos = new Vector2(player.transform.position.x, originY);
+        float playerPosX = player.transform.position.x + (facingX > 0 ? -4 : 4);
+        Vector2 landingPos = new Vector2(playerPosX, originY);
 
         float dropDuration = Status.dropDuration;
         float arcHeight = Status.arcHeight;
@@ -752,117 +719,12 @@ public class Boss_Utan : BaseBoss
     }
     #endregion
 
-    /*
-    #region 점프 내려치기
-    private IEnumerator Co_JumpSmash()
-    {
-        Debug.Log("[Utan] Phase 2: Jump Smash!");
-        Player player = Player.Instance;
-        if (player == null) yield break;
-        
-        LookAtPlayer();
-
-        // 도약 준비
-        Visual?.PlayAnim("ArmSmash_Prepare");
-        yield return new WaitForSeconds(Status.defultWindUpTime);
-        if (curAttack == AttackPattern.None || curState != EnemyState.Attack) yield break;
-
-        // 중력 잠시 끄기
-        float originGravity = _rigid.gravityScale;
-        _rigid.gravityScale = 0f;
-        _rigid.linearVelocity = Vector2.zero;
-
-        // 플레이어의 머리 위에 나오도록 좌표 설정
-        Vector2 startPos = _rigid.position;
-        float targetX = player.transform.position.x + (facingX < 0? 5.5f : -5.5f);
-        Vector2 targetPos = new Vector2(targetX, startPos.y + Status.jumpSmashHeight);
-
-        float jumpTime = 0.3f;
-        float elapsed = 0;
-
-        while (elapsed < jumpTime)
-        {
-            // 도중 상태가 변경되면 되돌려놓고 중지
-            if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
-            {
-                _rigid.gravityScale = originGravity;
-                yield break;
-            }
-
-            elapsed += Time.deltaTime;
-            float t = elapsed / jumpTime;
-            float easeT = 1f - (1f -t) * (1f - t);
-            _rigid.MovePosition(Vector2.Lerp(startPos, targetPos, easeT));
-            yield return null;
-        }
-
-        // 공중 체공 대기
-        yield return new WaitForSeconds(Status.jumpSmashAirDuration);
-        if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
-        {
-            _rigid.gravityScale = originGravity;
-            yield break;
-        }
-
-        // 내려찍기 수행
-        Visual?.PlayAnim("ArmSmash_Action");
-
-        while (_rigid.position.y > startPos.y)
-        {
-            if (curAttack == AttackPattern.None || CurState != EnemyState.Attack)
-            {
-                _rigid.gravityScale = originGravity;
-                yield break;
-            }
-            _rigid.MovePosition(_rigid.position + Vector2.down * Status.jumpSmashDropSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        // 착지 후 복구
-        _rigid.gravityScale = originGravity;
-        _rigid.position = new Vector2(_rigid.position.x, startPos.y);
-        ValidateStage();
-
-        // Todo 화면 진동, 파티클
-
-        yield return new WaitForSeconds(0.15f);
-        AE_SmashDisable();
-
-        yield return new WaitForSeconds(Status.defultWindDownTime);
-        lastJumpSmashTime = Time.time;
-    }
-    #endregion
-    */
-
     #region 스파이크 콤보
     private IEnumerator Co_ComboRockSmash()
     {
         Debug.Log("[Utan] Phase 2: Volleyball Spike Combo");
         Player player = Player.Instance;
         if (player == null) yield break;
-
-        /*
-        // 백스텝 (거리 벌리기)
-        float elapsed = 0f;
-        float backstepMaxTime = Status.comboBackstepTime;
-        float moveDir = -Mathf.Sign(player.transform.position.x - transform.position.x);
-        
-        Visual?.PlayAnim("IsMoving", true);
-
-        while (elapsed < backstepMaxTime)
-        {
-            if (CurState != EnemyState.Attack) yield break;
-            
-            float stepSpeed = Status.comboBackstepDist / backstepMaxTime;
-            Vector2 nextPos = _rigid.position + Vector2.right * moveDir * stepSpeed * Time.deltaTime;
-            _rigid.MovePosition(nextPos);
-
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        StopMove();
-        if (CurState != EnemyState.Attack) yield break;
-        */
 
         // 공을 토스
         LookAtPlayer();
@@ -985,7 +847,7 @@ public class Boss_Utan : BaseBoss
                 _rigid.gravityScale = originGravity;
                 yield break;
             }
-            _rigid.MovePosition(_rigid.position + Vector2.down * Status.jumpSmashDropSpeed * Time.deltaTime);
+            _rigid.MovePosition(_rigid.position + Vector2.down * 120 * Time.deltaTime);
             yield return null;
         }
 
@@ -1264,10 +1126,32 @@ public class Boss_Utan : BaseBoss
                 StartCoroutine(Co_IgnorePlayer(player, 1f)); // 중복 충돌 방지
 
                 // 일반 접촉 데미지
-                player.controller.OnKnockback(new Vector2(facingX, 0.2f), slamKnockbackForce * 0.5f);
-                player.TakeDamaged(Status.contactDamage);
+                if (CurState != EnemyState.Stun)
+                {
+                    Debug.Log("[Utan] Player Body Crash");
+                    StartCoroutine(Co_IgnorePlayer(player, 1f)); // 중복 충돌 방지
 
-                if (player.isDash) player.controller.CancelDash();
+                    // 1. 넉백을 주면서 동시에 플레이어의 가드 상태를 받아옵니다.
+                    Player.GuardType guard = player.controller.OnKnockback(new Vector2(facingX, 0.2f), slamKnockbackForce * 0.5f);
+
+                    // 2. 가드 상태에 따라 데미지 적용 여부를 결정합니다.
+                    if (guard == Player.GuardType.PerfectGuard)
+                    {
+                        Debug.Log("[Utan] Body Crash: Perfect Guarded!");
+                    }
+                    else if (guard == Player.GuardType.Guard)
+                    {
+                        Debug.Log("[Utan] Body Crash: Guarded!");
+                    }
+                    else
+                    {
+                        // 노멀 히트 -> 데미지 입힘
+                        player.TakeDamaged(Status.contactDamage);
+
+                        // 맞았을 때 대시 중이었다면 취소
+                        if (player.isDash) player.controller.CancelDash(); 
+                    }
+                }
             }
         }
     }
@@ -1418,19 +1302,6 @@ public class Boss_Utan : BaseBoss
 #endif
 
         #region 스파이크 콤보
-        
-        // 백스텝 도달 예상 위치
-        Gizmos.color = Color.cyan;
-        float backstepDist = Status.comboBackstepDist;
-        
-        // 좌/우 백스텝 거리
-        Vector2 leftBackstep = new Vector2(pos.x - backstepDist, pos.y);
-        Vector2 rightBackstep = new Vector2(pos.x + backstepDist, pos.y);
-
-        Gizmos.DrawLine(pos, leftBackstep);
-        Gizmos.DrawLine(pos, rightBackstep);
-        Gizmos.DrawWireSphere(leftBackstep, 0.5f);
-        Gizmos.DrawWireSphere(rightBackstep, 0.5f);
 
         // 도약 높이
         Gizmos.color = Color.magenta;
@@ -1440,9 +1311,7 @@ public class Boss_Utan : BaseBoss
         Vector2 tossRight = new Vector2(pos.x + lineWidth, tossHeight);
         Gizmos.DrawLine(tossLeft, tossRight);
 
-#if UNITY_EDITOR
-        Handles.Label(leftBackstep + Vector2.up * labelOffset, "Backstep Left", GetLabelStyle(Color.cyan));
-        Handles.Label(rightBackstep + Vector2.up * labelOffset, "Backstep Right", GetLabelStyle(Color.cyan));
+#if UNITY_EDITOR 
         Handles.Label(new Vector3(pos.x, tossHeight + labelOffset, 0), "Combo Toss Height", GetLabelStyle(Color.magenta));
 #endif
         #endregion
