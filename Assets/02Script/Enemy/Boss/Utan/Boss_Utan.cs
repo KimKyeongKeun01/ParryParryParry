@@ -9,7 +9,6 @@ public class Boss_Utan : BaseBoss
     private BossStatus_Utan Status => (BossStatus_Utan)_status;
     private BossVisual_Utan Visual => (BossVisual_Utan)_visual;
 
-    
     [Header(" === Boss Utan === ")]
     [Header("Attack State Machine")]
     [SerializeField] private AttackPattern curAttack = AttackPattern.None;
@@ -17,6 +16,7 @@ public class Boss_Utan : BaseBoss
 
     [Header("Arm Smash")]
     public Utan_Arms arms;
+    private bool isSmashHit = false;    // 타격 중복 방지 플래그
 
     [Header("Rock Throw")]
     public Transform rockSpawnPoint;
@@ -157,6 +157,8 @@ public class Boss_Utan : BaseBoss
                 nextPattern = AttackPattern.RockThrow;
             }
         }
+
+        nextPattern = AttackPattern.None;
 
         // 3. 결과 반환
         if (nextPattern == AttackPattern.None) return -1;
@@ -330,7 +332,8 @@ public class Boss_Utan : BaseBoss
 
         // 포물선을 그리며 플레이어에게 내려찍기
         Vector2 fallStartPos = _rigid.position;
-        Vector2 landingPos = new Vector2(player.transform.position.x, originY);
+        float playerPosX = player.transform.position.x + (facingX > 0 ? -4 : 4);
+        Vector2 landingPos = new Vector2(playerPosX, originY);
 
         float dropDuration = Status.dropDuration;
         float arcHeight = Status.arcHeight;
@@ -368,6 +371,7 @@ public class Boss_Utan : BaseBoss
 
     public void AE_SmashEnable()
     {
+        isSmashHit = false;
         arms.SetAttack(true);
     }
 
@@ -378,10 +382,12 @@ public class Boss_Utan : BaseBoss
 
     public void OnArmHit()
     {
-        if (CurState == EnemyState.Stun) return;
+        if (isSmashHit || CurState == EnemyState.Stun) return;
 
         Player player = Player.Instance;
         if (player == null) return;
+
+        isSmashHit = true;
 
         // 1. 플레이어 가드 확인
         Vector2 hitDir = new Vector2(facingX, 0.2f).normalized;
