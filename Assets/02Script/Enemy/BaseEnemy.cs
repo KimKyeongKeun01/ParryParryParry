@@ -200,12 +200,18 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IEnemy
         if (curHp <= 0) Die();
     }
 
+    protected virtual void OnEnable()
+    {
+        isDead = false;
+        curHp = maxHp;
+        ChangeState(EnemyState.Idle);
+    }
     protected virtual void Die()
     {
         isDead = true;
 
         curState = EnemyState.Dead;
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)

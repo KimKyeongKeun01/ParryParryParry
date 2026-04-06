@@ -79,7 +79,7 @@ public class Boss_Met : BaseBoss
     {
         if (isPlayingCutScene) return;
         if (isDead) return;
-
+        
         // 스턴 시 패턴 초기화
         if (CurState == EnemyState.Stun)
         {
@@ -136,13 +136,13 @@ public class Boss_Met : BaseBoss
         {
             exhaustedPos = _rigid.position;
         }
-        Debug.Log(exhaustedPos);
-        if(exhaustedPos.y > 3f)
-        {
-            exhaustedPos.y = 2.94f;
-        }
+        //Debug.Log(exhaustedPos);
+        //if(exhaustedPos.y > 3f)
+        //{
+        //    exhaustedPos.y = 2.94f;
+        //}
         _rigid.MovePosition(exhaustedPos + Vector2.left * facingX );
-        _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
+        //_rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         StartCoroutine(WaitExhaustedMove(exhaustedPos));
 
     }
@@ -916,7 +916,7 @@ public class Boss_Met : BaseBoss
     protected override void EndExhausted()
     {
         Debug.Log("기절 끝");
-        _rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
+        //_rigid.linearVelocity = new Vector2(0, _rigid.linearVelocityY);
         base.EndExhausted();
         DisableHitbox(); //기절 상태 히트박스 OFf
         Visual?.OffStunVisual();
@@ -1031,7 +1031,7 @@ public class Boss_Met : BaseBoss
 
                 // 중복 충돌 방지
                 StartCoroutine(Co_IgnorePlayer(player, 0.2f));
-
+                EffectManager.Instance.PlaySlamImpactVisual(transform, player.transform.position, Vector2.up, true);
                 // 플레이어 넉백
                 player.controller.OnKnockback(Vector2.up, slamKnockbackForce);
 

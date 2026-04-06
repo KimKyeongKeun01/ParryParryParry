@@ -264,7 +264,7 @@ public class Enemy_Boar : BaseEnemy
 
                 // 플레이어 넉백
                 player.controller.OnKnockback(Vector2.up, slamKnockbackForce);
-
+                EffectManager.Instance.PlaySlamImpactVisual(transform, player.transform.position, Vector2.up, true);
                 TakeDamage(1);
                 return;
             }
