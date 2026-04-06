@@ -356,15 +356,16 @@ public class PlayerVisual : MonoBehaviour
         EffectManager.Instance?.PlaySlamStartVisual(transform, startPos, slamDir);
     }
 
-    private void HandleSlamImpactVisual(Vector2 impactPos, Vector2 impactDir, Color impactColor)
+    private void HandleSlamImpactVisual(Vector2 impactPos, Vector2 impactDir, Color color)
     {
         CameraManager.Instance?.Shake.Play(slamShakeProfile, impactDir);
-        EffectManager.Instance?.PlaySlamImpactVisual(transform, impactPos, impactDir, impactColor);
+        EffectManager.Instance?.PlaySlamImpactVisual(transform, impactPos, impactDir);
     }
 
     private void HandleSlamEnemyImpactVisual(Vector2 impactPos, Vector2 impactDir)
     {
-        EffectManager.Instance?.PlaySlamEnemyEffect(impactPos, impactDir);
+        CameraManager.Instance?.Shake.Play(slamShakeProfile, impactDir);
+        EffectManager.Instance?.PlaySlamImpactVisual(transform, impactPos, impactDir, true);
     }
     #endregion
 
