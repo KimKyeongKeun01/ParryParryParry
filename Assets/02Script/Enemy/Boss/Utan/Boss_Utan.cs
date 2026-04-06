@@ -1139,7 +1139,7 @@ public class Boss_Utan : BaseBoss
                 StartCoroutine(Co_IgnorePlayer(player, 0.2f));
 
                 // 플레이어 넉백
-                player.controller.OnKnockback(Vector2.up, slamKnockbackForce);
+                player.controller.OnKnockback(Vector2.up, slamKnockbackForce, -1, true);
 
                 TakeDamage(1);
                 return;
@@ -1199,8 +1199,7 @@ public class Boss_Utan : BaseBoss
                 StartCoroutine(Co_IgnorePlayer(player, 0.2f));
 
                 // 플레이어 넉백
-                player.controller.OnKnockback(Vector2.up, slamKnockbackForce);
-
+                player.controller.OnKnockback(Vector2.up, slamKnockbackForce, -1, true);
                 TakeDamage(1);
                 return;
             }

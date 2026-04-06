@@ -1274,7 +1274,7 @@ public class PlayerController : MonoBehaviour, IPlatformPassenger2D, IBounceable
         hasUsedAirSlam = false;
     }
 
-    public Player.GuardType OnKnockback(Vector2 knockbackDir, float knockbackForce, float guardKnockbackMultiplier = -1f)
+    public Player.GuardType OnKnockback(Vector2 knockbackDir, float knockbackForce, float guardKnockbackMultiplier = -1f, bool isPlayerAttack = false)
     {
         Player.GuardType guardType = Player.GuardType.Normal;
 
@@ -1311,7 +1311,9 @@ public class PlayerController : MonoBehaviour, IPlatformPassenger2D, IBounceable
 
         var shakeDir = rb.linearVelocity;
         shakeDir.y = -1f;
-        onSlamEnemyImpact?.Invoke(transform.position, shakeDir);
+
+        if(isPlayerAttack)
+            onSlamEnemyImpact?.Invoke(transform.position, shakeDir);
 
         float force = (guardType == Player.GuardType.Guard)
             ? knockbackForce * appliedGuardKnockbackMultiplier

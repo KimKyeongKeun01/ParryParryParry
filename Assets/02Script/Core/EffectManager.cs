@@ -140,6 +140,7 @@ public class EffectManager : MonoBehaviour
         }
 
         PerfectGuardEffectController spawned = Instantiate(perfectGuardEffectPrefab, position, Quaternion.identity);
+        PlaySlamWaveEffect(position);
         spawned.Play();
 
         float lifeTime = spawned.GetLifetime();
@@ -153,18 +154,27 @@ public class EffectManager : MonoBehaviour
         PlaySlamAnticipationEffect(owner, playerPosition, slamDirection);
     }
 
-    public void PlaySlamImpactVisual(Transform owner, Vector2 position, Vector2 direction, Color color)
+    public void PlaySlamImpactVisual(Transform owner, Vector2 position, Vector2 direction, bool isAttack = false)
     {
         StopSlamAnticipationEffect(owner);
-        PlaySlamWaveEffect(position, direction, color);
-        PlaySlamEffect(slamGroundEffectPrefab, position, direction, color);
+        if(isAttack)
+        {
+            PlaySlamEffect(slamEnemyEffectPrefab, position, direction);
+            PlaySlamWaveEffect(position);
+        }
+        else
+        {
+            PlaySlamEffect(slamGroundEffectPrefab, position, direction);
+            
+        }
+        
     }
 
-    public void PlaySlamEnemyEffect(Vector2 position, Vector2 direction)
-    {
-        //TODO: 여기 캐릭터 좌표를 넣으면 플레이 되도록 만들어야함.
-        PlaySlamEffect(slamEnemyEffectPrefab, position, direction);
-    }
+    ////적이 날 때렸을 때. (사용하지 않음 - 2026.04.06 김우성)
+    //public void PlaySlamEnemyEffect(Vector2 position, Vector2 direction)
+    //{
+    //    PlaySlamEffect(slamEnemyEffectPrefab, position, direction);
+    //}
 
     private void PlaySlamAnticipationEffect(Transform owner, Vector2 playerPosition, Vector2 slamDirection)
     {
@@ -189,7 +199,7 @@ public class EffectManager : MonoBehaviour
             effect => HandleSlamAnticipationEffectFinished(owner, effect)
         );
     }
-    private void PlaySlamWaveEffect(Vector2 position, Vector2 direction, Color color)
+    private void PlaySlamWaveEffect(Vector2 position)
     {
         fullscreenShockwaveController.PlayAtWorld(position);
     }

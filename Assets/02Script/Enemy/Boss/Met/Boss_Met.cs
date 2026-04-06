@@ -73,7 +73,7 @@ public class Boss_Met : BaseBoss
 
     protected override void Update()
     {
-        if (isPlayingCutScene) return;
+        //if (isPlayingCutScene) return;
         if (isDead) return;
 
         // 스턴 시 패턴 초기화
@@ -156,7 +156,11 @@ public class Boss_Met : BaseBoss
         AttackPattern next = AttackPattern.None;
 
         // [우선순위 1] 멀리 있으면 무조건 돌진
-        if (dist > Status.meleeRange && canDash)
+        if (dist > 20 && canDash)
+        {
+            next = AttackPattern.PowerDash;
+        }
+        if (dist > 10 && canStamp)
         {
             next = AttackPattern.PowerDash;
         }
@@ -164,8 +168,8 @@ public class Boss_Met : BaseBoss
         else if (dist <= Status.meleeRange)
         {
             if (canTusk && Random.value > 0.5f) next = AttackPattern.TuskDrive;
-            else if (canStamp) next = AttackPattern.StampDrive;
             else if (canSlam) next = AttackPattern.BodySlam;
+            else if (canStamp) next = AttackPattern.StampDrive;
             else if (canDash) next = AttackPattern.PowerDash;
             //else if (canGroundSlam) next = AttackPattern.GroundSlam;
         }
@@ -193,7 +197,7 @@ public class Boss_Met : BaseBoss
             case AttackPattern.PowerDash:   yield return Co_PowerDash();    break;
             case AttackPattern.TuskDrive:   yield return Co_TuskDrive();    break;
             case AttackPattern.BodySlam:    yield return Co_BodySlam();     break;
-            case AttackPattern.GroundSlam: yield return Co_GroundSlam(); break;
+            //case AttackPattern.GroundSlam: yield return Co_GroundSlam(); break;
             case AttackPattern.StampDrive: yield return Co_StampDrive(); break;
         }
 
@@ -497,182 +501,180 @@ public class Boss_Met : BaseBoss
     }
     #endregion
 
-    #region 앞발찍기
-
-    #endregion
+    
 
     #region 롤링-금지된패턴-
-    private IEnumerator Co_GroundSlam()
-    {
-        Player player = Player.Instance;
-        if (player == null) yield break;
+    //private IEnumerator Co_GroundSlam()
+    //{
+    //    Player player = Player.Instance;
+    //    if (player == null) yield break;
 
-        // 시작 시 Y위치 저장 (착지 기준점)
-        groundSlamOriginY = _rigid.position.y;
+    //    // 시작 시 Y위치 저장 (착지 기준점)
+    //    groundSlamOriginY = _rigid.position.y;
 
-        hitStamp = false;
-        isGroundSlamming = false;
+    //    hitStamp = false;
+    //    isGroundSlamming = false;
 
-        Debug.Log("[Met] GroundSlam Start!");
+    //    Debug.Log("[Met] GroundSlam Start!");
 
-        // 패턴 시작 애니메이션
-        _visual.PlayAnim("Rolling_Action");
-        //yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
-        if (curAttack == AttackPattern.None) yield break;
+    //    // 패턴 시작 애니메이션
+    //    _visual.PlayAnim("Rolling_Action");
+    //    //yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+    //    if (curAttack == AttackPattern.None) yield break;
 
-        // 2회 반복
-        for (int i = 0; i < 2; i++)
-        {
-            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun) yield break;
+    //    // 2회 반복
+    //    for (int i = 0; i < 2; i++)
+    //    {
+    //        if (curAttack == AttackPattern.None || CurState == EnemyState.Stun) yield break;
 
-            // ── 올라가기 ──────────────────────────────────────────
-            // 목표 X: 보스와 플레이어 사이의 3/4 지점
-            float targetX = _rigid.position.x + (player.transform.position.x - _rigid.position.x) * 0.75f;
-            float targetY = groundSlamOriginY + Status.groundSlamJumpHeight;
-            Vector2 jumpTarget = new Vector2(targetX, targetY);
+    //        // ── 올라가기 ──────────────────────────────────────────
+    //        // 목표 X: 보스와 플레이어 사이의 3/4 지점
+    //        float targetX = _rigid.position.x + (player.transform.position.x - _rigid.position.x) * 0.75f;
+    //        float targetY = groundSlamOriginY + Status.groundSlamJumpHeight;
+    //        Vector2 jumpTarget = new Vector2(targetX, targetY);
 
-            Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}"); 
+    //        Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}"); 
 
-            yield return StartCoroutine(Co_MoveToTarget(
-            jumpTarget,
-            0.3f,   // 예: 0.2f ~ 0.3f
-            Ease.OutQuad                     // 처음 빠르게 치고 올라감
-        ));
+    //        yield return StartCoroutine(Co_MoveToTarget(
+    //        jumpTarget,
+    //        0.3f,   // 예: 0.2f ~ 0.3f
+    //        Ease.OutQuad                     // 처음 빠르게 치고 올라감
+    //    ));
 
-            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
-            {
-                KillGroundSlamTween();
-                yield break;
-            }
+    //        if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+    //        {
+    //            KillGroundSlamTween();
+    //            yield break;
+    //        }
 
-            _rigid.position = jumpTarget;
-            _rigid.linearVelocity = Vector2.zero;
+    //        _rigid.position = jumpTarget;
+    //        _rigid.linearVelocity = Vector2.zero;
 
-            // ── 공중 대기 1초 ─────────────────────────────────────
-            Debug.Log("[Met] GroundSlam Hovering...");
-            yield return new WaitForSeconds(1f);
-            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
-            {
-                KillGroundSlamTween();
-                yield break;
-            }
+    //        // ── 공중 대기 1초 ─────────────────────────────────────
+    //        Debug.Log("[Met] GroundSlam Hovering...");
+    //        yield return new WaitForSeconds(1f);
+    //        if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+    //        {
+    //            KillGroundSlamTween();
+    //            yield break;
+    //        }
 
-            // ── 내려찍기 (플레이어 방향 대각선 낙하) ──────────────
-            // 낙하 시작 시점 플레이어 위치 스냅
-            Vector2 slamTarget = new Vector2(player.transform.position.x, groundSlamOriginY);
-            hitStamp = false;
-            isGroundSlamming = true;
-            EnableHitbox();
+    //        // ── 내려찍기 (플레이어 방향 대각선 낙하) ──────────────
+    //        // 낙하 시작 시점 플레이어 위치 스냅
+    //        Vector2 slamTarget = new Vector2(player.transform.position.x, groundSlamOriginY);
+    //        hitStamp = false;
+    //        isGroundSlamming = true;
+    //        EnableHitbox();
 
-            Debug.Log($"[Met] GroundSlam Down #{i + 1} → {slamTarget}");
+    //        Debug.Log($"[Met] GroundSlam Down #{i + 1} → {slamTarget}");
 
 
-            yield return StartCoroutine(Co_MoveToTarget(
-            slamTarget,
-            0.3f,   // 예: 0.3f ~ 0.45f
-            Ease.InQuad                      // 처음 느리다가 점점 빠르게
+    //        yield return StartCoroutine(Co_MoveToTarget(
+    //        slamTarget,
+    //        0.3f,   // 예: 0.3f ~ 0.45f
+    //        Ease.InQuad                      // 처음 느리다가 점점 빠르게
         
-            ));
+    //        ));
 
 
-            // 중간에 끊기면 정리 후 종료
-            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
-            {
-                isGroundSlamming = false;
-                DisableHitbox();
-                KillGroundSlamTween();
-                yield break;
-            }
+    //        // 중간에 끊기면 정리 후 종료
+    //        if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+    //        {
+    //            isGroundSlamming = false;
+    //            DisableHitbox();
+    //            KillGroundSlamTween();
+    //            yield break;
+    //        }
 
-            // 착지 스냅 & 정리
-            _rigid.position = new Vector2(_rigid.position.x, groundSlamOriginY);
-            _rigid.linearVelocity = Vector2.zero;
-            isGroundSlamming = false;
-            DisableHitbox();
+    //        // 착지 스냅 & 정리
+    //        _rigid.position = new Vector2(_rigid.position.x, groundSlamOriginY);
+    //        _rigid.linearVelocity = Vector2.zero;
+    //        isGroundSlamming = false;
+    //        DisableHitbox();
 
-            Debug.Log($"[Met] GroundSlam Landed #{i + 1}");
+    //        Debug.Log($"[Met] GroundSlam Landed #{i + 1}");
 
-            // 마지막 회차에만 Dash_End 호출
-            if (i == 1)
-            {
-                _visual.PlayAnim("Rolling_End");
-                yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
-            }
-            else
-            {
-                // 첫 번째 착지 후 짧은 딜레이
-                yield return new WaitForSeconds(0.4f);
-            }
-        }
-        KillGroundSlamTween();
-        lastGroundSlamTime = Time.time;
-        yield return new WaitForSeconds(0.2f);//Status.defultWindDownTime
-    }
+    //        // 마지막 회차에만 Dash_End 호출
+    //        if (i == 1)
+    //        {
+    //            _visual.PlayAnim("Rolling_End");
+    //            yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+    //        }
+    //        else
+    //        {
+    //            // 첫 번째 착지 후 짧은 딜레이
+    //            yield return new WaitForSeconds(0.4f);
+    //        }
+    //    }
+    //    KillGroundSlamTween();
+    //    lastGroundSlamTime = Time.time;
+    //    yield return new WaitForSeconds(0.2f);//Status.defultWindDownTime
+    //}
     
-    private IEnumerator Co_MoveToTarget(Vector2 target, float duration, Ease ease)
-    {
-        bool finished = false;
+    //private IEnumerator Co_MoveToTarget(Vector2 target, float duration, Ease ease)
+    //{
+    //    bool finished = false;
 
-        KillGroundSlamTween();
+    //    KillGroundSlamTween();
 
-        _groundSlamTween = _rigid
-            .DOMove(target, duration)
-            .SetEase(ease)
-            .SetUpdate(UpdateType.Fixed)   // Rigidbody2D와 맞추기
-            .OnComplete(() => finished = true);
+    //    _groundSlamTween = _rigid
+    //        .DOMove(target, duration)
+    //        .SetEase(ease)
+    //        .SetUpdate(UpdateType.Fixed)   // Rigidbody2D와 맞추기
+    //        .OnComplete(() => finished = true);
 
-        while (!finished)
-        {
-            if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
-            {
-                KillGroundSlamTween();
-                yield break;
-            }
+    //    while (!finished)
+    //    {
+    //        if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
+    //        {
+    //            KillGroundSlamTween();
+    //            yield break;
+    //        }
 
-            // tween이 외부에서 Kill된 경우 무한루프 방지
-            if (_groundSlamTween == null || !_groundSlamTween.IsActive())
-                yield break;
+    //        // tween이 외부에서 Kill된 경우 무한루프 방지
+    //        if (_groundSlamTween == null || !_groundSlamTween.IsActive())
+    //            yield break;
 
-            yield return null;
-        }
+    //        yield return null;
+    //    }
 
-        KillGroundSlamTween();
-    }
-    private void KillGroundSlamTween()
-    {
-        if (_groundSlamTween != null && _groundSlamTween.IsActive())
-        {
-            _groundSlamTween.Kill();
-        }
+    //    KillGroundSlamTween();
+    //}
+    //private void KillGroundSlamTween()
+    //{
+    //    if (_groundSlamTween != null && _groundSlamTween.IsActive())
+    //    {
+    //        _groundSlamTween.Kill();
+    //    }
 
-        _groundSlamTween = null;
-    }
-    public void OnGroundSlamHit(Player player)
-    {
-        if (hitGroundSlam) return;
-        hitGroundSlam = true;
+    //    _groundSlamTween = null;
+    //}
+    //public void OnGroundSlamHit(Player player)
+    //{
+    //    if (hitGroundSlam) return;
+    //    hitGroundSlam = true;
 
-        Debug.Log("[Met] GroundSlam Player Hit!");
+    //    Debug.Log("[Met] GroundSlam Player Hit!");
 
-        // 내려찍기이므로 아래→위 방향 넉백 + 약간의 수평
-        Vector2 hitDir = new Vector2(facingX * 0.2f, 1f).normalized;
-        Player.GuardType guard = player.controller.OnKnockback(hitDir, Status.groundSlamKnockback);
+    //    // 내려찍기이므로 아래→위 방향 넉백 + 약간의 수평
+    //    Vector2 hitDir = new Vector2(facingX * 0.2f, 1f).normalized;
+    //    Player.GuardType guard = player.controller.OnKnockback(hitDir, Status.groundSlamKnockback);
 
-        if (guard == Player.GuardType.PerfectGuard)
-        {
-            Debug.Log("[Met] GroundSlam Perfect Guarded!");
-            StartExhausted();
-        }
-        else if (guard == Player.GuardType.Guard)
-        {
-            Debug.Log("[Met] GroundSlam Guarded.");
-            player.controller.OnKnockback(hitDir, Status.groundSlamKnockback * 0.5f);
-        }
-        else
-        {
-            player.TakeDamaged(Status.groundSlamDamage);
-        }
-    }
+    //    if (guard == Player.GuardType.PerfectGuard)
+    //    {
+    //        Debug.Log("[Met] GroundSlam Perfect Guarded!");
+    //        StartExhausted();
+    //    }
+    //    else if (guard == Player.GuardType.Guard)
+    //    {
+    //        Debug.Log("[Met] GroundSlam Guarded.");
+    //        player.controller.OnKnockback(hitDir, Status.groundSlamKnockback * 0.5f);
+    //    }
+    //    else
+    //    {
+    //        player.TakeDamaged(Status.groundSlamDamage);
+    //    }
+    //}
     #endregion
 
     #region 앞발찍기
@@ -684,16 +686,15 @@ public class Boss_Met : BaseBoss
 
         // 시작 시 Y위치 저장 (착지 기준점)
         groundSlamOriginY = _rigid.position.y;
-
+        float temporalJumpHeight = Status.groundSlamJumpHeight;
         hitStamp = false;
         isStamping = false;
 
 
         // 패턴 시작 애니메이션
         _visual.PlayAnim("Stamp_Prepare");
-        //yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
         if (curAttack == AttackPattern.None) yield break;
-
+        float Co_StampMoveDuration = 0.3f;
         // 2회 반복
         for (int i = 0; i < 2; i++)
         {
@@ -701,18 +702,19 @@ public class Boss_Met : BaseBoss
 
             // ── 올라가기 ──────────────────────────────────────────
             // 목표 X: 보스와 플레이어 사이의 3/4 지점
+            
             float targetX = _rigid.position.x + (player.transform.position.x - _rigid.position.x) * 0.75f;
-            float targetY = groundSlamOriginY + Status.groundSlamJumpHeight;
+            float targetY = groundSlamOriginY + temporalJumpHeight;
             Vector2 jumpTarget = new Vector2(targetX, targetY);
-
+            
             Debug.Log($"[Met] GroundSlam Jump Up #{i + 1} → {jumpTarget}");
 
             yield return StartCoroutine(Co_StampMove(
             jumpTarget,
-            0.3f,   //  0.2f ~ 0.3f
+            Co_StampMoveDuration,   //  0.2f ~ 0.3f
             Ease.OutQuad                     // 처음 빠르게 치고 올라감
-        ));
-
+            ));
+            
             if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
             {
                 KillStampDrive();
@@ -721,11 +723,14 @@ public class Boss_Met : BaseBoss
 
             _rigid.position = jumpTarget;
             _rigid.linearVelocity = Vector2.zero;
-
+            
             // ── 공중 대기 1초 ─────────────────────────────────────
             Debug.Log("[Met] GroundSlam Hovering...");
             if (i != 1)// 0회차만
-            { yield return new WaitForSeconds(0.5f); }
+            {
+                yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+                yield return new WaitForSeconds(0.5f); 
+            }
                 
             if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
             {
@@ -734,14 +739,16 @@ public class Boss_Met : BaseBoss
             }
 
             // ── 내려찍기 (플레이어 방향 대각선 낙하) ──────────────
-            // TODO 여기에 플레이어 방향 바라보기
+            
+            LookAtPlayer();
             // 낙하 시작 시점 플레이어 위치 스냅
             Vector2 slamTarget = new Vector2(player.transform.position.x, groundSlamOriginY);
             hitStamp = false;
             isStamping = true;
             EnableHitbox();// TODO 여기에 히트박스 겸 이펙트 
 
-
+            Co_StampMoveDuration -= 0.1f;
+            temporalJumpHeight -= 3f;
 
             yield return StartCoroutine(Co_StampMove(
             slamTarget,
@@ -772,16 +779,17 @@ public class Boss_Met : BaseBoss
             if (i == 1)
             {
                 _visual.PlayAnim("Stamp_Action", false);
-                yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
+                //yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None);
             }
             else
             {
                 // 첫 번째 착지 후 짧은 딜레이
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSeconds(0.8f);
             }
         }
         KillStampDrive();
         lastStampTime = Time.time;
+        Debug.Log("스탬프 드라이브 끝");
         //yield return new WaitForSeconds(0.2f);
     }
 
@@ -814,6 +822,7 @@ public class Boss_Met : BaseBoss
 
         KillStampDrive();
     }
+
     private void KillStampDrive()
     {
         if (_groundSlamTween != null && _groundSlamTween.IsActive())
@@ -831,7 +840,7 @@ public class Boss_Met : BaseBoss
         hitStamp = true;
 
         // 내려찍기이므로 아래→위 방향 넉백
-        Vector2 hitDir = new Vector2(facingX * 0.1f, 1f).normalized;
+        Vector2 hitDir = new Vector2(facingX , 0.5f).normalized;
         Player.GuardType guard = player.controller.OnKnockback(hitDir, Status.stampKnockback);
 
         if (guard == Player.GuardType.PerfectGuard)
@@ -913,10 +922,13 @@ public class Boss_Met : BaseBoss
     //기절 후 일어날 때 플레이어 넉백
     public void ShoutKnockback()
     {
-        //여기에 울리는 이펙트 필요
-        Vector2 hitDir = new Vector2(facingX, 0.2f).normalized;
         Player player = Player.Instance;
-        player.controller.OnKnockback(hitDir, 30f);
+        //여기에 울리는 이펙트 필요
+        Vector2 direction = player.transform.position - transform.position;
+        direction.y = 0.1f;
+        direction = direction.normalized;
+        
+        player.controller.OnKnockback(direction, 25f);
     }
     #endregion
 
@@ -967,7 +979,7 @@ public class Boss_Met : BaseBoss
                 case AttackPattern.PowerDash:   OnDashHit(player); break;
                 case AttackPattern.TuskDrive:   OnTuskHit(player); break;
                 case AttackPattern.BodySlam:    OnSlamHit(player); break;
-                case AttackPattern.GroundSlam: OnGroundSlamHit(player); break;
+                //case AttackPattern.GroundSlam: OnGroundSlamHit(player); break;
                 case AttackPattern.StampDrive: OnStampHit(player); break;
                 default: base.OnCollisionEnter2D(collision); break;
             }

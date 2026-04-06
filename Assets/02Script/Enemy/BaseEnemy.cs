@@ -250,7 +250,7 @@ public abstract class BaseEnemy : MonoBehaviour, IDamageable, IEnemy
                 Vector2 slamDir = player.controller.CurrentSlamDir;
 
                 // 플레이어, 적 넉백
-                player.controller.OnKnockback(Vector2.up, slamKnockbackForce);
+                player.controller.OnKnockback(Vector2.up, slamKnockbackForce, -1, true);
                 TakeDamage(1);
                 return;
             }

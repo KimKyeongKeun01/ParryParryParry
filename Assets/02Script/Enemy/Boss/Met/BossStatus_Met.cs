@@ -10,7 +10,7 @@ public class BossStatus_Met : BaseBossStatus
 
     [Header(" === Pattern: Dash (돌진) === ")]
     [Tooltip("돌진 속도")] public float dashSpeed = 18f;
-    [Tooltip("돌진 쿨타임")] public float dashCooldown = 6f;
+    [Tooltip("돌진 쿨타임")] public float dashCooldown = 8f;
     [Tooltip("돌진 데미지")] public int dashDamage = 1;
     [Tooltip("돌진 넉백 파워")] public float dashKnockback = 12f;
     [Tooltip("돌진 벽감지 거리")] public float wallDetectRange = 1.0f;
@@ -45,7 +45,7 @@ public class BossStatus_Met : BaseBossStatus
     [Tooltip("찍기 1회당 전진 거리")] public float stampMoveRange = 2.5f;
     [Tooltip("전진 속도")] public float stampMoveSpeed = 5f;
     [Tooltip("찍기와 찍기 사이 딜레이")] public float stampBetweenDelay = 0.3f;
-    [Tooltip("쿨타임")] public float stampCooldown = 5f;
+    [Tooltip("쿨타임")] public float stampCooldown = 8f;
     [Tooltip("데미지")] public int stampDamage = 1;
     [Tooltip("넉백 파워")] public float stampKnockback = 12f;
     [Tooltip("가드 시 넉백 파워")] public float stampGuardKnockback = 4f;
