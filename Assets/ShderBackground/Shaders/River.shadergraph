@@ -4101,7 +4101,7 @@
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.CategoryData",
     "m_ObjectId": "23ac02bbbf124259af82d0630c1276e0",
-    "m_Name": "ReflectionWater\\",
+    "m_Name": "ReflectionWater",
     "m_ChildObjectList": [
         {
             "m_Id": "c037ef4f7f314371b95804dfbdc4868a"
@@ -9459,7 +9459,7 @@
     "m_Hidden": false,
     "m_PerRendererData": false,
     "m_customAttributes": [],
-    "m_Value": 0.019999999552965165,
+    "m_Value": 0.20000000298023225,
     "m_FloatType": 0,
     "m_LiteralFloatMode": false,
     "m_RangeValues": {
