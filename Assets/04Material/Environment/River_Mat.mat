@@ -58,12 +58,12 @@ Material:
     - _FoamStrength: 0.1
     - _FoamThreshold: 0.1
     - _ImapctTime: 0.1
-    - _ImpactStrength: 0.1
-    - _ImpactWaveDecay: 0
-    - _ImpactWaveFrequency: 0
-    - _ImpactWaveRadius: 1
-    - _ImpactWaveSpeed: 0.1
-    - _ImpactX: 0
+    - _ImpactStrength: 1
+    - _ImpactWaveDecay: 0.001
+    - _ImpactWaveFrequency: 50
+    - _ImpactWaveRadius: 5
+    - _ImpactWaveSpeed: 3
+    - _ImpactX: 169.10666
     - _InnderDarkness: 0.5
     - _InnerDarkness: 0.6
     - _InnerDistortion: 0.001
@@ -74,10 +74,10 @@ Material:
     - _NoiseScrollX: 0.005
     - _NormalStrength: 1
     - _TopMaskPower: 0
-    - _WaveAmplitude: 0.03
-    - _WaveFrequency: 1000
+    - _WaveAmplitude: 0.05
+    - _WaveFrequency: 100
     - _WavePhaseOffset: 0
-    - _WaveSpeed: 1
+    - _WaveSpeed: 5
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _FoamColor: {r: 0, g: 0, b: 0, a: 1}
