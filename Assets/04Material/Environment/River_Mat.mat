@@ -23,6 +23,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _InnerWaterTex:
+        m_Texture: {fileID: 8400000, guid: 3627c0d2e51f1cf4ab82c4d7a4ec40a0, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 77f9992465233304a8e2bf7fffc55064, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 2800000, guid: c82b1ddd3d03b754a98754b0781336fc, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -45,16 +53,29 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Darkness: 0.45
+    - _Darkness: 0.1
     - _DistortionStrength: 0.001
     - _FoamStrength: 0.1
     - _FoamThreshold: 0.1
-    - _NoiseScale: 0.5
-    - _NoiseScrollX: 0.01
+    - _ImapctTime: 0.1
+    - _ImpactStrength: 0.1
+    - _ImpactWaveDecay: 0
+    - _ImpactWaveFrequency: 0
+    - _ImpactWaveRadius: 1
+    - _ImpactWaveSpeed: 0.1
+    - _ImpactX: 0
+    - _InnderDarkness: 0.5
+    - _InnerDarkness: 0.6
+    - _InnerDistortion: 0.001
+    - _InnerDistortionStrength: 0.0005
+    - _InnerNoiseScale: 0.2
+    - _InnerNoiseScrollX: 0.01
+    - _NoiseScale: 0.1
+    - _NoiseScrollX: 0.005
     - _NormalStrength: 1
     - _TopMaskPower: 0
-    - _WaveAmplitude: -0.01
-    - _WaveFrequency: 2.33
+    - _WaveAmplitude: 0.03
+    - _WaveFrequency: 1000
     - _WavePhaseOffset: 0
     - _WaveSpeed: 1
     m_Colors:
