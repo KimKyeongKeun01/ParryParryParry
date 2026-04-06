@@ -711,8 +711,9 @@ public class Boss_Met : BaseBoss
             0.3f,   //  0.2f ~ 0.3f
             Ease.OutQuad                     // 처음 빠르게 치고 올라감
             ));
-            if (i != 1)// 0회차만
-            { yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None); }
+
+            
+
             if (curAttack == AttackPattern.None || CurState == EnemyState.Stun)
             {
                 KillStampDrive();
@@ -721,7 +722,8 @@ public class Boss_Met : BaseBoss
 
             _rigid.position = jumpTarget;
             _rigid.linearVelocity = Vector2.zero;
-
+            if (i != 1)// 0회차만
+            { yield return new WaitUntil(() => _visual.IsAnimFinished || curAttack == AttackPattern.None); }
             // ── 공중 대기 1초 ─────────────────────────────────────
             Debug.Log("[Met] GroundSlam Hovering...");
             if (i != 1)// 0회차만
