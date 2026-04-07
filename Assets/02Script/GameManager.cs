@@ -101,21 +101,27 @@ public class GameManager : MonoBehaviour
 
     public void GameRestart()
     {
-        isPlaying = true;
+        isPlaying = false;
         timeManager.SetSystemTime(1);   // 시간 초기화 필수!
 
+        UIManager.Instance.SetPausePanel(false);
+        OnGameOver();
+
+        /*
         // 페이드 아웃 후 현재 씬 다시 로드
         UIManager.Instance.FadeOut(onComplete: () =>
         {
-            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            string currentScene = SceneManager.GetActiveScene().name;
             LoadManager.Instance.LoadScene(currentScene, () =>
             {
                 UIManager.Instance.SetPausePanel(false);
                 UIManager.Instance.UpdateHealth();
-                UIManager.Instance.FadeIn();
 
+                UIManager.Instance.FadeIn();
+                isPlaying = true;
             });
         });
+        */
     }
 
     public void GameResume()
@@ -136,29 +142,31 @@ public class GameManager : MonoBehaviour
     public void OnGameOver()
     {
         isPlaying = false;
-        var player = Player.Instance;
-        player.isPlaying = false;
-        player.controller.Setup();
-
+     
         UIManager.Instance.FadeOut(onComplete: () =>
         {
+            // Stage State Reset
+            StageManager.Instance.ResetCurrentStage();
+
+            // Player Reset
+            var player = Player.Instance;
             var respawnPos = StageManager.Instance.GetRespawnPoint(); // 리셋 + Activate 포함
-            if (StageManager.Instance.CurrentIndex == 7 || StageManager.Instance.CurrentIndex == 11)
-            {
-
-                //bossStage.StartBoss();
-            }
             player.Setup(respawnPos);
+            player.controller.Setup();
 
+            // UI, Time Reset
             UIManager.Instance.UpdateHealth(true);
+            timeManager.SetSystemTime(1);
 
-            player.isPlaying = true;
-            isPlaying = true;
-
-            //CameraManager.Instance.SnapCurrentCamera();
-            timeManager.SetSystemTime(1);   // 시간 초기화 필수!
+            // Boss Reset
+            if (StageManager.Instance.IsBossStage())
+            {
+                
+            }
 
             UIManager.Instance.FadeIn();
+            player.isPlaying = true;
+            isPlaying = true;
         });
         
     }

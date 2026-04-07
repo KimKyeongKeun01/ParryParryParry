@@ -1,9 +1,7 @@
 using DG.Tweening;
-using NUnit.Framework;
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 
 public class Boss_Met : BaseBoss
@@ -237,8 +235,10 @@ public class Boss_Met : BaseBoss
     private void LookAtPlayer()
     {
         Player player = Player.Instance;
+
         if (player == null) return;
         float dirX = player.transform.position.x - transform.position.x;
+
         facingX = Mathf.Sign(dirX);
         _visual?.Flip(dirX > 0f);
     }
@@ -1195,4 +1195,10 @@ public class Boss_Met : BaseBoss
     }
 #endif
     #endregion
+
+
+    private void OnDestroy()
+    {
+        transform.DOKill();
+    }
 }

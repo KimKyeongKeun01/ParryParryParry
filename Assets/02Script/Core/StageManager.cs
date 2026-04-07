@@ -1,11 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-//using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Playables;
 
 public class StageManager : MonoBehaviour
 {
@@ -33,9 +29,6 @@ public class StageManager : MonoBehaviour
     private void OnEnable() => Stage.OnPlayerEnteredStage += HandlePlayerEnteredStage;
     private void OnDisable() => Stage.OnPlayerEnteredStage -= HandlePlayerEnteredStage;
 
-    private void Update()
-    {
-    }
     private void HandlePlayerEnteredStage(Stage stage)
     {
         if (stage.Index == _currentIndex) return;
@@ -227,15 +220,18 @@ public class StageManager : MonoBehaviour
 
     // 클리어된 스테이지: 재생성 없이 재활성화 (적 상태 유지)
     // 미클리어 스테이지: 프리팹에서 완전 재생성 (적 포함 전체 리셋)
-    private void ResetCurrentStage()
+    public void ResetCurrentStage()
     {
         int i = _currentIndex;
+        if (i < 0 || i >= _instances.Count) return;
 
-        if (!_cleared[i])
-        {
-            if (_instances[i].TryGetComponent(out Stage stage))
-                stage.ResetEnemys(); // 자식 몬스터들 전부 SetActive(true)
-        }
+        GameObject stageObj = _instances[i];
+
+        // 일반 스테이지 리셋
+        if (stageObj.TryGetComponent(out Stage stage)) stage.ResetEnemys();
+
+        // 보스 스테이지 리셋
+        if (stageObj.TryGetComponent(out BossStage bossStage)) bossStage.BossReset();
     }
 
     public Stage GetCurrentStage()
@@ -249,6 +245,7 @@ public class StageManager : MonoBehaviour
     // 스테이지 인덱스로 현재 스테이지 변경
     public void SetCurrentStage(int index)
     {
+        
         if (index < 0 || index >= _instances.Count || index == _currentIndex) return;
 
         // 다음 스테이지 진입 시 현재 스테이지 클리어
@@ -261,7 +258,9 @@ public class StageManager : MonoBehaviour
         _currentIndex = index;
         //if (CameraManager.Instance != null)
         //    CameraManager.Instance.SwitchToCamera(index);
+        
     }
+
 
     // 현재 ±1 범위만 활성화, 나머지 비활성화
     // 활성화 시 계산된 위치로 복원
@@ -275,6 +274,19 @@ public class StageManager : MonoBehaviour
             Debug.Log($"현재 스테이지 인덱스: {_currentIndex}");
         }
     }
+
+    // 현재 스테이지가 보스 스테이지인지
+    public bool IsBossStage()
+    {
+        if (_currentIndex < 0 || _currentIndex >= _instances.Count) return false;
+        return _instances[_currentIndex].GetComponent<BossStage>() != null;
+    }
+
+    public BossStage GetCurrentBossStage()
+    {
+        return _instances[_currentIndex].GetComponent<BossStage>();
+    }
+
 
     // 스테이지의 모든 Renderer를 합친 bounds 반환
     // Renderer가 없으면 BoxCollider2D로 대체

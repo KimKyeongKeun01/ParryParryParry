@@ -46,6 +46,45 @@ public abstract class BaseBoss : BaseEnemy
         #endregion
     }
 
+    public virtual void InitBoss()
+    {
+        // Coroutine Stop
+        StopAllCoroutines();
+        patternCoroutine = null;
+
+        // Base State Reset
+        isDead = false;
+        curHp = maxHp;
+        curHits = 0;
+
+        // Boss Stae Reset
+        phase = 1;
+        isPhaseTransitioning = false;
+        canSlam = false;
+        isPlayingCutScene = true;
+
+        facingX = -1f;
+
+        // Physics Reset
+        if (_rigid != null)
+        {
+            _rigid.linearVelocity = Vector2.zero;
+            _rigid.angularVelocity = 0f;
+        }
+
+        if (_coll != null) _coll.isTrigger = false;
+
+        if (_visual != null)
+        {
+            _visual.Init(this);
+            _visual.Flip(false);
+        }
+
+        ChangeState(EnemyState.Idle);
+
+        Debug.Log($"[BaseBoss] {gameObject.name} State Reset");
+    }
+
     #region 상태 전환
     public override void ChangeState(EnemyState state)
     {

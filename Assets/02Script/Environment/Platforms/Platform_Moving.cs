@@ -255,6 +255,29 @@ public class Platform_Moving : MonoBehaviour
         return size.sqrMagnitude > Mathf.Epsilon;
     }
 
+    public void ResetToStart()
+    {
+        // 1. 경로 및 상태 초기화
+        ResetRouteState();
+        ResetRuntimeState();
+
+        // 2. 위치를 시작 지점으로 즉시 이동 (Snap)
+        if (platformBody != null)
+        {
+            Vector2 startWorldPos = LocalToWorldPoint(startPoint);
+            platformBody.position = startWorldPos;
+            transform.position = startWorldPos; // 비주얼 싱크
+        }
+
+        // 3. 속도 초기화
+        currentLinearVelocity = Vector2.zero;
+
+        // 4. 색상 초기화
+        ApplyColorImmediate(defaultColor);
+
+        Debug.Log($"[Platform_Moving] {gameObject.name} Reset to Start Position.");
+    }
+
     public void SetExternalSignal(bool active)
     {
         if (IsElevatorMode)
