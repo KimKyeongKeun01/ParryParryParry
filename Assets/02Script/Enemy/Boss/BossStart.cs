@@ -3,7 +3,7 @@ using UnityEngine;
 public class BossStart : MonoBehaviour
 {
     [SerializeField] private BossStage bossStage;
-    private bool isTriggered = false;
+    public bool isTriggered = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {

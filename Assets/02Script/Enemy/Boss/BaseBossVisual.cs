@@ -30,10 +30,11 @@ public abstract class BaseBossVisual : MonoBehaviour
         if (_anim == null) _anim = GetComponentInChildren<Animator>();
         _sprites = GetComponentsInChildren<SpriteRenderer>();
         
+        originalScaleX = Mathf.Abs(transform.localScale.x);
+
         foreach (var s in _sprites)
         {
             s.color = originColor;
-            originalScaleX = gameObject.transform.localScale.x;
         }
 
         Debug.Log($"[Boss Visual] {gameObject.name} Init Complete");

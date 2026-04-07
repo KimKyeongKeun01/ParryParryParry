@@ -20,6 +20,7 @@ public class BossStage : MonoBehaviour
     [SerializeField] private string bossTitle;
 
     [Header("Stage Door")]
+    [SerializeField] private BossStart bossEnter;
     [SerializeField] private Platform_Moving entrance_Door;
     [SerializeField] private Platform_Moving exit_Door;
 
@@ -206,21 +207,26 @@ public class BossStage : MonoBehaviour
         hasBossStarted = false;
         isCutscenePlaying = false;
 
-        // 보스 비활성화
+        // Boss Reset
+        if (bossScript != null) bossScript.InitBoss();
         if (bossObj != null)
         {
-            bossObj.transform.position = spawnPoint.position;
             bossObj.SetActive(false);
+
+            if (spawnPoint != null) bossObj.transform.position = spawnPoint.position;
         }
             
         // 문 열기
-        if (entrance_Door != null) entrance_Door.SetExternalSignal(false);
+        if (entrance_Door != null) entrance_Door.ResetToStart();
+        bossEnter.gameObject.SetActive(true);
+        bossEnter.isTriggered = false;
 
         // 타임라인 초기화
         if (bossIntro != null)
         {
             bossIntro.time = 0;
             bossIntro.Stop();
+            bossIntro.Evaluate();
         }
     }
 }

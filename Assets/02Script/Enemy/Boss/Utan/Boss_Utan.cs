@@ -246,12 +246,10 @@ public class Boss_Utan : BaseBoss
         float dirX = player.transform.position.x - transform.position.x;
 
         // 정확히 겹치면 기존 facing 유지
-        if (Mathf.Abs(dirX) < 0.01f)
-            dirX = facingX;
+        if (Mathf.Abs(dirX) < 0.01f) dirX = facingX;
 
+        facingX = Mathf.Sign(dirX);
         Visual?.Flip(dirX > 0f);
-
-        facingX = dirX;
     }
     #endregion
 

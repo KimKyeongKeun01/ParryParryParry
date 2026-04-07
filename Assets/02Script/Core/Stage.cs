@@ -144,7 +144,7 @@ public class Stage : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             // Manager에게 나(gameObject)를 전달합니다.
-            StageManager.Instance.UpdateCurrentStage(gameObject);
+            StageManager.Instance.SetCurrentStage(Index);
         }
     }
 
