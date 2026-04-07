@@ -104,6 +104,10 @@ public class GameManager : MonoBehaviour
         isPlaying = false;
         timeManager.SetSystemTime(1);   // 시간 초기화 필수!
 
+        UIManager.Instance.SetPausePanel(false);
+        OnGameOver();
+
+        /*
         // 페이드 아웃 후 현재 씬 다시 로드
         UIManager.Instance.FadeOut(onComplete: () =>
         {
@@ -112,9 +116,12 @@ public class GameManager : MonoBehaviour
             {
                 UIManager.Instance.SetPausePanel(false);
                 UIManager.Instance.UpdateHealth();
+
+                UIManager.Instance.FadeIn();
                 isPlaying = true;
             });
         });
+        */
     }
 
     public void GameResume()
