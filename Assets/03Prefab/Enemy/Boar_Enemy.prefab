@@ -94,13 +94,13 @@ MonoBehaviour:
   dashSpeed: 30
   windupTime: 2
   dashRestTime: 1
-  dashKnockbackForce: 0
+  dashKnockbackForce: 10
   parryStunTime: 5
   wallStunTime: 3
   edgeOffset: 0.5
   wallOffset: 1.5
   _sprite: {fileID: 5766530618428021833}
-  windupColor: {r: 0.06666667, g: 0.007843138, b: 0.003921569, a: 1}
+  windupColor: {r: 0.03773582, g: 0.008412578, b: 0.004449978, a: 1}
   stunColor: {r: 0.105882354, g: 0.07450981, b: 0, a: 1}
   hitColor: {r: 0.16862746, g: 0.08627451, b: 0.050980397, a: 0.78431374}
 --- !u!1 &2897284825811041732
