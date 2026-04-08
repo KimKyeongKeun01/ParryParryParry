@@ -188,6 +188,8 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.SetClearPanel(false);
             UIManager.Instance.title.gameObject.SetActive(main);
 
+            UIManager.Instance.UpdateHealth(true);
+
             UIManager.Instance.SetGuard(!main);
         });
     }

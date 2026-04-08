@@ -1102,6 +1102,8 @@ public class Boss_Utan : BaseBoss
         curState = EnemyState.Dead;
         // TODO: 스테이지 매니저 보스 사망 처리
         Visual?.PlayAnim("IsBool", true);
+
+        GameManager.Instance.GameClear();
     }
     protected override void OnEnable()
     {

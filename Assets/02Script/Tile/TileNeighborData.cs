@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using TreeEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static UnityEditor.PlayerSettings;
 
 public class TileNeighborData : MonoBehaviour
 {
